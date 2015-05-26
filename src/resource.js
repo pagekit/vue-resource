@@ -1,110 +1,121 @@
-var _ = require('./util');
+module.exports = function (Vue) {
 
-/**
- * Resource provides interaction support with RESTful services.
- */
+    var _ = require('./util')(Vue);
 
-function Resource (url, params, actions) {
+    /**
+     * Resource provides interaction support with RESTful services.
+     */
 
-    var self = this, resource = {};
+    function Resource (url, params, actions) {
 
-    actions = _.extend({},
-        Resource.actions,
-        actions
-    );
+        var self = this, resource = {};
 
-    _.each(actions, function (action, name) {
+        actions = _.extend({},
+            Resource.actions,
+            actions
+        );
 
-        action = _.extend(true, {url: url, params: params || {}}, action);
+        _.each(actions, function (action, name) {
 
-        resource[name] = function () {
-            return (self.$http || Vue.http)(opts(action, arguments));
-        };
-    });
+            action = _.extend(true, {url: url, params: params || {}}, action);
 
-    return resource;
-}
+            resource[name] = function () {
+                return (self.$http || Vue.http)(opts(action, arguments));
+            };
+        });
 
-function opts (action, args) {
+        return resource;
+    }
 
-    var options = _.extend({}, action), params = {}, data, success, error;
+    function opts (action, args) {
 
-    switch (args.length) {
+        var options = _.extend({}, action), params = {}, data, success, error;
 
-        case 4:
+        switch (args.length) {
 
-            error = args[3];
-            success = args[2];
+            case 4:
 
-        case 3:
-        case 2:
+                error = args[3];
+                success = args[2];
 
-            if (_.isFunction (args[1])) {
+            case 3:
+            case 2:
 
-                if (_.isFunction (args[0])) {
+                if (_.isFunction (args[1])) {
 
-                    success = args[0];
-                    error = args[1];
+                    if (_.isFunction (args[0])) {
+
+                        success = args[0];
+                        error = args[1];
+
+                        break;
+                    }
+
+                    success = args[1];
+                    error = args[2];
+
+                } else {
+
+                    params = args[0];
+                    data = args[1];
+                    success = args[2];
 
                     break;
                 }
 
-                success = args[1];
-                error = args[2];
+            case 1:
 
-            } else {
-
-                params = args[0];
-                data = args[1];
-                success = args[2];
+                if (_.isFunction (args[0])) {
+                    success = args[0];
+                } else if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
+                    data = args[0];
+                } else {
+                    params = args[0];
+                }
 
                 break;
-            }
 
-        case 1:
+            case 0:
 
-            if (_.isFunction (args[0])) {
-                success = args[0];
-            } else if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
-                data = args[0];
-            } else {
-                params = args[0];
-            }
+                break;
 
-            break;
+            default:
 
-        case 0:
+                throw 'Expected up to 4 arguments [params, data, success, error], got ' + args.length + ' arguments';
+        }
 
-            break;
+        options.url = action.url;
+        options.data = data;
+        options.params = _.extend({}, action.params, params);
 
-        default:
+        if (success) {
+            options.success = success;
+        }
 
-            throw 'Expected up to 4 arguments [params, data, success, error], got ' + args.length + ' arguments';
+        if (error) {
+            options.error = error;
+        }
+
+        return options;
     }
 
-    options.url = action.url;
-    options.data = data;
-    options.params = _.extend({}, action.params, params);
+    Resource.actions = {
 
-    if (success) {
-        options.success = success;
-    }
+        get: {method: 'GET'},
+        save: {method: 'POST'},
+        query: {method: 'GET'},
+        remove: {method: 'DELETE'},
+        delete: {method: 'DELETE'}
 
-    if (error) {
-        options.error = error;
-    }
+    };
 
-    return options;
-}
+    Object.defineProperty(Vue.prototype, '$resource', {
 
-Resource.actions = {
+        get: function () {
+            return Resource.bind(this);
+        }
 
-    get: {method: 'GET'},
-    save: {method: 'POST'},
-    query: {method: 'GET'},
-    remove: {method: 'DELETE'},
-    delete: {method: 'DELETE'}
+    });
 
+    return Resource;
 };
-
-module.exports = Resource;
