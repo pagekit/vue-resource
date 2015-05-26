@@ -1,13 +1,13 @@
-var _ = require('./util');
-var Url = require('./url');
-var Http = require('./http');
-var Resource = require('./resource');
-
 /**
  * Install plugin.
  */
 
 function install (Vue) {
+
+    var _ = require('./util');
+    var Url = require('./url');
+    var Http = require('./http');
+    var Resource = require('./resource');
 
     Vue.url = Url;
     Vue.http = Http;
