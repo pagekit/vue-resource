@@ -22,7 +22,7 @@ List of methods:
 ```javascript
   new Vue({
 
-      ready: {
+      ready: function() {
 
         // GET request
         this.$http.get('/someUrl', function (data, status, request) {
@@ -61,7 +61,7 @@ delete: {method: 'DELETE'}
 ```javascript
   new Vue({
 
-      ready: {
+      ready: function() {
 
         var resource = this.$resource('someItem/:id');
 
