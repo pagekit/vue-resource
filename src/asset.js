@@ -11,7 +11,6 @@ module.exports = function (Vue) {
 
     function Asset(assets, onSuccess, onError) {
 
-        assets = _normalize(assets);
         onSuccess = onSuccess || fn;
         onError = onError || fn;
 
@@ -87,38 +86,6 @@ module.exports = function (Vue) {
         return promise;
     }
 
-    function _normalize(assets) {
-
-        assets = assets || {};
-
-        if (typeof(assets) === 'string' ) {
-            assets = [assets];
-        }
-
-        if (_.isArray(assets)) {
-
-            var _assets = {'js':[],'css':[], 'image': []};
-
-            for (var i=0, len=assets.length; i<len; i++) {
-
-                if (!assets[i]) continue;
-
-                if (assets[i].match(/\.js$/i)) {
-                    _assets.js.push(assets[i]);
-                } else if (assets[i].match(/\.css$/i)) {
-                    _assets.css.push(assets[i]);
-                } else if (assets[i].match(/\.(jpg|jpeg|png|gif|svg)$/i)) {
-                    _assets.image.push(assets[i]);
-                }
-            }
-
-            assets = _assets;
-        }
-
-        return assets;
-    }
-
-
     function getScript(url) {
 
         return new _.Promise(function(resolve, reject) {
@@ -162,6 +129,18 @@ module.exports = function (Vue) {
             img.src = url;
         });
     }
+
+    types.forEach(function (type) {
+
+        Asset[type] = function (assets, onSuccess, onError) {
+
+            var _assets = {};
+
+            _assets[type] = assets;
+
+            return this(_assets, onSuccess, onError);
+        };
+    });
 
     Object.defineProperty(Vue.prototype, '$asset', {
 
