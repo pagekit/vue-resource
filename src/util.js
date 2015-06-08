@@ -71,64 +71,125 @@ module.exports = function (Vue) {
         return obj && typeof obj === 'function';
     };
 
+
     /**
-     * Promise polyfill (https://gist.github.com/briancavalier/814313)
+     * Promise polyfill (https://github.com/RubenVerborgh/promiscuous)
      */
 
     _.Promise = window.Promise;
 
     if (!_.Promise) {
 
-        _.Promise = function (executor) {
-            executor(this.resolve.bind(this), this.reject.bind(this));
-            this._thens = [];
-        };
+        _.Promise = (function (func, obj) {
 
-        _.Promise.prototype = {
+            function is(type, item) { return (typeof item)[0] == type; }
 
-            then: function (onResolve, onReject, onProgress) {
-                this._thens.push({resolve: onResolve, reject: onReject, progress: onProgress});
-            },
+            function Promise(callback, handler) {
 
-            'catch': function (onReject) {
-                this._thens.push({reject: onReject});
-            },
+                handler = function pendingHandler(resolved, rejected, value, queue, then, i) {
 
-            resolve: function (value) {
-                this._complete('resolve', value);
-            },
+                    queue = pendingHandler.q;
 
-            reject: function (reason) {
-                this._complete('reject', reason);
-            },
+                    if (resolved != is) {
+                        return Promise(function (resolve, reject) {
+                            queue.push({ p: this, r: resolve, j: reject, 1: resolved, 0: rejected });
+                        });
+                    }
 
-            progress: function (status) {
+                    if (value && (is(func, value) | is(obj, value))) {
+                        try { then = value.then; }
+                        catch (reason) { rejected = 0; value = reason; }
+                    }
 
-                var i = 0, aThen;
+                    if (is(func, then)) {
+                        var valueHandler = function (resolved) {
+                            return function (value) { return then && (then = 0, pendingHandler(is, resolved, value)); };
+                        };
+                        try { then.call(value, valueHandler(1), rejected = valueHandler(0)); }
+                        catch (reason) { rejected(reason); }
 
-                while (aThen = this._thens[i++]) {
-                    aThen.progress && aThen.progress(status);
-                }
-            },
+                    } else {
 
-            _complete: function (which, arg) {
+                        handler = function (Resolved, Rejected) {
+                            if (!is(func, (Resolved = rejected ? Resolved : Rejected))) return callback;
+                            return Promise(function (resolve, reject) { finalize(this, resolve, reject, value, Resolved); });
+                        };
 
-                this.then = which === 'resolve' ?
-                    function (resolve, reject) { resolve && resolve(arg); } :
-                    function (resolve, reject) { reject && reject(arg); };
+                        i = 0;
 
-                this.resolve = this.reject = this.progress =
-                    function () { throw new Error('Promise already completed.'); };
+                        while (i < queue.length) {
+                            then = queue[i++];
+                            if (!is(func, resolved = then[rejected])) {
+                                (rejected ? then.r : then.j)(value);
+                            } else {
+                                finalize(then.p, then.r, then.j, value, resolved);
+                            }
+                        }
+                    }
+                };
 
-                var aThen, i = 0;
+                handler.q = [];
 
-                while (aThen = this._thens[i++]) {
-                    aThen[which] && aThen[which](arg);
-                }
+                callback.call(callback = {
+                        then:  function (resolved, rejected) { return handler(resolved, rejected); },
+                        catch: function (rejected)           { return handler(0,        rejected); }
+                    },
+                    function (value)  { handler(is, 1,  value); },
+                    function (reason) { handler(is, 0, reason); }
+                );
 
-                delete this._thens;
+                return callback;
             }
-        };
+
+            // Finalizes the promise by resolving/rejecting it with the transformed value
+            function finalize(promise, resolve, reject, value, transform) {
+                setTimeout(function () {
+                    try {
+                        // Transform the value through and check whether it's a promise
+                        value = transform(value);
+                        transform = value && (is(obj, value) | is(func, value)) && value.then;
+                        // Return the result if it's not a promise
+                        if (!is(func, transform))
+                            resolve(value);
+                        // If it's a promise, make sure it's not circular
+                        else if (value == promise)
+                            reject(TypeError());
+                        // Take over the promise's state
+                        else
+                            transform.call(value, resolve, reject);
+                    }
+                    catch (error) { reject(error); }
+                }, 0);
+            }
+
+            Promise.resolve = ResolvedPromise;
+            function ResolvedPromise(value) { return Promise(function (resolve) { resolve(value); }); }
+
+            Promise.reject = function (reason) { return Promise(function (resolve, reject) { reject(reason); }); };
+
+            Promise.all = function (promises) {
+                return Promise(function (resolve, reject, count, values) {
+
+                    values = [];
+                    count  = promises.length || resolve(values);
+
+                    promises.map(function (promise, index) {
+                        ResolvedPromise(promise).then(
+                        // Store the value and resolve if it was the last
+                        function (value) {
+                            values[index] = value;
+                            count = count -1;
+                            if(!count) resolve(values);
+                        },
+                        // Reject if one element fails
+                        reject);
+                    });
+                });
+            };
+
+            return Promise;
+
+        })('f', 'o');
     }
 
     return _;
