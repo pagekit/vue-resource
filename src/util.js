@@ -70,10 +70,7 @@ module.exports = function (Vue) {
     _.isFunction = function (obj) {
         return obj && typeof obj === 'function';
     };
-
-    _.isArray = Array.isArray || function(value) {
-        return Object.prototype.toString.call(value) === "[object Array]";
-    };
+    
 
     /**
      * Promise polyfill (https://github.com/RubenVerborgh/promiscuous)
