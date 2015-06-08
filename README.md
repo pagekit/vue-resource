@@ -96,7 +96,9 @@ The asset service can be used globally `Vue.asset` or in a Vue instance `this.$a
 List of methods:
 
 * `Vue.asset(assets, [success], [error])`
-
+* `Vue.asset.css(url, [success], [error])`
+* `Vue.asset.js(url, [success], [error])`
+* `Vue.asset.image(url, [success], [error])`
 
 ### Usage
 ```javascript
