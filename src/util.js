@@ -70,7 +70,7 @@ module.exports = function (Vue) {
     _.isFunction = function (obj) {
         return obj && typeof obj === 'function';
     };
-    
+
 
     /**
      * Promise polyfill (https://github.com/RubenVerborgh/promiscuous)
