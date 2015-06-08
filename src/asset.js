@@ -4,10 +4,10 @@ module.exports = function (Vue) {
         cache = {};
 
     /**
-     * Assets provides a promise based assets manager.
+     * Asset provides a promise based assets manager.
      */
 
-    function Assets(assets, onSuccess, onError) {
+    function Asset(assets, onSuccess, onError) {
 
         assets = _.isArray(assets) ? assets : [assets];
 
@@ -33,9 +33,14 @@ module.exports = function (Vue) {
             promises.push(cache[assets[i]]);
         }
 
-        return _.Promise.all(promises).then(onSuccess).catch(function(){
+        var promise = _.Promise.all(promises);
+
+        promise.then(onSuccess).catch(function(e){
+            console.log(e)
             onError ? onError() : console.error("Require failed: \n"+assets.join(",\n"));
         });
+
+        return promise;
     }
 
 
@@ -82,5 +87,13 @@ module.exports = function (Vue) {
         });
     }
 
-    return Assets;
+    Object.defineProperty(Vue.prototype, '$asset', {
+
+        get: function () {
+            return _.extend(Asset.bind(this), Asset);
+        }
+
+    });
+
+    return Asset;
 };
