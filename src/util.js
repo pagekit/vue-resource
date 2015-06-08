@@ -71,6 +71,10 @@ module.exports = function (Vue) {
         return obj && typeof obj === 'function';
     };
 
+    _.isArray = Array.isArray || function(value) {
+        return Object.prototype.toString.call(value) === "[object Array]";
+    };
+
     /**
      * Promise polyfill (https://gist.github.com/briancavalier/814313)
      */
@@ -128,6 +132,45 @@ module.exports = function (Vue) {
 
                 delete this._thens;
             }
+        };
+
+        _.Promise.all = function() {
+
+            var args = Array.prototype.slice.call(arguments.length === 1 && _.isArray(arguments[0]) ? arguments[0] : arguments);
+
+            return new _.Promise(function (resolve, reject) {
+
+                if (args.length === 0) return resolve([]);
+
+                var remaining = args.length;
+
+                function res(i, val) {
+
+                    try {
+
+                        if (val && (typeof val === 'object' || typeof val === 'function')) {
+                            var then = val.then;
+                            if (typeof then === 'function') {
+                                then.call(val, function (val) { res(i, val); }, reject);
+                                return;
+                            }
+                        }
+
+                        args[i] = val;
+
+                        if (--remaining === 0) {
+                            resolve(args);
+                        }
+
+                    } catch (ex) {
+                        reject(ex);
+                    }
+                }
+
+                for (var i = 0; i < args.length; i++) {
+                    res(i, args[i]);
+                }
+            });
         };
     }
 

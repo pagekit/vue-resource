@@ -6,6 +6,7 @@ function install (Vue) {
     Vue.url = require('./url')(Vue);
     Vue.http = require('./http')(Vue);
     Vue.resource = require('./resource')(Vue);
+    Vue.assets = require('./assets')(Vue);
 }
 
 if (window.Vue) {
