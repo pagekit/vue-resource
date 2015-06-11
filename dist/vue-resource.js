@@ -564,7 +564,10 @@
 	        post: jsonType,
 	        patch: jsonType,
 	        delete: jsonType,
-	        common: { 'Accept': 'application/json, text/plain, */*' }
+	        common: {
+	            'Accept': 'application/json, text/plain, */*',
+	            'X-Requested-With': 'XMLHttpRequest'
+	        }
 	    };
 
 	    ['get', 'put', 'post', 'patch', 'delete', 'jsonp'].forEach(function (method) {
