@@ -88,3 +88,47 @@ delete: {method: 'DELETE'}
 
   })
 ```
+
+## Asset
+
+The asset service can be used globally `Vue.asset` or in a Vue instance `this.$asset`.
+
+List of methods:
+
+* `Vue.asset(assets, [success], [error])`
+* `Vue.asset.css(url, [success], [error])`
+* `Vue.asset.js(url, [success], [error])`
+* `Vue.asset.image(url, [success], [error])`
+
+### Usage
+```javascript
+  new Vue({
+
+      ready: function() {
+
+        this.$asset({
+            css   : [
+                'lib/style.css',
+                'lib2/style.css'
+            ],
+            js    : [
+                'lib/script.js',
+                'lib2/script.js',
+            ],
+            image : [
+                'media/image1.png',
+                'media/image2.png',
+            ]
+
+        }, function() {
+
+            this.obj = new Lib(this.$el);
+
+        }).error(function(e) {
+            // handle error
+        });
+
+      }
+
+  })
+```
