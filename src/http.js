@@ -1,6 +1,7 @@
 module.exports = function (Vue) {
 
     var _ = require('./util')(Vue);
+    var Promise = require('./promise');
     var jsonType = { 'Content-Type': 'application/json;charset=utf-8' };
 
     /**
@@ -27,11 +28,7 @@ module.exports = function (Vue) {
             Http.options, _.options('http', this, options)
         );
 
-        if (_.isObject(options.data) && /FormData/i.test(options.data.toString())) {
-            delete options.headers['Content-Type'];
-        }
-
-        promise = new _.Promise((options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).bind(this, (this.$url || Vue.url), options));
+        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(this, this.$url || Vue.url, options);
 
         _.extend(promise, {
 
@@ -77,7 +74,7 @@ module.exports = function (Vue) {
         return promise;
     }
 
-    function xhr(url, options, resolve, reject) {
+    function xhr(url, options) {
 
         var request = new XMLHttpRequest();
 
@@ -92,35 +89,52 @@ module.exports = function (Vue) {
 
         if (options.emulateJSON && _.isPlainObject(options.data)) {
             options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-            options.data = Vue.url.params(options.data);
+            options.data = url.params(options.data);
+        }
+
+        if (_.isObject(options.data) && /FormData/i.test(options.data.toString())) {
+            delete options.headers['Content-Type'];
         }
 
         if (_.isPlainObject(options.data)) {
             options.data = JSON.stringify(options.data);
         }
 
-        request.open(options.method, url(options), true);
+        var promise = new Promise(function (resolve, reject) {
 
-        _.each(options.headers, function (value, header) {
-            request.setRequestHeader(header, value);
+            request.open(options.method, url(options), true);
+
+            _.each(options.headers, function (value, header) {
+                request.setRequestHeader(header, value);
+            });
+
+            request.onreadystatechange = function () {
+
+                if (this.readyState === 4) {
+
+                    if (this.status >= 200 && this.status < 300) {
+                        resolve(this);
+                    } else {
+                        reject(this);
+                    }
+                }
+            };
+
+            request.send(options.data);
         });
 
-        request.onreadystatechange = function () {
+        _.extend(promise, {
 
-            if (this.readyState === 4) {
-
-                if (this.status >= 200 && this.status < 300) {
-                    resolve(this);
-                } else {
-                    reject(this);
-                }
+            abort: function () {
+                request.abort();
             }
-        };
 
-        request.send(options.data);
+        });
+
+        return promise;
     }
 
-    function jsonp(url, options, resolve, reject) {
+    function jsonp(url, options) {
 
         var callback = '_jsonp' + Math.random().toString(36).substr(2), script, result;
 
@@ -131,33 +145,38 @@ module.exports = function (Vue) {
             options.beforeSend({}, options);
         }
 
-        script = document.createElement('script');
-        script.src = url(options.url, options.params);
-        script.type = 'text/javascript';
-        script.async = true;
+        var promise = new Promise(function (resolve, reject) {
 
-        window[callback] = function (data) {
-            result = data;
-        };
+            script = document.createElement('script');
+            script.src = url(options.url, options.params);
+            script.type = 'text/javascript';
+            script.async = true;
 
-        var handler = function (event) {
+            window[callback] = function (data) {
+                result = data;
+            };
 
-            delete window[callback];
-            document.body.removeChild(script);
+            var handler = function (event) {
 
-            if (event.type === 'load' && !result) {
-                event.type = 'error';
-            }
+                delete window[callback];
+                document.body.removeChild(script);
 
-            var text = result ? result : event.type, status = event.type === 'error' ? 404 : 200;
+                if (event.type === 'load' && !result) {
+                    event.type = 'error';
+                }
 
-            (status === 200 ? resolve : reject)({ responseText: text, status: status });
-        };
+                var text = result ? result : event.type, status = event.type === 'error' ? 404 : 200;
 
-        script.onload = handler;
-        script.onerror = handler;
+                (status === 200 ? resolve : reject)({ responseText: text, status: status });
+            };
 
-        document.body.appendChild(script);
+            script.onload = handler;
+            script.onerror = handler;
+
+            document.body.appendChild(script);
+        });
+
+        return promise;
     }
 
     function parseReq(request) {
