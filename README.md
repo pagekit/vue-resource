@@ -1,6 +1,6 @@
 # vue-resource
 
-Resource plugin for Vue.js (v0.11).
+Resource plugin for Vue.js.
 
 The plugin provides services for making web requests and handle responses using a XMLHttpRequest or JSONP.
 
@@ -8,7 +8,7 @@ The plugin provides services for making web requests and handle responses using 
 
 The http service can be used globally `Vue.http` or in a Vue instance `this.$http`.
 
-List of methods:
+### Methods
 
 * `Vue.http.get(url, [data], [success], [options])`
 * `Vue.http.post(url, [data], [success], [options])`
@@ -16,6 +16,20 @@ List of methods:
 * `Vue.http.patch(url, [data], [success], [options])`
 * `Vue.http.delete(url, [data], [success], [options])`
 * `Vue.http.jsonp(url, [data], [success], [options])`
+
+### Options
+
+* **url** - `string` - URL to which the request is sent
+* **data** - `Object|string` - Data to be sent as the request message data
+* **method** - `string` - HTTP method (e.g. GET, POST, ...)
+* **params** - `Object` - Parameters object to be appended as GET parameters
+* **headers** - `Object` - Headers object to be sent as HTTP request headers
+* **success** - `function(data, status, request)` - Callback function to be called when the request finishes
+* **error** - `function(data, status, request)` - Callback function to be called when the request fails
+* **beforeSend** - `function(request, options)` - Callback function to modify the request object before it is sent
+* **emulateHTTP** - `boolean` - Send PUT, PATCH and DELETE requests with a HTTP POST and set the `X-HTTP-Method-Override` header
+* **emulateJSON** - `boolean` -  Send request data as `application/x-www-form-urlencoded` content type
+* **jsonp** - `string` - Callback function name in a JSONP request
 
 ### Usage
 
@@ -43,11 +57,11 @@ List of methods:
 
 The resource service can be used globally `Vue.resource` or in a Vue instance `this.$resource`.
 
-List of methods:
+### Methods
 
 * `Vue.resource(url, [params], [actions])`
 
-List of default actions:
+### Default Actions
 
 ```javascript
 get: {method: 'GET'},
