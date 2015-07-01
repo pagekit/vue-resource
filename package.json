@@ -4,7 +4,7 @@
   "description": "A web request service for Vue.js",
   "main": "src/index.js",
   "scripts": {
-    "build": "webpack --config build/webpack.build.config.js && webpack --config build/webpack.build.config.js --output-file vue-resource.min.js -p"
+    "build": "webpack --config build/webpack.build.config.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/vuejs/vue-resource#readme",
   "devDependencies": {
-    "webpack": "^1.8.11"
+    "webpack": "^1.10.0"
   }
 }
