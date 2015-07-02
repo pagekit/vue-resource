@@ -1,3 +1,9 @@
+/**
+ * vue-resource v0.1.4
+ * https://github.com/vuejs/vue-resource
+ * Released under the MIT License.
+ */
+
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -96,7 +102,7 @@
 	            return '';
 	        });
 
-	        if (!url.match(/^(https?:)?\//) && options.root) {
+	        if (options.root !== false && !url.match(/^(https?:)?\//)) {
 	            url = options.root + '/' + url;
 	        }
 
@@ -124,7 +130,7 @@
 
 	    Url.options = {
 	        url: '',
-	        root: '',
+	        root: false,
 	        params: {}
 	    };
 
@@ -231,7 +237,7 @@
 
 /***/ },
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	/**
 	 * Utility functions.
@@ -557,7 +563,7 @@
 
 /***/ },
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	/**
 	 * Promise polyfill (https://gist.github.com/briancavalier/814313)
