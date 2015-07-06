@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.1.4
+ * vue-resource v0.1.5
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -350,6 +350,11 @@
 	            Http.options, _.options('http', this, options)
 	        );
 
+	        if (_.isPlainObject(options.data) && /^(get|jsonp)$/i.test(options.method)) {
+	            _.extend(options.params, options.data);
+	            options.data = '';
+	        }
+
 	        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(this, this.$url || Vue.url, options);
 
 	        _.extend(promise, {
@@ -404,9 +409,9 @@
 	            options.beforeSend(request, options);
 	        }
 
-	        if (options.emulateHTTP && /^(PUT|PATCH|DELETE)$/i.test(options.method)) {
+	        if (options.emulateHTTP && /^(put|patch|delete)$/i.test(options.method)) {
 	            options.headers['X-HTTP-Method-Override'] = options.method;
-	            options.method = 'POST';
+	            options.method = 'post';
 	        }
 
 	        if (options.emulateJSON && _.isPlainObject(options.data)) {
@@ -460,7 +465,6 @@
 
 	        var callback = '_jsonp' + Math.random().toString(36).substr(2), script, result;
 
-	        _.extend(options.params, options.data);
 	        options.params[options.jsonp] = callback;
 
 	        if (_.isFunction(options.beforeSend)) {
@@ -515,7 +519,7 @@
 	    }
 
 	    Http.options = {
-	        method: 'GET',
+	        method: 'get',
 	        params: {},
 	        data: '',
 	        jsonp: 'callback',
