@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.1.5
+ * vue-resource v0.1.6
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -102,7 +102,7 @@
 	            return '';
 	        });
 
-	        if (options.root !== false && !url.match(/^(https?:)?\//)) {
+	        if (typeof options.root === 'string' && !url.match(/^(https?:)?\//)) {
 	            url = options.root + '/' + url;
 	        }
 
@@ -130,7 +130,6 @@
 
 	    Url.options = {
 	        url: '',
-	        root: false,
 	        params: {}
 	    };
 
@@ -355,40 +354,36 @@
 	            options.data = '';
 	        }
 
-	        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(this, this.$url || Vue.url, options);
+	        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(this, this.$url || Vue.url, options).then(transformResponse, transformResponse);
 
-	        _.extend(promise, {
+	        promise.success = function (fn) {
 
-	            success: function (onSuccess) {
+	            promise.then(function (response) {
+	                fn.call(self, response.data, response.status, response);
+	            });
 
-	                this.then(function (request) {
-	                    onSuccess.apply(self, parseReq(request));
-	                }, function () {});
+	            return promise;
+	        };
 
-	                return this;
-	            },
+	        promise.error = function (fn) {
 
-	            error: function (onError) {
+	            promise.catch(function (response) {
+	                fn.call(self, response.data, response.status, response);
+	            });
 
-	                this.catch(function (request) {
-	                    onError.apply(self, parseReq(request));
-	                });
+	            return promise;
+	        };
 
-	                return this;
-	            },
+	        promise.always = function (fn) {
 
-	            always: function (onAlways) {
+	            var cb = function (response) {
+	                fn.call(self, response.data, response.status, response);
+	            };
 
-	                var cb = function (request) {
-	                    onAlways.apply(self, parseReq(request));
-	                };
+	            promise.then(cb, cb);
 
-	                this.then(cb, cb);
-
-	                return this;
-	            }
-
-	        });
+	            return promise;
+	        };
 
 	        if (options.success) {
 	            promise.success(options.success);
@@ -505,17 +500,15 @@
 	        return promise;
 	    }
 
-	    function parseReq(request) {
-
-	        var result;
+	    function transformResponse(response) {
 
 	        try {
-	            result = JSON.parse(request.responseText);
+	            response.data = JSON.parse(response.responseText);
 	        } catch (e) {
-	            result = request.responseText;
+	            response.data = response.responseText;
 	        }
 
-	        return [result, request.status, request];
+	        return response;
 	    }
 
 	    Http.options = {
@@ -525,7 +518,7 @@
 	        jsonp: 'callback',
 	        beforeSend: null,
 	        emulateHTTP: false,
-	        emulateJSON: false,
+	        emulateJSON: false
 	    };
 
 	    Http.headers = {
