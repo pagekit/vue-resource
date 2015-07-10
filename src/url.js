@@ -29,7 +29,7 @@ module.exports = function (Vue) {
             return '';
         });
 
-        if (options.root !== false && !url.match(/^(https?:)?\//)) {
+        if (typeof options.root === 'string' && !url.match(/^(https?:)?\//)) {
             url = options.root + '/' + url;
         }
 
@@ -57,7 +57,6 @@ module.exports = function (Vue) {
 
     Url.options = {
         url: '',
-        root: false,
         params: {}
     };
 
