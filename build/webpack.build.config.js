@@ -13,7 +13,9 @@ module.exports = [
         entry: "./src/index",
         output: {
             path: "./dist",
-            filename: "vue-resource.js"
+            filename: "vue-resource.js",
+            library: "VueResource",
+            libraryTarget: "umd"
         },
         plugins: [
             new webpack.BannerPlugin(banner, {raw: true})
@@ -24,7 +26,9 @@ module.exports = [
         entry: "./src/index",
         output: {
             path: "./dist",
-            filename: "vue-resource.min.js"
+            filename: "vue-resource.min.js",
+            library: "VueResource",
+            libraryTarget: "umd"
         },
         plugins: [
             new webpack.optimize.UglifyJsPlugin,
