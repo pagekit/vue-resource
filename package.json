@@ -1,6 +1,6 @@
 {
   "name": "vue-resource",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "A web request service for Vue.js",
   "main": "src/index.js",
   "scripts": {
@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/vuejs/vue-resource#readme",
   "devDependencies": {
-    "webpack": "^1.10.0"
+    "webpack": "^1.10.1"
   }
 }
