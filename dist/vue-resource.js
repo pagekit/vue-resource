@@ -364,13 +364,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            options.data = '';
 	        }
 
-	        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(this, this.$url || Vue.url, options).then(transformResponse, transformResponse);
+	        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(this, this.$url || Vue.url, options);
+
+	        promise.then(transformResponse, transformResponse);
 
 	        promise.success = function (fn) {
 
 	            promise.then(function (response) {
 	                fn.call(self, response.data, response.status, response);
-	            });
+	            }, function () {});
 
 	            return promise;
 	        };
@@ -518,7 +520,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            response.data = response.responseText;
 	        }
 
-	        return response;
 	    }
 
 	    Http.options = {
