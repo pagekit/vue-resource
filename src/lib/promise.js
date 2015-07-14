@@ -1,5 +1,5 @@
 /**
- * Promise polyfill (https://gist.github.com/briancavalier/814313)
+ * Promise polyfill. (https://gist.github.com/briancavalier/814313)
  */
 
 function Promise (executor) {

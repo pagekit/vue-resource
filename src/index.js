@@ -2,7 +2,7 @@
  * Install plugin.
  */
 
-function install (Vue) {
+function install(Vue) {
     Vue.url = require('./url')(Vue);
     Vue.http = require('./http')(Vue);
     Vue.resource = require('./resource')(Vue);

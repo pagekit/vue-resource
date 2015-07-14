@@ -1,15 +1,12 @@
+/**
+ * Service for URL templating.
+ */
+
+var _ = require('./lib/util');
+
 module.exports = function (Vue) {
 
-    var _ = require('./util')(Vue);
-
-    /**
-     * Url provides URL templating.
-     *
-     * @param {String} url
-     * @param {Object} params
-     */
-
-    function Url (url, params) {
+    function Url(url, params) {
 
         var urlParams = {}, queryParams = {}, options = url, query;
 
@@ -109,7 +106,7 @@ module.exports = function (Vue) {
         };
     };
 
-    function serialize (params, obj, scope) {
+    function serialize(params, obj, scope) {
 
         var array = _.isArray(obj), plain = _.isPlainObject(obj), hash;
 
@@ -131,7 +128,7 @@ module.exports = function (Vue) {
         });
     }
 
-    function encodeUriSegment (value) {
+    function encodeUriSegment(value) {
 
         return encodeUriQuery(value, true).
             replace(/%26/gi, '&').
@@ -139,7 +136,7 @@ module.exports = function (Vue) {
             replace(/%2B/gi, '+');
     }
 
-    function encodeUriQuery (value, spaces) {
+    function encodeUriQuery(value, spaces) {
 
         return encodeURIComponent(value).
             replace(/%40/gi, '@').

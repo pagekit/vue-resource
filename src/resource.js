@@ -1,12 +1,12 @@
+/**
+ * Service for interacting with RESTful services.
+ */
+
+var _ = require('./lib/util');
+
 module.exports = function (Vue) {
 
-    var _ = require('./util')(Vue);
-
-    /**
-     * Resource provides interaction support with RESTful services.
-     */
-
-    function Resource (url, params, actions) {
+    function Resource(url, params, actions) {
 
         var self = this, resource = {};
 
@@ -27,7 +27,7 @@ module.exports = function (Vue) {
         return resource;
     }
 
-    function opts (action, args) {
+    function opts(action, args) {
 
         var options = _.extend({}, action), params = {}, data, success, error;
 
