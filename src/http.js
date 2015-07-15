@@ -24,7 +24,7 @@ module.exports = function (Vue) {
         }
 
         options = _.extend(true, {url: url},
-            Http.options, _.options('http', this, options)
+            Http.options, _.options('http', self, options)
         );
 
         if (options.crossOrigin === null) {
@@ -61,7 +61,7 @@ module.exports = function (Vue) {
             options.data = JSON.stringify(options.data);
         }
 
-        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(this, this.$url || Url, options);
+        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(self, self.$url || Url, options);
 
         promise.then(transformResponse, transformResponse);
 

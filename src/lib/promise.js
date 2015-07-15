@@ -2,9 +2,13 @@
  * Promises/A+ polyfill v1.1.0 (https://github.com/bramstein/promis)
  */
 
+var RESOLVED = 0;
+var REJECTED = 1;
+var PENDING  = 2;
+
 function Promise(executor) {
 
-    this.state = Promise.State.PENDING;
+    this.state = PENDING;
     this.value = undefined;
     this.deferred = [];
 
@@ -20,12 +24,6 @@ function Promise(executor) {
         promise.reject(e);
     }
 }
-
-Promise.State = {
-    RESOLVED: 0,
-    REJECTED: 1,
-    PENDING: 2
-};
 
 Promise.reject = function (r) {
     return new Promise(function (resolve, reject) {
@@ -78,7 +76,7 @@ var p = Promise.prototype;
 p.resolve = function resolve(x) {
     var promise = this;
 
-    if (promise.state === Promise.State.PENDING) {
+    if (promise.state === PENDING) {
         if (x === promise) {
             throw new TypeError('Promise settled with itself.');
         }
@@ -109,7 +107,7 @@ p.resolve = function resolve(x) {
             }
             return;
         }
-        promise.state = Promise.State.RESOLVED;
+        promise.state = RESOLVED;
         promise.value = x;
         promise.notify();
     }
@@ -118,12 +116,12 @@ p.resolve = function resolve(x) {
 p.reject = function reject(reason) {
     var promise = this;
 
-    if (promise.state === Promise.State.PENDING) {
+    if (promise.state === PENDING) {
         if (reason === promise) {
             throw new TypeError('Promise settled with itself.');
         }
 
-        promise.state = Promise.State.REJECTED;
+        promise.state = REJECTED;
         promise.value = reason;
         promise.notify();
     }
@@ -133,7 +131,7 @@ p.notify = function notify() {
     var promise = this;
 
     async(function () {
-        if (promise.state !== Promise.State.PENDING) {
+        if (promise.state !== PENDING) {
             while (promise.deferred.length) {
                 var deferred = promise.deferred.shift(),
                     onResolved = deferred[0],
@@ -142,13 +140,13 @@ p.notify = function notify() {
                     reject = deferred[3];
 
                 try {
-                    if (promise.state === Promise.State.RESOLVED) {
+                    if (promise.state === RESOLVED) {
                         if (typeof onResolved === 'function') {
                             resolve(onResolved.call(undefined, promise.value));
                         } else {
                             resolve(promise.value);
                         }
-                    } else if (promise.state === Promise.State.REJECTED) {
+                    } else if (promise.state === REJECTED) {
                         if (typeof onRejected === 'function') {
                             resolve(onRejected.call(undefined, promise.value));
                         } else {
