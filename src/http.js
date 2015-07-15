@@ -9,9 +9,12 @@ var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
 
 module.exports = function (Vue) {
 
+    var Url = Vue.url;
+    var originUrl = Url.parse(location.href);
+
     function Http(url, options) {
 
-        var self = this, headers, promise;
+        var self = this, promise;
 
         options = options || {};
 
@@ -20,13 +23,19 @@ module.exports = function (Vue) {
             url = '';
         }
 
-        headers = _.extend({},
-            Http.headers.common,
-            Http.headers[options.method.toLowerCase()]
+        options = _.extend(true, {url: url},
+            Http.options, _.options('http', this, options)
         );
 
-        options = _.extend(true, {url: url, headers: headers},
-            Http.options, _.options('http', this, options)
+        if (options.crossOrigin === null) {
+            options.crossOrigin = crossOrigin(options.url);
+        }
+
+        options.headers = _.extend({},
+            Http.headers.common,
+            !options.crossOrigin ? Http.headers.custom : {},
+            Http.headers[options.method.toLowerCase()],
+            options.headers
         );
 
         if (_.isPlainObject(options.data) && /^(get|jsonp)$/i.test(options.method)) {
@@ -34,7 +43,25 @@ module.exports = function (Vue) {
             delete options.data;
         }
 
-        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(this, this.$url || Vue.url, options);
+        if (options.emulateHTTP && !option.crossOrigin && /^(put|patch|delete)$/i.test(options.method)) {
+            options.headers['X-HTTP-Method-Override'] = options.method;
+            options.method = 'post';
+        }
+
+        if (options.emulateJSON && _.isPlainObject(options.data)) {
+            options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            options.data = Url.params(options.data);
+        }
+
+        if (_.isObject(options.data) && /FormData/i.test(options.data.toString())) {
+            delete options.headers['Content-Type'];
+        }
+
+        if (_.isPlainObject(options.data)) {
+            options.data = JSON.stringify(options.data);
+        }
+
+        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(this, this.$url || Url, options);
 
         promise.then(transformResponse, transformResponse);
 
@@ -88,12 +115,20 @@ module.exports = function (Vue) {
 
     }
 
+    function crossOrigin(url) {
+
+        var requestUrl = Url.parse(url);
+
+        return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
+    }
+
     Http.options = {
         method: 'get',
         params: {},
         data: '',
         jsonp: 'callback',
         beforeSend: null,
+        crossOrigin: null,
         emulateHTTP: false,
         emulateJSON: false
     };
@@ -103,10 +138,8 @@ module.exports = function (Vue) {
         post: jsonType,
         patch: jsonType,
         delete: jsonType,
-        common: {
-            'Accept': 'application/json, text/plain, */*',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
+        common: {'Accept': 'application/json, text/plain, */*'},
+        custom: {'X-Requested-With': 'XMLHttpRequest'}
     };
 
     ['get', 'put', 'post', 'patch', 'delete', 'jsonp'].forEach(function (method) {

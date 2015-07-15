@@ -13,24 +13,6 @@ module.exports = function (url, options) {
         options.beforeSend.call(this, request, options);
     }
 
-    if (options.emulateHTTP && /^(put|patch|delete)$/i.test(options.method)) {
-        options.headers['X-HTTP-Method-Override'] = options.method;
-        options.method = 'post';
-    }
-
-    if (options.emulateJSON && _.isPlainObject(options.data)) {
-        options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-        options.data = url.params(options.data);
-    }
-
-    if (_.isObject(options.data) && /FormData/i.test(options.data.toString())) {
-        delete options.headers['Content-Type'];
-    }
-
-    if (_.isPlainObject(options.data)) {
-        options.data = JSON.stringify(options.data);
-    }
-
     promise = new Promise(function (resolve, reject) {
 
         request.open(options.method, url(options), true);

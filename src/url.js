@@ -3,6 +3,7 @@
  */
 
 var _ = require('./lib/util');
+var el = document.createElement('a');
 
 module.exports = function (Vue) {
 
@@ -93,16 +94,17 @@ module.exports = function (Vue) {
 
     Url.parse = function (url) {
 
-        var pattern = new RegExp("^(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\\?([^#]*))?(?:#(.*))?"),
-            matches = url.match(pattern);
+        el.href = url;
 
         return {
-            url: url,
-            scheme: matches[1] || '',
-            host: matches[2] || '',
-            path: matches[3] || '',
-            query: matches[4] || '',
-            fragment: matches[5] || ''
+            href: el.href,
+            protocol: el.protocol ? el.protocol.replace(/:$/, '') : '',
+            port: el.port,
+            host: el.host,
+            hostname: el.hostname,
+            pathname: el.pathname.charAt(0) === '/' ? el.pathname : '/' + el.pathname,
+            search: el.search ? el.search.replace(/^\?/, '') : '',
+            hash: el.hash ? el.hash.replace(/^#/, '') : ''
         };
     };
 

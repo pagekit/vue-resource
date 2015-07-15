@@ -67,7 +67,7 @@ module.exports = function (Vue) {
 
                 if (_.isFunction (args[0])) {
                     success = args[0];
-                } else if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
+                } else if (/^(post|put|patch)$/i.test(options.method)) {
                     data = args[0];
                 } else {
                     params = args[0];
@@ -101,11 +101,11 @@ module.exports = function (Vue) {
 
     Resource.actions = {
 
-        get: {method: 'GET'},
-        save: {method: 'POST'},
-        query: {method: 'GET'},
-        remove: {method: 'DELETE'},
-        delete: {method: 'DELETE'}
+        get: {method: 'get'},
+        save: {method: 'post'},
+        query: {method: 'get'},
+        remove: {method: 'delete'},
+        delete: {method: 'delete'}
 
     };
 
