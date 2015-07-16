@@ -104,6 +104,7 @@ module.exports = function (Vue) {
         get: {method: 'get'},
         save: {method: 'post'},
         query: {method: 'get'},
+        update: {method: 'put'},
         remove: {method: 'delete'},
         delete: {method: 'delete'}
 
