@@ -43,7 +43,7 @@ module.exports = function (Vue) {
             delete options.data;
         }
 
-        if (options.emulateHTTP && !option.crossOrigin && /^(put|patch|delete)$/i.test(options.method)) {
+        if (options.emulateHTTP && !options.crossOrigin && /^(put|patch|delete)$/i.test(options.method)) {
             options.headers['X-HTTP-Method-Override'] = options.method;
             options.method = 'post';
         }
