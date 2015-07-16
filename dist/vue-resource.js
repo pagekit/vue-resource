@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.1.9
+ * vue-resource v0.1.10
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -359,7 +359,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        options = _.extend(true, {url: url},
-	            Http.options, _.options('http', this, options)
+	            Http.options, _.options('http', self, options)
 	        );
 
 	        if (options.crossOrigin === null) {
@@ -378,7 +378,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            delete options.data;
 	        }
 
-	        if (options.emulateHTTP && !option.crossOrigin && /^(put|patch|delete)$/i.test(options.method)) {
+	        if (options.emulateHTTP && !options.crossOrigin && /^(put|patch|delete)$/i.test(options.method)) {
 	            options.headers['X-HTTP-Method-Override'] = options.method;
 	            options.method = 'post';
 	        }
@@ -396,7 +396,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            options.data = JSON.stringify(options.data);
 	        }
 
-	        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(this, this.$url || Url, options);
+	        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(self, self.$url || Url, options);
 
 	        promise.then(transformResponse, transformResponse);
 
@@ -565,9 +565,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Promises/A+ polyfill v1.1.0 (https://github.com/bramstein/promis)
 	 */
 
+	var RESOLVED = 0;
+	var REJECTED = 1;
+	var PENDING  = 2;
+
 	function Promise(executor) {
 
-	    this.state = Promise.State.PENDING;
+	    this.state = PENDING;
 	    this.value = undefined;
 	    this.deferred = [];
 
@@ -583,12 +587,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        promise.reject(e);
 	    }
 	}
-
-	Promise.State = {
-	    RESOLVED: 0,
-	    REJECTED: 1,
-	    PENDING: 2
-	};
 
 	Promise.reject = function (r) {
 	    return new Promise(function (resolve, reject) {
@@ -641,7 +639,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	p.resolve = function resolve(x) {
 	    var promise = this;
 
-	    if (promise.state === Promise.State.PENDING) {
+	    if (promise.state === PENDING) {
 	        if (x === promise) {
 	            throw new TypeError('Promise settled with itself.');
 	        }
@@ -672,7 +670,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            return;
 	        }
-	        promise.state = Promise.State.RESOLVED;
+	        promise.state = RESOLVED;
 	        promise.value = x;
 	        promise.notify();
 	    }
@@ -681,12 +679,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	p.reject = function reject(reason) {
 	    var promise = this;
 
-	    if (promise.state === Promise.State.PENDING) {
+	    if (promise.state === PENDING) {
 	        if (reason === promise) {
 	            throw new TypeError('Promise settled with itself.');
 	        }
 
-	        promise.state = Promise.State.REJECTED;
+	        promise.state = REJECTED;
 	        promise.value = reason;
 	        promise.notify();
 	    }
@@ -696,7 +694,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var promise = this;
 
 	    async(function () {
-	        if (promise.state !== Promise.State.PENDING) {
+	        if (promise.state !== PENDING) {
 	            while (promise.deferred.length) {
 	                var deferred = promise.deferred.shift(),
 	                    onResolved = deferred[0],
@@ -705,13 +703,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    reject = deferred[3];
 
 	                try {
-	                    if (promise.state === Promise.State.RESOLVED) {
+	                    if (promise.state === RESOLVED) {
 	                        if (typeof onResolved === 'function') {
 	                            resolve(onResolved.call(undefined, promise.value));
 	                        } else {
 	                            resolve(promise.value);
 	                        }
-	                    } else if (promise.state === Promise.State.REJECTED) {
+	                    } else if (promise.state === REJECTED) {
 	                        if (typeof onRejected === 'function') {
 	                            resolve(onRejected.call(undefined, promise.value));
 	                        } else {
