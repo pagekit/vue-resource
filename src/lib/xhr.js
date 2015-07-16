@@ -23,25 +23,15 @@ module.exports = function (url, options) {
 
         request.onreadystatechange = function () {
 
-            if (this.readyState === 4) {
+            if (request.readyState === 4) {
 
-                if (this.status >= 200 && this.status < 300) {
-                    resolve(this);
-                } else {
-                    reject(this);
-                }
+                request.ok = request.status >= 200 && request.status < 300;
+
+                (request.ok ? resolve : reject)(request);
             }
         };
 
         request.send(options.data);
-    });
-
-    _.extend(promise, {
-
-        abort: function () {
-            request.abort();
-        }
-
     });
 
     return promise;

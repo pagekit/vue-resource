@@ -5,12 +5,13 @@
 var _ = require('./lib/util');
 var xhr = require('./lib/xhr');
 var jsonp = require('./lib/jsonp');
-var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
+var Promise = require('./lib/promise');
 
 module.exports = function (Vue) {
 
     var Url = Vue.url;
     var originUrl = Url.parse(location.href);
+    var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
 
     function Http(url, options) {
 
@@ -61,22 +62,20 @@ module.exports = function (Vue) {
             options.data = JSON.stringify(options.data);
         }
 
-        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(self, self.$url || Url, options);
-
-        promise.then(transformResponse, transformResponse);
+        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(self, self.$url || Url, options).then(transformResponse, transformResponse);
 
         promise.success = function (fn) {
 
             promise.then(function (response) {
                 fn.call(self, response.data, response.status, response);
-            }, function () {});
+            });
 
             return promise;
         };
 
         promise.error = function (fn) {
 
-            promise.catch(function (response) {
+            promise.then(undefined, function (response) {
                 fn.call(self, response.data, response.status, response);
             });
 
@@ -113,6 +112,7 @@ module.exports = function (Vue) {
             response.data = response.responseText;
         }
 
+        return response.ok ? response : Promise.reject(response);
     }
 
     function crossOrigin(url) {

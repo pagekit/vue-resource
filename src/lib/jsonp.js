@@ -7,7 +7,7 @@ var Promise = require('./promise');
 
 module.exports = function (url, options) {
 
-    var callback = '_jsonp' + Math.random().toString(36).substr(2), script, body;
+    var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {}, script, body;
 
     options.params[options.jsonp] = callback;
 
@@ -35,9 +35,11 @@ module.exports = function (url, options) {
                 event.type = 'error';
             }
 
-            var text = body ? body : event.type, status = event.type === 'error' ? 404 : 200;
+            response.ok = event.type !== 'error';
+            response.status = response.ok ? 200 : 404;
+            response.responseText = body ? body : event.type;
 
-            (status === 200 ? resolve : reject)({responseText: text, status: status});
+            (response.ok ? resolve : reject)(response);
         };
 
         script.onload = handler;
