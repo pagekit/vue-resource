@@ -4,6 +4,16 @@ Resource plugin for Vue.js.
 
 The plugin provides services for making web requests and handle responses using a XMLHttpRequest or JSONP.
 
+## Setup
+
+### Browserify
+
+Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then add these lines to the top of your code:
+```javascript
+var Vue = require('vue');
+require('vue-resource')(Vue);
+```
+
 ## HTTP
 
 The http service can be used globally `Vue.http` or in a Vue instance `this.$http`.
