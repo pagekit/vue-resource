@@ -28,7 +28,7 @@ module.exports = function (Vue) {
 
                 url = $url(_assets[i]);
 
-                cache[_assets[i]] = Assets.types[type](url);
+                cache[_assets[i]] = Assets[type](url);
                 promises.push(cache[assets[i]]);
             }
 
