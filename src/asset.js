@@ -1,7 +1,7 @@
 module.exports = function (Vue) {
 
     var _ = require('./util')(Vue);
-    var types = ['css', 'js', 'image'];
+    var Promise = require('./promise');
     var fn = function(){};
     var cache = {};
 
@@ -16,9 +16,9 @@ module.exports = function (Vue) {
 
         var self = this, promises = [], $url = (this.$url || Vue.url), _assets = [], url, i, len, promise;
 
-        types.forEach(function(type) {
+        Object.keys(assets).forEach(function(type) {
 
-            if (!assets[type]) return;
+            if (!Asset[type]) return;
 
             _assets = _.isArray(assets[type]) ? assets[type] : [assets[type]];
 
@@ -28,22 +28,13 @@ module.exports = function (Vue) {
 
                 url = $url(_assets[i]);
 
-                if (type === 'js') {
-                    cache[_assets[i]] = getScript(url);
-                } else if (type === 'css') {
-                    cache[_assets[i]] = getCss(url);
-                } else if (type === 'image') {
-                    cache[_assets[i]] = getImage(url);
-                } else {
-                    continue;
-                }
-
+                cache[_assets[i]] = Assets.types[type](url);
                 promises.push(cache[assets[i]]);
             }
 
         });
 
-        promise = _.Promise.all(promises);
+        promise = Promise.all(promises);
 
         _.extend(promise, {
 
@@ -86,60 +77,51 @@ module.exports = function (Vue) {
         return promise;
     }
 
-    function getScript(url) {
+    _.extend(Asset, {
 
-        return new _.Promise(function(resolve, reject) {
+        css: function(url) {
 
-            var script = document.createElement('script');
+            return new Promise(function(resolve, reject) {
 
-            script.async = true;
-            script.onload = function() { resolve(url); };
-            script.onerror = function() { reject(url); };
-            script.src = url;
+                var img       = document.createElement('img'),
+                    link      = document.createElement('link');
+                    link.type = 'text/css';
+                    link.rel  = 'stylesheet';
+                    link.href = url;
 
-            document.getElementsByTagName('head')[0].appendChild(script);
-        });
-    }
+                document.getElementsByTagName('head')[0].appendChild(link);
+                img.onerror = function(){ resolve(url); };
+                img.src = link.href;
+            });
+        },
 
-    function getCss(url){
+        js: function(url) {
 
-        return new _.Promise(function(resolve, reject) {
+            return new Promise(function(resolve, reject) {
 
-            var img       = document.createElement('img'),
-                link      = document.createElement('link');
-                link.type = 'text/css';
-                link.rel  = 'stylesheet';
-                link.href = url;
+                var script = document.createElement('script');
 
-            document.getElementsByTagName('head')[0].appendChild(link);
-            img.onerror = function(){ resolve(); };
-            img.src = link.href;
-        });
-    }
+                script.async = true;
+                script.onload = function() { resolve(url); };
+                script.onerror = function() { reject(url); };
+                script.src = url;
 
-    function getImage(url){
+                document.getElementsByTagName('head')[0].appendChild(script);
+            });
+        },
 
-        return new _.Promise(function(resolve, reject) {
+        image: function(url) {
 
-            var img = document.createElement('img');
+            return new Promise(function(resolve, reject) {
 
-            img.onload  = function(){ resolve(url); };
-            img.onerror = function(){ reject(url); };
+                var img = document.createElement('img');
 
-            img.src = url;
-        });
-    }
+                img.onload  = function(){ resolve(url); };
+                img.onerror = function(){ reject(url); };
 
-    types.forEach(function (type) {
-
-        Asset[type] = function (assets, onSuccess, onError) {
-
-            var _assets = {};
-
-            _assets[type] = assets;
-
-            return this(_assets, onSuccess, onError);
-        };
+                img.src = url;
+            });
+        }
     });
 
     Object.defineProperty(Vue.prototype, '$asset', {
