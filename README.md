@@ -77,6 +77,7 @@ The resource service can be used globally `Vue.resource` or in a Vue instance `t
 get: {method: 'GET'},
 save: {method: 'POST'},
 query: {method: 'GET'},
+update: {method: 'PUT'},
 remove: {method: 'DELETE'},
 delete: {method: 'DELETE'}
 ```
