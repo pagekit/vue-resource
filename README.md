@@ -8,10 +8,12 @@ The plugin provides services for making web requests and handle responses using 
 
 ### Browserify
 
-Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then add these lines to the top of your code:
+Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then add these lines in your code:
+
 ```javascript
 var Vue = require('vue');
-require('vue-resource')(Vue);
+
+Vue.use(require('vue-resource'));
 ```
 
 ## HTTP
