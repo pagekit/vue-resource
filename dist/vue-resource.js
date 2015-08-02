@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.1.10
+ * vue-resource v0.1.11
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -340,12 +340,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _ = __webpack_require__(2);
 	var xhr = __webpack_require__(4);
 	var jsonp = __webpack_require__(6);
-	var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
+	var Promise = __webpack_require__(5);
 
 	module.exports = function (Vue) {
 
 	    var Url = Vue.url;
 	    var originUrl = Url.parse(location.href);
+	    var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
 
 	    function Http(url, options) {
 
@@ -396,22 +397,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	            options.data = JSON.stringify(options.data);
 	        }
 
-	        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(self, self.$url || Url, options);
-
-	        promise.then(transformResponse, transformResponse);
+	        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(self, self.$url || Url, options).then(transformResponse, transformResponse);
 
 	        promise.success = function (fn) {
 
 	            promise.then(function (response) {
 	                fn.call(self, response.data, response.status, response);
-	            }, function () {});
+	            });
 
 	            return promise;
 	        };
 
 	        promise.error = function (fn) {
 
-	            promise.catch(function (response) {
+	            promise.then(undefined, function (response) {
 	                fn.call(self, response.data, response.status, response);
 	            });
 
@@ -448,6 +447,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            response.data = response.responseText;
 	        }
 
+	        return response.ok ? response : Promise.reject(response);
 	    }
 
 	    function crossOrigin(url) {
@@ -532,25 +532,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        request.onreadystatechange = function () {
 
-	            if (this.readyState === 4) {
+	            if (request.readyState === 4) {
 
-	                if (this.status >= 200 && this.status < 300) {
-	                    resolve(this);
-	                } else {
-	                    reject(this);
-	                }
+	                request.ok = request.status >= 200 && request.status < 300;
+
+	                (request.ok ? resolve : reject)(request);
 	            }
 	        };
 
 	        request.send(options.data);
-	    });
-
-	    _.extend(promise, {
-
-	        abort: function () {
-	            request.abort();
-	        }
-
 	    });
 
 	    return promise;
@@ -786,7 +776,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (url, options) {
 
-	    var callback = '_jsonp' + Math.random().toString(36).substr(2), script, body;
+	    var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {}, script, body;
 
 	    options.params[options.jsonp] = callback;
 
@@ -814,9 +804,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                event.type = 'error';
 	            }
 
-	            var text = body ? body : event.type, status = event.type === 'error' ? 404 : 200;
+	            response.ok = event.type !== 'error';
+	            response.status = response.ok ? 200 : 404;
+	            response.responseText = body ? body : event.type;
 
-	            (status === 200 ? resolve : reject)({responseText: text, status: status});
+	            (response.ok ? resolve : reject)(response);
 	        };
 
 	        script.onload = handler;
@@ -938,6 +930,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        get: {method: 'get'},
 	        save: {method: 'post'},
 	        query: {method: 'get'},
+	        update: {method: 'put'},
 	        remove: {method: 'delete'},
 	        delete: {method: 'delete'}
 
