@@ -68,7 +68,7 @@ module.exports = function (Vue) {
 
             promise.then(function (response) {
                 fn.call(self, response.data, response.status, response);
-            });
+            }, function() {});
 
             return promise;
         };
