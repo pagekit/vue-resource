@@ -15,6 +15,12 @@ module.exports = function (url, options) {
 
     promise = new Promise(function (resolve, reject) {
 
+        if (_.isPlainObject(options.xhr)) {
+            _.each(options.xhr, function (value, key) {
+                request[key] = value;
+            });
+        }
+
         request.open(options.method, url(options), true);
 
         _.each(options.headers, function (value, header) {
