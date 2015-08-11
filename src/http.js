@@ -32,10 +32,10 @@ module.exports = function (Vue) {
             options.crossOrigin = crossOrigin(options.url);
         }
 
-        options.headers = _.extend({},
-            Http.headers.common,
+        options.method = options.method.toLowerCase();
+        options.headers = _.extend({}, Http.headers.common,
             !options.crossOrigin ? Http.headers.custom : {},
-            Http.headers[options.method.toLowerCase()],
+            Http.headers[options.method],
             options.headers
         );
 
@@ -62,7 +62,7 @@ module.exports = function (Vue) {
             options.data = JSON.stringify(options.data);
         }
 
-        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(this, this.$url || Url, options);
+        promise = (options.method == 'jsonp' ? jsonp : xhr).call(this, this.$url || Url, options);
         promise = extendPromise(promise.then(transformResponse, transformResponse), this);
 
         if (options.success) {
