@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.1.12
+ * vue-resource v0.1.13
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -416,7 +416,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        promise.success = function (fn) {
 
 	            return extendPromise(promise.then(function (response) {
-	                fn.call(thisArg, response.data, response.status, response);
+	                return fn.call(thisArg, response.data, response.status, response) || response;
 	            }), thisArg);
 
 	        };
@@ -424,7 +424,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        promise.error = function (fn) {
 
 	            return extendPromise(promise.then(undefined, function (response) {
-	                fn.call(thisArg, response.data, response.status, response);
+	                return fn.call(thisArg, response.data, response.status, response) || response;
 	            }), thisArg);
 
 	        };
@@ -432,7 +432,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        promise.always = function (fn) {
 
 	            var cb = function (response) {
-	                fn.call(thisArg, response.data, response.status, response);
+	                return fn.call(thisArg, response.data, response.status, response) || response;
 	            };
 
 	            return extendPromise(promise.then(cb, cb), thisArg);
