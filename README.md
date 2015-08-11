@@ -22,12 +22,12 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 
 ### Methods
 
-* `Vue.http.get(url, [data], [success], [options])`
-* `Vue.http.post(url, [data], [success], [options])`
-* `Vue.http.put(url, [data], [success], [options])`
-* `Vue.http.patch(url, [data], [success], [options])`
-* `Vue.http.delete(url, [data], [success], [options])`
-* `Vue.http.jsonp(url, [data], [success], [options])`
+* `get(url, [data], [success], [options])`
+* `post(url, [data], [success], [options])`
+* `put(url, [data], [success], [options])`
+* `patch(url, [data], [success], [options])`
+* `delete(url, [data], [success], [options])`
+* `jsonp(url, [data], [success], [options])`
 
 ### Options
 
@@ -41,9 +41,10 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 * **beforeSend** - `function(request, options)` - Callback function to modify the request object before it is sent
 * **emulateHTTP** - `boolean` - Send PUT, PATCH and DELETE requests with a HTTP POST and set the `X-HTTP-Method-Override` header
 * **emulateJSON** - `boolean` -  Send request data as `application/x-www-form-urlencoded` content type
+* **xhr** - `Object` - Parameters object to be set on the native XHR object
 * **jsonp** - `string` - Callback function name in a JSONP request
 
-### Usage
+### Example
 
 ```javascript
   new Vue({
@@ -71,7 +72,7 @@ The resource service can be used globally `Vue.resource` or in a Vue instance `t
 
 ### Methods
 
-* `Vue.resource(url, [params], [actions])`
+* `resource(url, [params], [actions])`
 
 ### Default Actions
 
@@ -84,7 +85,7 @@ remove: {method: 'DELETE'},
 delete: {method: 'DELETE'}
 ```
 
-### Usage
+### Example
 ```javascript
   new Vue({
 
