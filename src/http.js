@@ -81,7 +81,7 @@ module.exports = function (Vue) {
         promise.success = function (fn) {
 
             return extendPromise(promise.then(function (response) {
-                fn.call(thisArg, response.data, response.status, response);
+                return fn.call(thisArg, response.data, response.status, response) || response;
             }), thisArg);
 
         };
@@ -89,7 +89,7 @@ module.exports = function (Vue) {
         promise.error = function (fn) {
 
             return extendPromise(promise.then(undefined, function (response) {
-                fn.call(thisArg, response.data, response.status, response);
+                return fn.call(thisArg, response.data, response.status, response) || response;
             }), thisArg);
 
         };
@@ -97,7 +97,7 @@ module.exports = function (Vue) {
         promise.always = function (fn) {
 
             var cb = function (response) {
-                fn.call(thisArg, response.data, response.status, response);
+                return fn.call(thisArg, response.data, response.status, response) || response;
             };
 
             return extendPromise(promise.then(cb, cb), thisArg);
