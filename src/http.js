@@ -62,44 +62,46 @@ module.exports = function (Vue) {
             options.data = JSON.stringify(options.data);
         }
 
-        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(self, self.$url || Url, options).then(transformResponse, transformResponse);
+        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(this, this.$url || Url, options);
+        promise = extendPromise(promise.then(transformResponse, transformResponse), this);
+
+        if (options.success) {
+            promise = promise.success(options.success);
+        }
+
+        if (options.error) {
+            promise = promise.error(options.error);
+        }
+
+        return promise;
+    }
+
+    function extendPromise(promise, thisArg) {
 
         promise.success = function (fn) {
 
-            promise.then(function (response) {
-                fn.call(self, response.data, response.status, response);
-            }, function() {});
+            return extendPromise(promise.then(function (response) {
+                fn.call(thisArg, response.data, response.status, response);
+            }), thisArg);
 
-            return promise;
         };
 
         promise.error = function (fn) {
 
-            promise.then(undefined, function (response) {
-                fn.call(self, response.data, response.status, response);
-            });
+            return extendPromise(promise.then(undefined, function (response) {
+                fn.call(thisArg, response.data, response.status, response);
+            }), thisArg);
 
-            return promise;
         };
 
         promise.always = function (fn) {
 
             var cb = function (response) {
-                fn.call(self, response.data, response.status, response);
+                fn.call(thisArg, response.data, response.status, response);
             };
 
-            promise.then(cb, cb);
-
-            return promise;
+            return extendPromise(promise.then(cb, cb), thisArg);
         };
-
-        if (options.success) {
-            promise.success(options.success);
-        }
-
-        if (options.error) {
-            promise.error(options.error);
-        }
 
         return promise;
     }
