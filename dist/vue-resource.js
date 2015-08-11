@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.1.11
+ * vue-resource v0.1.12
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -350,7 +350,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    function Http(url, options) {
 
-	        var self = this, promise;
+	        var promise;
 
 	        options = options || {};
 
@@ -360,17 +360,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        options = _.extend(true, {url: url},
-	            Http.options, _.options('http', self, options)
+	            Http.options, _.options('http', this, options)
 	        );
 
 	        if (options.crossOrigin === null) {
 	            options.crossOrigin = crossOrigin(options.url);
 	        }
 
-	        options.headers = _.extend({},
-	            Http.headers.common,
+	        options.method = options.method.toLowerCase();
+	        options.headers = _.extend({}, Http.headers.common,
 	            !options.crossOrigin ? Http.headers.custom : {},
-	            Http.headers[options.method.toLowerCase()],
+	            Http.headers[options.method],
 	            options.headers
 	        );
 
@@ -397,44 +397,46 @@ return /******/ (function(modules) { // webpackBootstrap
 	            options.data = JSON.stringify(options.data);
 	        }
 
-	        promise = (options.method.toLowerCase() == 'jsonp' ? jsonp : xhr).call(self, self.$url || Url, options).then(transformResponse, transformResponse);
+	        promise = (options.method == 'jsonp' ? jsonp : xhr).call(this, this.$url || Url, options);
+	        promise = extendPromise(promise.then(transformResponse, transformResponse), this);
+
+	        if (options.success) {
+	            promise = promise.success(options.success);
+	        }
+
+	        if (options.error) {
+	            promise = promise.error(options.error);
+	        }
+
+	        return promise;
+	    }
+
+	    function extendPromise(promise, thisArg) {
 
 	        promise.success = function (fn) {
 
-	            promise.then(function (response) {
-	                fn.call(self, response.data, response.status, response);
-	            });
+	            return extendPromise(promise.then(function (response) {
+	                fn.call(thisArg, response.data, response.status, response);
+	            }), thisArg);
 
-	            return promise;
 	        };
 
 	        promise.error = function (fn) {
 
-	            promise.then(undefined, function (response) {
-	                fn.call(self, response.data, response.status, response);
-	            });
+	            return extendPromise(promise.then(undefined, function (response) {
+	                fn.call(thisArg, response.data, response.status, response);
+	            }), thisArg);
 
-	            return promise;
 	        };
 
 	        promise.always = function (fn) {
 
 	            var cb = function (response) {
-	                fn.call(self, response.data, response.status, response);
+	                fn.call(thisArg, response.data, response.status, response);
 	            };
 
-	            promise.then(cb, cb);
-
-	            return promise;
+	            return extendPromise(promise.then(cb, cb), thisArg);
 	        };
-
-	        if (options.success) {
-	            promise.success(options.success);
-	        }
-
-	        if (options.error) {
-	            promise.error(options.error);
-	        }
 
 	        return promise;
 	    }
@@ -461,6 +463,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        method: 'get',
 	        params: {},
 	        data: '',
+	        xhr: null,
 	        jsonp: 'callback',
 	        beforeSend: null,
 	        crossOrigin: null,
@@ -517,6 +520,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = function (url, options) {
 
 	    var request = new XMLHttpRequest(), promise;
+
+	    if (_.isPlainObject(options.xhr)) {
+	        _.extend(request, options.xhr);
+	    }
 
 	    if (_.isFunction(options.beforeSend)) {
 	        options.beforeSend.call(this, request, options);
