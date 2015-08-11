@@ -9,17 +9,15 @@ module.exports = function (url, options) {
 
     var request = new XMLHttpRequest(), promise;
 
+    if (_.isPlainObject(options.xhr)) {
+        _.extend(request, options.xhr);
+    }
+
     if (_.isFunction(options.beforeSend)) {
         options.beforeSend.call(this, request, options);
     }
 
     promise = new Promise(function (resolve, reject) {
-
-        if (_.isPlainObject(options.xhr)) {
-            _.each(options.xhr, function (value, key) {
-                request[key] = value;
-            });
-        }
 
         request.open(options.method, url(options), true);
 

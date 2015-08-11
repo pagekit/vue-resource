@@ -15,7 +15,7 @@ module.exports = function (Vue) {
 
     function Http(url, options) {
 
-        var self = this, promise;
+        var promise;
 
         options = options || {};
 
@@ -25,7 +25,7 @@ module.exports = function (Vue) {
         }
 
         options = _.extend(true, {url: url},
-            Http.options, _.options('http', self, options)
+            Http.options, _.options('http', this, options)
         );
 
         if (options.crossOrigin === null) {
@@ -128,6 +128,7 @@ module.exports = function (Vue) {
         method: 'get',
         params: {},
         data: '',
+        xhr: null,
         jsonp: 'callback',
         beforeSend: null,
         crossOrigin: null,
