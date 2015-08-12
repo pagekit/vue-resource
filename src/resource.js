@@ -85,7 +85,7 @@ module.exports = function (Vue) {
         }
 
         options.url = action.url;
-        options.data = data;
+        options.data = _.extend({}, action.data, data);
         options.params = _.extend({}, action.params, params);
 
         if (success) {
