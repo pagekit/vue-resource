@@ -1,4 +1,4 @@
-# vue-resource
+# vue-resource [![npm package](https://img.shields.io/npm/v/vue-resource.svg)](https://www.npmjs.com/package/vue-resource)
 
 Resource plugin for Vue.js.
 
