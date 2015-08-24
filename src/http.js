@@ -2,30 +2,27 @@
  * Service for sending network requests.
  */
 
-var _ = require('./lib/util');
 var xhr = require('./lib/xhr');
 var jsonp = require('./lib/jsonp');
 var Promise = require('./lib/promise');
 
-module.exports = function (Vue) {
+module.exports = function (_) {
 
-    var Url = Vue.url;
-    var originUrl = Url.parse(location.href);
+    var originUrl = _.url.parse(location.href);
     var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
 
     function Http(url, options) {
 
         var promise;
 
-        options = options || {};
-
         if (_.isPlainObject(url)) {
             options = url;
             url = '';
         }
 
-        options = _.extend(true, {url: url},
-            Http.options, _.options('http', this, options)
+        options = _.extend({url: url}, options);
+        options = _.extend(true, {},
+            Http.options, this.options, options
         );
 
         if (options.crossOrigin === null) {
@@ -51,7 +48,7 @@ module.exports = function (Vue) {
 
         if (options.emulateJSON && _.isPlainObject(options.data)) {
             options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-            options.data = Url.params(options.data);
+            options.data = _.url.params(options.data);
         }
 
         if (_.isObject(options.data) && /FormData/i.test(options.data.toString())) {
@@ -62,8 +59,8 @@ module.exports = function (Vue) {
             options.data = JSON.stringify(options.data);
         }
 
-        promise = (options.method == 'jsonp' ? jsonp : xhr).call(this, this.$url || Url, options);
-        promise = extendPromise(promise.then(transformResponse, transformResponse), this);
+        promise = (options.method == 'jsonp' ? jsonp : xhr).call(this.vm, _, options);
+        promise = extendPromise(promise.then(transformResponse, transformResponse), this.vm);
 
         if (options.success) {
             promise = promise.success(options.success);
@@ -76,31 +73,31 @@ module.exports = function (Vue) {
         return promise;
     }
 
-    function extendPromise(promise, thisArg) {
+    function extendPromise(promise, vm) {
 
         promise.success = function (fn) {
 
             return extendPromise(promise.then(function (response) {
-                return fn.call(thisArg, response.data, response.status, response) || response;
-            }), thisArg);
+                return fn.call(vm, response.data, response.status, response) || response;
+            }), vm);
 
         };
 
         promise.error = function (fn) {
 
             return extendPromise(promise.then(undefined, function (response) {
-                return fn.call(thisArg, response.data, response.status, response) || response;
-            }), thisArg);
+                return fn.call(vm, response.data, response.status, response) || response;
+            }), vm);
 
         };
 
         promise.always = function (fn) {
 
             var cb = function (response) {
-                return fn.call(thisArg, response.data, response.status, response) || response;
+                return fn.call(vm, response.data, response.status, response) || response;
             };
 
-            return extendPromise(promise.then(cb, cb), thisArg);
+            return extendPromise(promise.then(cb, cb), vm);
         };
 
         return promise;
@@ -119,7 +116,7 @@ module.exports = function (Vue) {
 
     function crossOrigin(url) {
 
-        var requestUrl = Url.parse(url);
+        var requestUrl = _.url.parse(url);
 
         return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
     }
@@ -159,13 +156,5 @@ module.exports = function (Vue) {
         };
     });
 
-    Object.defineProperty(Vue.prototype, '$http', {
-
-        get: function () {
-            return _.extend(Http.bind(this), Http);
-        }
-
-    });
-
-    return Http;
+    return _.http = Http;
 };

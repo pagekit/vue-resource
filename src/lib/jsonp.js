@@ -2,10 +2,9 @@
  * JSONP request.
  */
 
-var _ = require('./util');
 var Promise = require('./promise');
 
-module.exports = function (url, options) {
+module.exports = function (_, options) {
 
     var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {}, script, body;
 
@@ -18,7 +17,7 @@ module.exports = function (url, options) {
     return new Promise(function (resolve, reject) {
 
         script = document.createElement('script');
-        script.src = url(options.url, options.params);
+        script.src = _.url(options);
         script.type = 'text/javascript';
         script.async = true;
 

@@ -2,9 +2,7 @@
  * Service for interacting with RESTful services.
  */
 
-var _ = require('./lib/util');
-
-module.exports = function (Vue) {
+module.exports = function (_) {
 
     function Resource(url, params, actions) {
 
@@ -20,7 +18,7 @@ module.exports = function (Vue) {
             action = _.extend(true, {url: url, params: params || {}}, action);
 
             resource[name] = function () {
-                return (self.$http || Vue.http)(opts(action, arguments));
+                return (self.$http || _.http)(opts(action, arguments));
             };
         });
 
@@ -110,13 +108,5 @@ module.exports = function (Vue) {
 
     };
 
-    Object.defineProperty(Vue.prototype, '$resource', {
-
-        get: function () {
-            return Resource.bind(this);
-        }
-
-    });
-
-    return Resource;
+    return _.resource = Resource;
 };

@@ -2,10 +2,9 @@
  * XMLHttp request.
  */
 
-var _ = require('./util');
 var Promise = require('./promise');
 
-module.exports = function (url, options) {
+module.exports = function (_, options) {
 
     var request = new XMLHttpRequest(), promise;
 
@@ -19,7 +18,7 @@ module.exports = function (url, options) {
 
     promise = new Promise(function (resolve, reject) {
 
-        request.open(options.method, url(options), true);
+        request.open(options.method, _.url(options), true);
 
         _.each(options.headers, function (value, header) {
             request.setRequestHeader(header, value);
