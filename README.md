@@ -6,7 +6,7 @@ The plugin provides services for making web requests and handle responses using 
 
 ## Setup
 
-### Browserify
+### Webpack/Browserify
 
 Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then add these lines in your code:
 
@@ -14,6 +14,30 @@ Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then ad
 var Vue = require('vue');
 
 Vue.use(require('vue-resource'));
+```
+
+### Configuration
+
+Set default values using the global configuration.
+
+```javascript
+Vue.http.options.root = '/root';
+Vue.http.headers.common['Authorization'] = 'Basic YXBpOnBhc3N3b3Jk';
+```
+
+Set default values inside your Vue component options.
+
+```javascript
+new Vue({
+
+    http: {
+      root: '/root',
+      headers: {
+        Authorization: 'Basic YXBpOnBhc3N3b3Jk'
+      }
+    }
+
+})
 ```
 
 ## HTTP
@@ -47,23 +71,23 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 ### Example
 
 ```javascript
-  new Vue({
+new Vue({
 
-      ready: function() {
+    ready: function() {
 
-        // GET request
-        this.$http.get('/someUrl', function (data, status, request) {
+      // GET request
+      this.$http.get('/someUrl', function (data, status, request) {
 
-            // set data on vm
-            this.$set('someData', data)
+          // set data on vm
+          this.$set('someData', data)
 
-        }).error(function (data, status, request) {
-            // handle error
-        })
+      }).error(function (data, status, request) {
+          // handle error
+      })
 
-      }
+    }
 
-  })
+})
 ```
 
 ## Resource
@@ -87,32 +111,32 @@ delete: {method: 'DELETE'}
 
 ### Example
 ```javascript
-  new Vue({
+new Vue({
 
-      ready: function() {
+    ready: function() {
 
-        var resource = this.$resource('someItem/:id');
+      var resource = this.$resource('someItem/:id');
 
-        // get item
-        resource.get({id: 1}, function (item, status, request) {
-            this.$set('item', item)
-        })
+      // get item
+      resource.get({id: 1}, function (item, status, request) {
+          this.$set('item', item)
+      })
 
-        // save item
-        resource.save({id: 1}, {item: this.item}, function (data, status, request) {
-            // handle success
-        }).error(function (data, status, request) {
-            // handle error
-        })
+      // save item
+      resource.save({id: 1}, {item: this.item}, function (data, status, request) {
+          // handle success
+      }).error(function (data, status, request) {
+          // handle error
+      })
 
-        // delete item
-        resource.delete({id: 1}, function (data, status, request) {
-            // handle success
-        }).error(function (data, status, request) {
-            // handle error
-        })
+      // delete item
+      resource.delete({id: 1}, function (data, status, request) {
+          // handle success
+      }).error(function (data, status, request) {
+          // handle error
+      })
 
-      }
+    }
 
-  })
+})
 ```
