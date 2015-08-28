@@ -140,3 +140,19 @@ new Vue({
 
 })
 ```
+
+### Headers
+
+You can set headers through the global config:
+
+```javascript
+Vue.http.headers.common['Authorization'] = 'Basic YXBpOnBhc3N3b3Jk';
+```
+
+or when using the $http service through the options:
+
+```javascript
+this.$http.get('/node/1', function(node) {
+   // code ...
+}, {headers: {'Authorization': 'Basic YXBpOnBhc3N3b3Jk'}});
+```
