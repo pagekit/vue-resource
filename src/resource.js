@@ -39,9 +39,9 @@ module.exports = function (_) {
             case 3:
             case 2:
 
-                if (_.isFunction (args[1])) {
+                if (_.isFunction(args[1])) {
 
-                    if (_.isFunction (args[0])) {
+                    if (_.isFunction(args[0])) {
 
                         success = args[0];
                         error = args[1];
@@ -63,9 +63,9 @@ module.exports = function (_) {
 
             case 1:
 
-                if (_.isFunction (args[0])) {
+                if (_.isFunction(args[0])) {
                     success = args[0];
-                } else if (/^(post|put|patch)$/i.test(options.method)) {
+                } else if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
                     data = args[0];
                 } else {
                     params = args[0];
@@ -82,9 +82,8 @@ module.exports = function (_) {
                 throw 'Expected up to 4 arguments [params, data, success, error], got ' + args.length + ' arguments';
         }
 
-        options.url = action.url;
         options.data = data;
-        options.params = _.extend({}, action.params, params);
+        options.params = _.extend({}, options.params, params);
 
         if (success) {
             options.success = success;
@@ -99,12 +98,12 @@ module.exports = function (_) {
 
     Resource.actions = {
 
-        get: {method: 'get'},
-        save: {method: 'post'},
-        query: {method: 'get'},
-        update: {method: 'put'},
-        remove: {method: 'delete'},
-        delete: {method: 'delete'}
+        get: {method: 'GET'},
+        save: {method: 'POST'},
+        query: {method: 'GET'},
+        update: {method: 'PUT'},
+        remove: {method: 'DELETE'},
+        delete: {method: 'DELETE'}
 
     };
 
