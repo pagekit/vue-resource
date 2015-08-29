@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.1.14
+ * vue-resource v0.1.15
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -211,11 +211,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            Url.options, this.options, options
 	        );
 
-	        url = options.url.replace(/:([a-z]\w*)/gi, function (match, name) {
+	        url = options.url.replace(/(\/?):([a-z]\w*)/gi, function (match, slash, name) {
 
 	            if (options.params[name]) {
 	                urlParams[name] = true;
-	                return encodeUriSegment(options.params[name]);
+	                return slash + encodeUriSegment(options.params[name]);
 	            }
 
 	            return '';
@@ -224,9 +224,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (_.isString(options.root) && !url.match(/^(https?:)?\//)) {
 	            url = options.root + '/' + url;
 	        }
-
-	        url = url.replace(/([^:])[\/]{2,}/g, '$1/');
-	        url = url.replace(/(\w+)\/+$/, '$1');
 
 	        _.each(options.params, function (value, key) {
 	            if (!urlParams[key]) {
@@ -382,21 +379,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	            options.crossOrigin = crossOrigin(options.url);
 	        }
 
-	        options.method = options.method.toLowerCase();
+	        options.method = options.method.toUpperCase();
 	        options.headers = _.extend({}, Http.headers.common,
 	            !options.crossOrigin ? Http.headers.custom : {},
-	            Http.headers[options.method],
+	            Http.headers[options.method.toLowerCase()],
 	            options.headers
 	        );
 
-	        if (_.isPlainObject(options.data) && /^(get|jsonp)$/i.test(options.method)) {
+	        if (_.isPlainObject(options.data) && /^(GET|JSONP)$/i.test(options.method)) {
 	            _.extend(options.params, options.data);
 	            delete options.data;
 	        }
 
-	        if (options.emulateHTTP && !options.crossOrigin && /^(put|patch|delete)$/i.test(options.method)) {
+	        if (options.emulateHTTP && !options.crossOrigin && /^(PUT|PATCH|DELETE)$/i.test(options.method)) {
 	            options.headers['X-HTTP-Method-Override'] = options.method;
-	            options.method = 'post';
+	            options.method = 'POST';
 	        }
 
 	        if (options.emulateJSON && _.isPlainObject(options.data)) {
@@ -412,7 +409,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            options.data = JSON.stringify(options.data);
 	        }
 
-	        promise = (options.method == 'jsonp' ? jsonp : xhr).call(this.vm, _, options);
+	        promise = (options.method == 'JSONP' ? jsonp : xhr).call(this.vm, _, options);
 	        promise = extendPromise(promise.then(transformResponse, transformResponse), this.vm);
 
 	        if (options.success) {
@@ -877,9 +874,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            case 3:
 	            case 2:
 
-	                if (_.isFunction (args[1])) {
+	                if (_.isFunction(args[1])) {
 
-	                    if (_.isFunction (args[0])) {
+	                    if (_.isFunction(args[0])) {
 
 	                        success = args[0];
 	                        error = args[1];
@@ -901,9 +898,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            case 1:
 
-	                if (_.isFunction (args[0])) {
+	                if (_.isFunction(args[0])) {
 	                    success = args[0];
-	                } else if (/^(post|put|patch)$/i.test(options.method)) {
+	                } else if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
 	                    data = args[0];
 	                } else {
 	                    params = args[0];
@@ -920,9 +917,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                throw 'Expected up to 4 arguments [params, data, success, error], got ' + args.length + ' arguments';
 	        }
 
-	        options.url = action.url;
 	        options.data = data;
-	        options.params = _.extend({}, action.params, params);
+	        options.params = _.extend({}, options.params, params);
 
 	        if (success) {
 	            options.success = success;
@@ -937,12 +933,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    Resource.actions = {
 
-	        get: {method: 'get'},
-	        save: {method: 'post'},
-	        query: {method: 'get'},
-	        update: {method: 'put'},
-	        remove: {method: 'delete'},
-	        delete: {method: 'delete'}
+	        get: {method: 'GET'},
+	        save: {method: 'POST'},
+	        query: {method: 'GET'},
+	        update: {method: 'PUT'},
+	        remove: {method: 'DELETE'},
+	        delete: {method: 'DELETE'}
 
 	    };
 
