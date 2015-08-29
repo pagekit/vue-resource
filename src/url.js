@@ -18,11 +18,11 @@ module.exports = function (_) {
             Url.options, this.options, options
         );
 
-        url = options.url.replace(/:([a-z]\w*)/gi, function (match, name) {
+        url = options.url.replace(/(\/?):([a-z]\w*)/gi, function (match, slash, name) {
 
             if (options.params[name]) {
                 urlParams[name] = true;
-                return encodeUriSegment(options.params[name]);
+                return slash + encodeUriSegment(options.params[name]);
             }
 
             return '';
@@ -31,9 +31,6 @@ module.exports = function (_) {
         if (_.isString(options.root) && !url.match(/^(https?:)?\//)) {
             url = options.root + '/' + url;
         }
-
-        url = url.replace(/([^:])[\/]{2,}/g, '$1/');
-        url = url.replace(/(\w+)\/+$/, '$1');
 
         _.each(options.params, function (value, key) {
             if (!urlParams[key]) {
