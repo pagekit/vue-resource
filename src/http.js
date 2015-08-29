@@ -29,21 +29,21 @@ module.exports = function (_) {
             options.crossOrigin = crossOrigin(options.url);
         }
 
-        options.method = options.method.toLowerCase();
+        options.method = options.method.toUpperCase();
         options.headers = _.extend({}, Http.headers.common,
             !options.crossOrigin ? Http.headers.custom : {},
-            Http.headers[options.method],
+            Http.headers[options.method.toLowerCase()],
             options.headers
         );
 
-        if (_.isPlainObject(options.data) && /^(get|jsonp)$/i.test(options.method)) {
+        if (_.isPlainObject(options.data) && /^(GET|JSONP)$/i.test(options.method)) {
             _.extend(options.params, options.data);
             delete options.data;
         }
 
-        if (options.emulateHTTP && !options.crossOrigin && /^(put|patch|delete)$/i.test(options.method)) {
+        if (options.emulateHTTP && !options.crossOrigin && /^(PUT|PATCH|DELETE)$/i.test(options.method)) {
             options.headers['X-HTTP-Method-Override'] = options.method;
-            options.method = 'post';
+            options.method = 'POST';
         }
 
         if (options.emulateJSON && _.isPlainObject(options.data)) {
@@ -59,7 +59,7 @@ module.exports = function (_) {
             options.data = JSON.stringify(options.data);
         }
 
-        promise = (options.method == 'jsonp' ? jsonp : xhr).call(this.vm, _, options);
+        promise = (options.method == 'JSONP' ? jsonp : xhr).call(this.vm, _, options);
         promise = extendPromise(promise.then(transformResponse, transformResponse), this.vm);
 
         if (options.success) {
