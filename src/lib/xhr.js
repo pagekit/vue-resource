@@ -8,6 +8,10 @@ module.exports = function (_, options) {
 
     var request = new XMLHttpRequest(), promise;
 
+    if (window.XDomainRequest && options.crossOrigin) {
+        request = new XDomainRequest();
+    }
+
     if (_.isPlainObject(options.xhr)) {
         _.extend(request, options.xhr);
     }
@@ -24,15 +28,18 @@ module.exports = function (_, options) {
             request.setRequestHeader(header, value);
         });
 
-        request.onreadystatechange = function () {
+        var handler = function (event) {
 
-            if (request.readyState === 4) {
+            request.ok = event.type === 'load'
+                && request.status >= 200
+                && request.status < 300;
 
-                request.ok = request.status >= 200 && request.status < 300;
-
-                (request.ok ? resolve : reject)(request);
-            }
+            (request.ok ? resolve : reject)(request);
         };
+
+        request.onload = handler;
+        request.onabort = handler;
+        request.onerror = handler;
 
         request.send(options.data);
     });
