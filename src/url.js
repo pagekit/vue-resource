@@ -2,6 +2,7 @@
  * Service for URL templating.
  */
 
+var ie = document.documentMode;
 var el = document.createElement('a');
 
 module.exports = function (_) {
@@ -92,6 +93,11 @@ module.exports = function (_) {
      */
 
     Url.parse = function (url) {
+
+        if (ie) {
+            el.href = url;
+            url = el.href;
+        }
 
         el.href = url;
 
