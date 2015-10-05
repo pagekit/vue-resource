@@ -8,7 +8,7 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
-		define(factory);
+		define([], factory);
 	else if(typeof exports === 'object')
 		exports["VueResource"] = factory();
 	else
@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    Vue.url = __webpack_require__(2)(_);
 	    Vue.http = __webpack_require__(3)(_);
-	    Vue.resource = __webpack_require__(7)(_);
+	    Vue.resource = __webpack_require__(8)(_);
 
 	    Object.defineProperties(Vue.prototype, {
 
@@ -361,6 +361,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var xhr = __webpack_require__(4);
 	var jsonp = __webpack_require__(6);
 	var Promise = __webpack_require__(5);
+	var Transforms = __webpack_require__(7);
 
 	module.exports = function (_) {
 
@@ -368,8 +369,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
 
 	    function Http(url, options) {
-
-	        var promise;
+	        var vm = this.vm;
 
 	        if (_.isPlainObject(url)) {
 	            options = url;
@@ -380,6 +380,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        options = _.extend(true, {},
 	            Http.options, this.options, options
 	        );
+
+	        var transformRequest = function (options) {
+	            return transform(Http.transforms.request, options.transformRequest, options, vm);
+	        };
+
+	        var transformResponse = function (response) {
+	            return transform(Http.transforms.response, options.transformResponse, response, vm);
+	        };
 
 	        if (options.crossOrigin === null) {
 	            options.crossOrigin = crossOrigin(options.url);
@@ -407,26 +415,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	            options.data = _.url.params(options.data);
 	        }
 
-	        if (_.isObject(options.data) && /FormData/i.test(options.data.toString())) {
-	            delete options.headers['Content-Type'];
-	        }
+	        return extendPromise(transformRequest(options).then(function (options) {
 
-	        if (_.isPlainObject(options.data)) {
-	            options.data = JSON.stringify(options.data);
-	        }
+	            var promise = (options.method == 'JSONP' ? jsonp : xhr).call(vm, _, options);
+	            promise = extendPromise(promise.then(transformResponse, transformResponse), vm);
 
-	        promise = (options.method == 'JSONP' ? jsonp : xhr).call(this.vm, _, options);
-	        promise = extendPromise(promise.then(transformResponse, transformResponse), this.vm);
+	            if (options.success) {
+	                promise = promise.success(options.success);
+	            }
 
-	        if (options.success) {
-	            promise = promise.success(options.success);
-	        }
+	            if (options.error) {
+	                promise = promise.error(options.error);
+	            }
 
-	        if (options.error) {
-	            promise = promise.error(options.error);
-	        }
+	            return promise;
 
-	        return promise;
+	        }), vm);
 	    }
 
 	    function extendPromise(promise, vm) {
@@ -459,15 +463,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return promise;
 	    }
 
-	    function transformResponse(response) {
-
-	        try {
-	            response.data = JSON.parse(response.responseText);
-	        } catch (e) {
-	            response.data = response.responseText;
+	    function transform(transforms, custom, arg, vm) {
+	        if (custom) {
+	            transforms = transforms.concat(custom instanceof Array ? custom : [custom]);
 	        }
 
-	        return response.ok ? response : Promise.reject(response);
+	        return transforms.reduce(function (sequence, transform) {
+	            return sequence.then(function (arg) {
+	                return transform.call(vm, arg);
+	            });
+	        }, Promise.resolve(arg));
 	    }
 
 	    function crossOrigin(url) {
@@ -476,6 +481,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
 	    }
+
+	    Http.transforms = Transforms.call(this, _);
 
 	    Http.options = {
 	        method: 'get',
@@ -486,7 +493,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        beforeSend: null,
 	        crossOrigin: null,
 	        emulateHTTP: false,
-	        emulateJSON: false
+	        emulateJSON: false,
+	        transformRequest: null,
+	        transformResponse: null
 	    };
 
 	    Http.headers = {
@@ -847,6 +856,49 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Promise = __webpack_require__(5);
+
+	module.exports = function (_) {
+	    return {
+
+	        request: [
+
+	            function (options) {
+
+	                if (_.isObject(options.data) && /FormData/i.test(options.data.toString())) {
+	                    delete options.headers['Content-Type'];
+	                }
+
+	                if (_.isPlainObject(options.data)) {
+	                    options.data = JSON.stringify(options.data);
+	                }
+
+	                return options;
+	            }
+
+	        ],
+
+	        response: [
+
+	            function (response) {
+	                try {
+	                    response.data = JSON.parse(response.responseText);
+	                } catch (e) {
+	                    response.data = response.responseText;
+	                }
+
+	                return response.ok ? response : Promise.reject(response);
+	            }
+
+	        ]
+
+	    }
+	};
+
+/***/ },
+/* 8 */
 /***/ function(module, exports) {
 
 	/**
