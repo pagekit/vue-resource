@@ -49,6 +49,14 @@ module.exports = function (_, options) {
         script.onload = handler;
         script.onerror = handler;
 
+        if (options.timeout) {
+            setTimeout(function () {
+
+                reject(new Event('timeout'));
+
+            }, options.timeout);
+        }
+
         document.body.appendChild(script);
     });
 
