@@ -115,9 +115,11 @@ module.exports = function (_) {
         }
 
         return transforms.reduce(function (sequence, transform) {
-            return sequence.then(function (arg) {
+            var cb = function (arg) {
                 return transform.call(vm, arg);
-            });
+            };
+
+            return sequence.then(cb, cb);
         }, Promise.resolve(arg));
     }
 

@@ -42,6 +42,7 @@ module.exports = function (_, options) {
             response.ok = event.type !== 'error';
             response.status = response.ok ? 200 : 404;
             response.responseText = body ? body : event.type;
+            response.headers = "";
 
             (response.ok ? resolve : reject)(response);
         };
@@ -51,8 +52,15 @@ module.exports = function (_, options) {
 
         if (options.timeout) {
             setTimeout(function () {
+                var response = {};
 
-                reject(new Event('timeout'));
+                response.ok = false;
+                response.type = 'timeout';
+                response.status = 0;
+                response.headers = "";
+                response.responseText = '';
+
+                reject(response);
 
             }, options.timeout);
         }

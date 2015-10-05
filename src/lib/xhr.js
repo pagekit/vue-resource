@@ -18,7 +18,6 @@ module.exports = function (_, options) {
         _.extend(request, options.xhr);
     }
 
-    request.timeout = options.timeout;
 
     if (_.isFunction(options.beforeSend)) {
 
@@ -32,6 +31,7 @@ module.exports = function (_, options) {
     promise = new Promise(function (resolve, reject) {
 
         request.open(options.method, _.url(options), true);
+        request.timeout = options.timeout;
 
         _.each(options.headers, function (value, header) {
             request.setRequestHeader(header, value);
@@ -40,6 +40,7 @@ module.exports = function (_, options) {
         var handler = function (event) {
 
             request.ok = event.type === 'load';
+            request.headers = request.getAllResponseHeaders();
 
             if (request.ok && request.status) {
                 request.ok = request.status >= 200 && request.status < 300;
