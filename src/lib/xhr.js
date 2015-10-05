@@ -18,6 +18,8 @@ module.exports = function (_, options) {
         _.extend(request, options.xhr);
     }
 
+    request.timeout = options.timeout;
+
     if (_.isFunction(options.beforeSend)) {
 
         _.warn('beforeSend has been deprecated in vue-resource ^0.1.17. ' +
@@ -49,6 +51,7 @@ module.exports = function (_, options) {
         request.onload = handler;
         request.onabort = handler;
         request.onerror = handler;
+        request.ontimeout = handler;
 
         request.send(options.data);
     });

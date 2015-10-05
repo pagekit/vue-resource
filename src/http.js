@@ -25,14 +25,6 @@ module.exports = function (_) {
             Http.options, this.options, options
         );
 
-        var transformRequest = function (options) {
-            return transform(Http.transforms.request, options.transformRequest, options, vm);
-        };
-
-        var transformResponse = function (response) {
-            return transform(Http.transforms.response, options.transformResponse, response, vm);
-        };
-
         if (options.crossOrigin === null) {
             options.crossOrigin = crossOrigin(options.url);
         }
@@ -58,6 +50,14 @@ module.exports = function (_) {
             options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
             options.data = _.url.params(options.data);
         }
+
+        var transformRequest = function (options) {
+            return transform(Http.transforms.request, options.transformRequest, options, vm);
+        };
+
+        var transformResponse = function (response) {
+            return transform(Http.transforms.response, options.transformResponse, response, vm);
+        };
 
         return extendPromise(transformRequest(options).then(function (options) {
 
@@ -140,6 +140,7 @@ module.exports = function (_) {
         crossOrigin: null,
         emulateHTTP: false,
         emulateJSON: false,
+        timeout: 0,
         transformRequest: null,
         transformResponse: null
     };
