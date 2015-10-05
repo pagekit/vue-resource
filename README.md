@@ -74,8 +74,9 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 * **emulateJSON** - `boolean` -  Send request data as `application/x-www-form-urlencoded` content type
 * **xhr** - `Object` - Parameters object to be set on the native XHR object
 * **jsonp** - `string` - Callback function name in a JSONP request
-* **transformRequest** - `function(options)|array` - Callback function to modify the request options before it is sent. If an array is passed, the default transformations are overwritten.
-* **transformResponse** - `function(options)|array` - Callback function to modify the response before it is passed to the handler functions. If an array is passed, the default transformations are overwritten.
+* **timeout** - `unsigned long` - Request timeout in milliseconds (`0` means no timeout)
+* **transformRequest** - `function(options)|array` - Callback function to modify the request options before it is sent (if an array is passed, the default transformations are overwritten)
+* **transformResponse** - `function(options)|array` - Callback function to modify the response before it is passed to the handler functions (if an array is passed, the default transformations are overwritten)
 
 ### Example
 
