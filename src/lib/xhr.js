@@ -22,7 +22,7 @@ module.exports = function (_, options) {
 
     if (_.isFunction(options.beforeSend)) {
 
-        _.warn('beforeSend has been deprecated in vue-resource ^0.1.17. ' +
+        _.warn('beforeSend has been deprecated in ^0.1.17. ' +
             'Use transformRequest or XHR options instead.'
         );
 
