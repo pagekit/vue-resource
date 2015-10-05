@@ -11,6 +11,11 @@ module.exports = function (_, options) {
     options.params[options.jsonp] = callback;
 
     if (_.isFunction(options.beforeSend)) {
+
+        _.warn('beforeSend has been deprecated in vue-resource ^0.1.17. ' +
+            'Use transformRequest instead.'
+        );
+
         options.beforeSend.call(this, {}, options);
     }
 

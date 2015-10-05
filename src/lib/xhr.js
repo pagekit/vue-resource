@@ -10,7 +10,8 @@ module.exports = function (_, options) {
     var request = new XMLHttpRequest(), promise;
 
     if (XDomain && options.crossOrigin) {
-        request = new XDomainRequest(); options.headers = {};
+        request = new XDomainRequest();
+        options.headers = {};
     }
 
     if (_.isPlainObject(options.xhr)) {
@@ -18,6 +19,11 @@ module.exports = function (_, options) {
     }
 
     if (_.isFunction(options.beforeSend)) {
+
+        _.warn('beforeSend has been deprecated in vue-resource ^0.1.17. ' +
+            'Use transformRequest or XHR options instead.'
+        );
+
         options.beforeSend.call(this, request, options);
     }
 

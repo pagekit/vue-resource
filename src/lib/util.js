@@ -60,6 +60,10 @@ module.exports = function (Vue) {
         return target;
     };
 
+    if (!_.warn) {
+        _.warn = function () {};
+    }
+
     function extend(target, source, deep) {
         for (var key in source) {
             if (deep && (_.isPlainObject(source[key]) || _.isArray(source[key]))) {
