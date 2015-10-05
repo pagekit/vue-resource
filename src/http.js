@@ -108,8 +108,10 @@ module.exports = function (_) {
     }
 
     function transform(transforms, custom, arg, vm) {
-        if (custom) {
-            transforms = transforms.concat(custom instanceof Array ? custom : [custom]);
+        if (custom && custom instanceof Array) {
+            transforms = custom;
+        } else if (custom) {
+            transforms = transforms.concat([custom]);
         }
 
         return transforms.reduce(function (sequence, transform) {
