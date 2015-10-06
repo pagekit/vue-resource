@@ -3,13 +3,12 @@
  */
 
 var Promise = require('./promise');
-var XDomain = window.XDomainRequest;
 
 module.exports = function (_, options) {
 
     var request = new XMLHttpRequest(), promise;
 
-    if (XDomain && options.crossOrigin && !('withCredentials' in request)) {
+    if (options.crossOrigin && !('withCredentials' in request)) {
 
         request = new XDomainRequest();
         options.headers = {};
@@ -34,11 +33,9 @@ module.exports = function (_, options) {
         request.open(options.method, _.url(options), true);
         request.timeout = options.timeout;
 
-        if ('setRequestHeader' in request) {
-            _.each(options.headers, function (value, header) {
-                request.setRequestHeader(header, value);
-            });
-        }
+        _.each(options.headers, function (value, header) {
+            request.setRequestHeader(header, value);
+        });
 
         var handler = function (event) {
 
