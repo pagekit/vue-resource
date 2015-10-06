@@ -46,7 +46,7 @@ module.exports = function (_, options) {
                 request.ok = request.status >= 200 && request.status < 300;
             }
 
-            (request.ok ? resolve : reject)(request);
+            resolve(request);
         };
 
         request.onload = handler;

@@ -44,7 +44,7 @@ module.exports = function (_, options) {
             response.responseText = body ? body : event.type;
             response.headers = "";
 
-            (response.ok ? resolve : reject)(response);
+            resolve(response);
         };
 
         script.onload = handler;
@@ -60,7 +60,7 @@ module.exports = function (_, options) {
                 response.headers = "";
                 response.responseText = '';
 
-                reject(response);
+                resolve(response);
 
             }, options.timeout);
         }

@@ -56,7 +56,9 @@ module.exports = function (_) {
         };
 
         var transformResponse = function (response) {
-            return transform(Http.transforms.response, options.transformResponse, response, vm);
+            return transform(Http.transforms.response, options.transformResponse, response, vm).then(function (response) {
+                return response.ok ? response : Promise.reject(response);
+            });
         };
 
         return extendPromise(transformRequest(options).then(function (options) {
@@ -108,6 +110,7 @@ module.exports = function (_) {
     }
 
     function transform(transforms, custom, arg, vm) {
+
         if (custom && custom instanceof Array) {
             transforms = custom;
         } else if (custom) {
@@ -115,11 +118,11 @@ module.exports = function (_) {
         }
 
         return transforms.reduce(function (sequence, transform) {
-            var cb = function (arg) {
-                return transform.call(vm, arg);
-            };
 
-            return sequence.then(cb, cb);
+            return sequence.then(function (arg) {
+                return transform.call(vm, arg);
+            });
+
         }, Promise.resolve(arg));
     }
 

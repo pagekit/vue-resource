@@ -1,4 +1,6 @@
-var Promise = require('./promise');
+/**
+ * Request/Response transforms.
+ */
 
 module.exports = function (_) {
     return {
@@ -29,7 +31,7 @@ module.exports = function (_) {
                     response.data = response.responseText;
                 }
 
-                return response.ok ? response : Promise.reject(response);
+                return response;
             }
 
         ]
