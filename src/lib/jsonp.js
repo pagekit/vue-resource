@@ -19,7 +19,7 @@ module.exports = function (_, options) {
         options.beforeSend.call(this, {}, options);
     }
 
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) {
 
         script = document.createElement('script');
         script.src = _.url(options);

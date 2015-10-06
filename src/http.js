@@ -111,7 +111,7 @@ module.exports = function (_) {
 
     function transform(transforms, custom, arg, vm) {
 
-        if (custom && custom instanceof Array) {
+        if (_.isArray(custom)) {
             transforms = custom;
         } else if (custom) {
             transforms = transforms.concat([custom]);

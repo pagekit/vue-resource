@@ -28,7 +28,7 @@ module.exports = function (_, options) {
         options.beforeSend.call(this, request, options);
     }
 
-    promise = new Promise(function (resolve, reject) {
+    promise = new Promise(function (resolve) {
 
         request.open(options.method, _.url(options), true);
         request.timeout = options.timeout;
