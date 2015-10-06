@@ -10,20 +10,28 @@ module.exports = function (_, options) {
     var request = new XMLHttpRequest(), promise;
 
     if (XDomain && options.crossOrigin) {
-        request = new XDomainRequest(); options.headers = {};
+        request = new XDomainRequest();
+        options.headers = {};
     }
 
     if (_.isPlainObject(options.xhr)) {
         _.extend(request, options.xhr);
     }
 
+
     if (_.isFunction(options.beforeSend)) {
+
+        _.warn('beforeSend has been deprecated in ^0.1.17. ' +
+            'Use transformRequest or XHR options instead.'
+        );
+
         options.beforeSend.call(this, request, options);
     }
 
-    promise = new Promise(function (resolve, reject) {
+    promise = new Promise(function (resolve) {
 
         request.open(options.method, _.url(options), true);
+        request.timeout = options.timeout;
 
         _.each(options.headers, function (value, header) {
             request.setRequestHeader(header, value);
@@ -32,17 +40,19 @@ module.exports = function (_, options) {
         var handler = function (event) {
 
             request.ok = event.type === 'load';
+            request.headers = request.getAllResponseHeaders();
 
             if (request.ok && request.status) {
                 request.ok = request.status >= 200 && request.status < 300;
             }
 
-            (request.ok ? resolve : reject)(request);
+            resolve(request);
         };
 
         request.onload = handler;
         request.onabort = handler;
         request.onerror = handler;
+        request.ontimeout = handler;
 
         request.send(options.data);
     });
