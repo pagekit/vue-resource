@@ -9,7 +9,8 @@ module.exports = function (_, options) {
 
     var request = new XMLHttpRequest(), promise;
 
-    if (XDomain && options.crossOrigin) {
+    if (XDomain && options.crossOrigin && !('withCredentials' in request)) {
+
         request = new XDomainRequest();
         options.headers = {};
     }
@@ -33,14 +34,16 @@ module.exports = function (_, options) {
         request.open(options.method, _.url(options), true);
         request.timeout = options.timeout;
 
-        _.each(options.headers, function (value, header) {
-            request.setRequestHeader(header, value);
-        });
+        if ('setRequestHeader' in request) {
+            _.each(options.headers, function (value, header) {
+                request.setRequestHeader(header, value);
+            });
+        }
 
         var handler = function (event) {
 
             request.ok = event.type === 'load';
-            request.headers = request.getAllResponseHeaders();
+            request.headers = 'getAllResponseHeaders' in request ? request.getAllResponseHeaders() : '';
 
             if (request.ok && request.status) {
                 request.ok = request.status >= 200 && request.status < 300;
