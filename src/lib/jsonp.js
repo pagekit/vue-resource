@@ -32,38 +32,41 @@ module.exports = function (_, options) {
 
         var handler = function (event) {
 
-            delete window[callback];
-            document.body.removeChild(script);
+            if (event.type === 'load') {
+                delete window[callback];
+                document.body.removeChild(script);
+            }
 
             if (event.type === 'load' && !body) {
                 event.type = 'error';
             }
 
-            response.ok = event.type !== 'error';
-            response.status = response.ok ? 200 : 404;
-            response.responseText = body ? body : event.type;
-            response.headers = "";
+            switch (event.type) {
+                case 'load':
+                    response.status = 200;
+                    break;
+                case 'error':
+                    response.status = 404;
+                    break;
+                default:
+                    response.status = 0;
+            }
+
+            response.ok = event.type === 'load';
+            response.responseText = body ? body : '';
+            response.header = function () {return null};
 
             resolve(response);
         };
 
-        script.onload = handler;
-        script.onerror = handler;
-
         if (options.timeout) {
             setTimeout(function () {
-                var response = {};
-
-                response.ok = false;
-                response.type = 'timeout';
-                response.status = 0;
-                response.responseText = '';
-                response.header = function () {return null};
-
-                resolve(response);
-
+                handler({type: 'timeout'});
             }, options.timeout);
         }
+
+        script.onload = handler;
+        script.onerror = handler;
 
         document.body.appendChild(script);
     });
