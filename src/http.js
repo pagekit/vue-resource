@@ -13,7 +13,7 @@ module.exports = function (_) {
     var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
 
     function Http(url, options) {
-        var vm = this.vm;
+        var promise;
 
         if (_.isPlainObject(url)) {
             options = url;
@@ -51,32 +51,24 @@ module.exports = function (_) {
             options.data = _.url.params(options.data);
         }
 
-        var transformRequest = function (options) {
-            return transform(Http.transforms.request, options.transformRequest, options, vm);
-        };
+        options = transform(Http.transforms.request, options.transformRequest, options, this.vm);
+        promise = (options.method == 'JSONP' ? jsonp : xhr).call(this.vm, _, options);
+        promise = extendPromise(promise.then(function (response) {
 
-        var transformResponse = function (response) {
-            return transform(Http.transforms.response, options.transformResponse, response, vm).then(function (response) {
-                return response.reject ? Promise.reject(response) : response;
-            });
-        };
+            transform(Http.transforms.response, options.transformResponse, response, this);
+            return response.reject ? Promise.reject(response) : response;
 
-        return extendPromise(transformRequest(options).then(function (options) {
+        }.bind(this.vm)), this.vm);
 
-            var promise = (options.method == 'JSONP' ? jsonp : xhr).call(vm, _, options);
-            promise = extendPromise(promise.then(transformResponse, transformResponse), vm);
+        if (options.success) {
+            promise = promise.success(options.success);
+        }
 
-            if (options.success) {
-                promise = promise.success(options.success);
-            }
+        if (options.error) {
+            promise = promise.error(options.error);
+        }
 
-            if (options.error) {
-                promise = promise.error(options.error);
-            }
-
-            return promise;
-
-        }), vm);
+        return promise;
     }
 
     function extendPromise(promise, vm) {
@@ -117,13 +109,9 @@ module.exports = function (_) {
             transforms = transforms.concat([custom]);
         }
 
-        return transforms.reduce(function (sequence, transform) {
-
-            return sequence.then(function (arg) {
-                return transform.call(vm, arg);
-            });
-
-        }, Promise.resolve(arg));
+        return transforms.reduce(function (arg, transform) {
+            return transform.call(vm, arg);
+        }, arg);
     }
 
     function crossOrigin(url) {
