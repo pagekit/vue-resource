@@ -53,6 +53,7 @@ module.exports = function (_, options) {
             }
 
             response.ok = event.type === 'load';
+            response.reject = !response.ok;
             response.responseText = body ? body : '';
             response.header = function () {return null};
 

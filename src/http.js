@@ -57,7 +57,7 @@ module.exports = function (_) {
 
         var transformResponse = function (response) {
             return transform(Http.transforms.response, options.transformResponse, response, vm).then(function (response) {
-                return response.ok ? response : Promise.reject(response);
+                return response.reject ? Promise.reject(response) : response;
             });
         };
 

@@ -47,6 +47,7 @@ module.exports = function (_, options) {
             if (request.ok && request.status) {
                 request.ok = request.status >= 200 && request.status < 300;
             }
+            request.reject = !request.ok;
 
             resolve(request);
         };
