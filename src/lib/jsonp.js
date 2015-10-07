@@ -57,8 +57,8 @@ module.exports = function (_, options) {
                 response.ok = false;
                 response.type = 'timeout';
                 response.status = 0;
-                response.headers = "";
                 response.responseText = '';
+                response.header = function () {return null};
 
                 resolve(response);
 

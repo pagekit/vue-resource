@@ -40,7 +40,9 @@ module.exports = function (_, options) {
         var handler = function (event) {
 
             request.ok = event.type === 'load';
-            request.headers = 'getAllResponseHeaders' in request ? request.getAllResponseHeaders() : '';
+            request.header = function (name) {
+                return 'getResponseHeader' in this ? this.getResponseHeader(name) : null;
+            };
 
             if (request.ok && request.status) {
                 request.ok = request.status >= 200 && request.status < 300;
