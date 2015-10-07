@@ -55,7 +55,7 @@ module.exports = function (_) {
         promise = (options.method == 'JSONP' ? jsonp : xhr).call(this.vm, _, options);
         promise = extendPromise(promise.then(function (response) {
 
-            transform(Http.transforms.response, options.transformResponse, response, this);
+            response = transform(Http.transforms.response, options.transformResponse, response, this);
             return response.reject ? Promise.reject(response) : response;
 
         }.bind(this.vm)), this.vm);
