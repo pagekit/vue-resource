@@ -5,7 +5,6 @@
 var xhr = require('./lib/xhr');
 var jsonp = require('./lib/jsonp');
 var Promise = require('./lib/promise');
-var Transforms = require('./lib/transforms');
 
 module.exports = function (_) {
 
@@ -51,14 +50,26 @@ module.exports = function (_) {
             options.data = _.url.params(options.data);
         }
 
-        options = transform(Http.transforms.request, options.transformRequest, options, this.vm);
+        if (_.isObject(options.data) && /FormData/i.test(options.data.toString())) {
+            delete options.headers['Content-Type'];
+        }
+
+        if (_.isPlainObject(options.data)) {
+            options.data = JSON.stringify(options.data);
+        }
+
         promise = (options.method == 'JSONP' ? jsonp : xhr).call(this.vm, _, options);
         promise = extendPromise(promise.then(function (response) {
 
-            response = transform(Http.transforms.response, options.transformResponse, response, this);
+            try {
+                response.data = JSON.parse(response.responseText);
+            } catch (e) {
+                response.data = response.responseText;
+            }
+
             return response.reject ? Promise.reject(response) : response;
 
-        }.bind(this.vm)), this.vm);
+        }), this.vm);
 
         if (options.success) {
             promise = promise.success(options.success);
@@ -101,27 +112,12 @@ module.exports = function (_) {
         return promise;
     }
 
-    function transform(transforms, custom, arg, vm) {
-
-        if (_.isArray(custom)) {
-            transforms = custom;
-        } else if (custom) {
-            transforms = transforms.concat([custom]);
-        }
-
-        return transforms.reduce(function (arg, transform) {
-            return transform.call(vm, arg);
-        }, arg);
-    }
-
     function crossOrigin(url) {
 
         var requestUrl = _.url.parse(url);
 
         return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
     }
-
-    Http.transforms = Transforms.call(this, _);
 
     Http.options = {
         method: 'get',
@@ -133,9 +129,7 @@ module.exports = function (_) {
         crossOrigin: null,
         emulateHTTP: false,
         emulateJSON: false,
-        timeout: 0,
-        transformRequest: null,
-        transformResponse: null
+        timeout: 0
     };
 
     Http.headers = {
