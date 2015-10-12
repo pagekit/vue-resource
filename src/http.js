@@ -2,17 +2,22 @@
  * Service for sending network requests.
  */
 
-var xhr = require('./lib/xhr');
-var jsonp = require('./lib/jsonp');
 var Promise = require('./lib/promise');
 
 module.exports = function (_) {
 
-    var originUrl = _.url.parse(location.href);
+    var request = require('./lib/request')(_);
     var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
 
+    var defaultInterceptor = {
+        'mime': require('./interceptor/mime.js')(_)
+    };
+
     function Http(url, options) {
-        var promise;
+        var chain, promise,
+            vm = this.vm,
+            requestInterceptor = [],
+            responseInterceptor = [];
 
         if (_.isPlainObject(url)) {
             options = url;
@@ -24,52 +29,51 @@ module.exports = function (_) {
             Http.options, this.options, options
         );
 
-        if (options.crossOrigin === null) {
-            options.crossOrigin = crossOrigin(options.url);
-        }
+        Http.interceptor.forEach(function (interceptor) {
+            var config = {};
 
-        options.method = options.method.toUpperCase();
-        options.headers = _.extend({}, Http.headers.common,
-            !options.crossOrigin ? Http.headers.custom : {},
-            Http.headers[options.method.toLowerCase()],
-            options.headers
-        );
-
-        if (_.isPlainObject(options.data) && /^(GET|JSONP)$/i.test(options.method)) {
-            _.extend(options.params, options.data);
-            delete options.data;
-        }
-
-        if (options.emulateHTTP && !options.crossOrigin && /^(PUT|PATCH|DELETE)$/i.test(options.method)) {
-            options.headers['X-HTTP-Method-Override'] = options.method;
-            options.method = 'POST';
-        }
-
-        if (options.emulateJSON && _.isPlainObject(options.data)) {
-            options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-            options.data = _.url.params(options.data);
-        }
-
-        if (_.isObject(options.data) && /FormData/i.test(options.data.toString())) {
-            delete options.headers['Content-Type'];
-        }
-
-        if (_.isPlainObject(options.data)) {
-            options.data = JSON.stringify(options.data);
-        }
-
-        promise = (options.method == 'JSONP' ? jsonp : xhr).call(this.vm, _, options);
-        promise = extendPromise(promise.then(function (response) {
-
-            try {
-                response.data = JSON.parse(response.responseText);
-            } catch (e) {
-                response.data = response.responseText;
+            if (_.isArray(interceptor)) {
+                interceptor = interceptor[0];
+                config = interceptor[1];
             }
 
-            return response.reject ? Promise.reject(response) : response;
+            if (_.isString(interceptor)) {
+                interceptor = defaultInterceptor[interceptor];
+            }
 
-        }), this.vm);
+            if (_.isFunction(interceptor)) {
+                interceptor = interceptor.call(this, Promise);
+            }
+
+            if (!_.isPlainObject(interceptor)) {
+                return;
+            }
+
+            // TODO: Add config.
+            if (interceptor.request) {
+                requestInterceptor.push(interceptor.request);
+            }
+
+            if (interceptor.response) {
+                responseInterceptor.push(interceptor.response);
+            }
+
+        });
+
+        chain = requestInterceptor.concat([request], responseInterceptor);
+        promise = chain.reduce(function (sequence, segment) {
+
+            return sequence.then(function (carry) {
+                return segment.call(vm, carry);
+            })
+
+        }, Promise.resolve(options));
+
+        promise = extendPromise(promise.then(function (response) {
+
+            return response.ok ? response : Promise.reject(response);
+
+        }), vm);
 
         if (options.success) {
             promise = promise.success(options.success);
@@ -112,13 +116,6 @@ module.exports = function (_) {
         return promise;
     }
 
-    function crossOrigin(url) {
-
-        var requestUrl = _.url.parse(url);
-
-        return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
-    }
-
     Http.options = {
         method: 'get',
         params: {},
@@ -131,6 +128,10 @@ module.exports = function (_) {
         emulateJSON: false,
         timeout: 0
     };
+
+    Http.interceptor = [
+        'mime'
+    ];
 
     Http.headers = {
         put: jsonType,
