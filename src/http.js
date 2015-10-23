@@ -6,18 +6,12 @@ var Promise = require('./lib/promise');
 
 module.exports = function (_) {
 
-    var request = require('./lib/request')(_);
     var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
 
-    var defaultInterceptor = {
-        'mime': require('./interceptor/mime.js')(_)
-    };
+    var request = require('./lib/request')(_);
+    var interceptorFactory = require('./lib/interceptor')(_);
 
     function Http(url, options) {
-        var chain, promise,
-            vm = this.vm,
-            requestInterceptor = [],
-            responseInterceptor = [];
 
         if (_.isPlainObject(url)) {
             options = url;
@@ -29,51 +23,15 @@ module.exports = function (_) {
             Http.options, this.options, options
         );
 
-        Http.interceptor.forEach(function (interceptor) {
-            var config = {};
-
-            if (_.isArray(interceptor)) {
-                interceptor = interceptor[0];
-                config = interceptor[1];
-            }
-
-            if (_.isString(interceptor)) {
-                interceptor = defaultInterceptor[interceptor];
-            }
-
-            if (_.isFunction(interceptor)) {
-                interceptor = interceptor.call(this, Promise);
-            }
-
-            if (!_.isPlainObject(interceptor)) {
-                return;
-            }
-
-            // TODO: Add config.
-            if (interceptor.request) {
-                requestInterceptor.push(interceptor.request);
-            }
-
-            if (interceptor.response) {
-                responseInterceptor.push(interceptor.response);
-            }
-
-        });
-
-        chain = requestInterceptor.concat([request], responseInterceptor);
-        promise = chain.reduce(function (sequence, segment) {
-
-            return sequence.then(function (carry) {
-                return segment.call(vm, carry);
-            })
-
-        }, Promise.resolve(options));
+        var interceptorStack = interceptorFactory.parse(Http.interceptor);
+        var chain = interceptorFactory.chain(interceptorStack, request);
+        var promise = interceptorFactory.run(chain, options, this.vm);
 
         promise = extendPromise(promise.then(function (response) {
 
             return response.ok ? response : Promise.reject(response);
 
-        }), vm);
+        }), this.vm);
 
         if (options.success) {
             promise = promise.success(options.success);
@@ -130,7 +88,8 @@ module.exports = function (_) {
     };
 
     Http.interceptor = [
-        'mime'
+        require('./interceptor/option')(_),
+        require('./interceptor/mime')(_)
     ];
 
     Http.headers = {

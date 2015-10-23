@@ -69,6 +69,41 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 * **jsonp** - `string` - Callback function name in a JSONP request
 * **timeout** - `unsigned long` - Request timeout in milliseconds (`0` means no timeout)
 
+### Interceptors
+
+```javascript
+Vue.http.interceptor.push({
+
+    request: function (options) {
+        return options;
+    },
+
+    response: function (response) {
+        return response;
+    }
+
+});
+```
+
+#### Interceptor Factory
+
+```javascript
+Vue.http.interceptor.push(function (Promise) {
+    return {
+           request: function (options) {
+
+
+               return Promise.reject();
+           },
+           response: function (response) {
+
+
+               return Promise.reject();
+           }
+       };
+});
+```
+
 ### Example
 
 ```javascript
