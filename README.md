@@ -71,6 +71,8 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 
 ### Interceptors
 
+Interceptors can be defined globally and are used for pre- and postprocessing of a request.
+
 ```javascript
 Vue.http.interceptor.push({
 
@@ -87,18 +89,20 @@ Vue.http.interceptor.push({
 
 #### Interceptor Factory
 
+If Promises are needed inside of a Interceptor, a factory function can be used.
+
 ```javascript
 Vue.http.interceptor.push(function (Promise) {
     return {
            request: function (options) {
-
-
-               return Promise.reject();
+               if (reject) {
+                   return Promise.reject();
+               }
            },
            response: function (response) {
-
-
-               return Promise.reject();
+                 if (reject) {
+                    return Promise.reject();
+                 }
            }
        };
 });

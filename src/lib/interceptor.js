@@ -1,5 +1,5 @@
 /**
- * Interceptor.
+ * Interceptor factory.
  */
 
 var Promise = require('./promise');
