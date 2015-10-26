@@ -7,25 +7,23 @@ var Promise = require('./lib/promise');
 module.exports = function (_) {
 
     var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
+    var factory = require('./interceptor/factory')(_);
 
-    var request = require('./lib/request')(_);
-    var interceptorFactory = require('./lib/interceptor')(_);
-
-    function Http(url, options) {
+    function Http(url, request) {
 
         if (_.isPlainObject(url)) {
-            options = url;
+            request = url;
             url = '';
         }
 
-        options = _.extend({url: url}, options);
-        options = _.extend(true, {},
-            Http.options, this.options, options
+        request = _.extend({url: url}, request);
+        request = _.extend(true, {},
+            Http.options, this.options, request
         );
 
-        var interceptorStack = interceptorFactory.parse(Http.interceptor);
-        var chain = interceptorFactory.chain(interceptorStack, request);
-        var promise = interceptorFactory.run(chain, options, this.vm);
+        request.client = require('./client/xhr')(_);
+
+        var promise = factory(Http.interceptor).run(request);
 
         promise = extendPromise(promise.then(function (response) {
 
@@ -33,12 +31,12 @@ module.exports = function (_) {
 
         }), this.vm);
 
-        if (options.success) {
-            promise = promise.success(options.success);
+        if (request.success) {
+            promise = promise.success(request.success);
         }
 
-        if (options.error) {
-            promise = promise.error(options.error);
+        if (request.error) {
+            promise = promise.error(request.error);
         }
 
         return promise;
@@ -88,8 +86,10 @@ module.exports = function (_) {
     };
 
     Http.interceptor = [
+        require('./interceptor/cors')(_),
         require('./interceptor/option')(_),
-        require('./interceptor/mime')(_)
+        require('./interceptor/mime')(_),
+        require('./interceptor/jsonp')(_)
     ];
 
     Http.headers = {

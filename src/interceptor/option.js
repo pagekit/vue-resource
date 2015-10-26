@@ -4,39 +4,26 @@
 
 module.exports = function (_) {
 
-    var originUrl = _.url.parse(location.href);
-
     return {
 
-        request: function (options) {
+        request: function (request) {
 
-            if (options.crossOrigin === null) {
-                options.crossOrigin = crossOrigin(options.url);
-            }
-
-            options.method = options.method.toUpperCase();
-            options.headers = _.extend({}, _.http.headers.common,
-                !options.crossOrigin ? _.http.headers.custom : {},
-                _.http.headers[options.method.toLowerCase()],
-                options.headers
+            request.method = request.method.toUpperCase();
+            request.headers = _.extend({}, _.http.headers.common,
+                !request.crossOrigin ? _.http.headers.custom : {},
+                _.http.headers[request.method.toLowerCase()],
+                request.headers
             );
 
-            if (_.isPlainObject(options.data) && /^(GET|JSONP)$/i.test(options.method)) {
-                _.extend(options.params, options.data);
-                delete options.data;
+            if (_.isPlainObject(request.data) && /^(GET|JSONP)$/i.test(request.method)) {
+                _.extend(request.params, request.data);
+                delete request.data;
             }
 
-            return options;
+            return request;
 
         }
 
     };
-
-    function crossOrigin(url) {
-
-        var requestUrl = _.url.parse(url);
-
-        return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
-    }
 
 }
