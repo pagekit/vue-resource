@@ -8,13 +8,13 @@ module.exports = function (_) {
 
     return {
 
-        request: function (options) {
+        request: function (request) {
 
-            if (options.crossOrigin === null) {
-                options.crossOrigin = crossOrigin(options.url);
+            if (request.crossOrigin === null) {
+                request.crossOrigin = crossOrigin(request.url);
             }
 
-            return options;
+            return request;
 
         }
 

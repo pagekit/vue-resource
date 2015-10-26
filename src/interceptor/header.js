@@ -1,5 +1,5 @@
 /**
- * Options Interceptor.
+ * Header Interceptor.
  */
 
 module.exports = function (_) {

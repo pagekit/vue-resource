@@ -9,21 +9,23 @@ module.exports = function (_) {
     var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
     var factory = require('./interceptor/factory')(_);
 
-    function Http(url, request) {
+    function Http(url, options) {
+
+        var request;
 
         if (_.isPlainObject(url)) {
-            request = url;
+            options = url;
             url = '';
         }
 
-        request = _.extend({url: url}, request);
+        request = _.extend({url: url}, options);
         request = _.extend(true, {},
             Http.options, this.options, request
         );
 
         request.client = require('./client/xhr')(_);
 
-        var promise = factory(Http.interceptor).run(request);
+        var promise = factory(Http.interceptors).run(request);
 
         promise = extendPromise(promise.then(function (response) {
 
@@ -85,9 +87,9 @@ module.exports = function (_) {
         timeout: 0
     };
 
-    Http.interceptor = [
+    Http.interceptors = [
         require('./interceptor/cors')(_),
-        require('./interceptor/option')(_),
+        require('./interceptor/header')(_),
         require('./interceptor/mime')(_),
         require('./interceptor/jsonp')(_)
     ];
