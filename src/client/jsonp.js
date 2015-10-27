@@ -6,6 +6,8 @@ var Promise = require('../lib/promise');
 
 module.exports = function (_) {
 
+    var handler;
+
     return {
 
         send: function (request) {
@@ -29,7 +31,7 @@ module.exports = function (_) {
                     body = data;
                 };
 
-                var handler = function (event) {
+                handler = function (event) {
 
                     if (event.type === 'load') {
                         delete window[callback];
@@ -61,12 +63,6 @@ module.exports = function (_) {
                     resolve(response);
                 };
 
-                if (request.timeout) {
-                    setTimeout(function () {
-                        handler({type: 'timeout'});
-                    }, request.timeout);
-                }
-
                 script.onload = handler;
                 script.onerror = handler;
 
@@ -76,6 +72,8 @@ module.exports = function (_) {
         },
 
         cancel: function () {
+
+            handler({type: 'cancel'});
 
         }
 

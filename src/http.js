@@ -88,6 +88,7 @@ module.exports = function (_) {
     };
 
     Http.interceptors = [
+        require('./interceptor/timeout')(_),
         require('./interceptor/cors')(_),
         require('./interceptor/header')(_),
         require('./interceptor/mime')(_),

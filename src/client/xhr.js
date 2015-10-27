@@ -26,7 +26,6 @@ module.exports = function (_) {
                 }
 
                 client.open(request.method, _.url(request), true);
-                client.timeout = request.timeout;
 
                 _.each(request.headers, function (value, header) {
                     client.setRequestHeader(header, value);
@@ -50,7 +49,6 @@ module.exports = function (_) {
                 client.onload = handler;
                 client.onabort = handler;
                 client.onerror = handler;
-                client.ontimeout = handler;
 
                 client.send(request.data);
             });
@@ -58,7 +56,9 @@ module.exports = function (_) {
         },
 
         cancel: function () {
+
             client.abort();
+
         }
 
     };
