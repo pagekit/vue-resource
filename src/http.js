@@ -2,70 +2,43 @@
  * Service for sending network requests.
  */
 
-var xhr = require('./lib/xhr');
-var jsonp = require('./lib/jsonp');
 var Promise = require('./lib/promise');
-var Transforms = require('./lib/transforms');
 
 module.exports = function (_) {
 
-    var originUrl = _.url.parse(location.href);
     var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
+    var factory = require('./interceptor/factory')(_);
 
     function Http(url, options) {
-        var promise;
+
+        var request;
 
         if (_.isPlainObject(url)) {
             options = url;
             url = '';
         }
 
-        options = _.extend({url: url}, options);
-        options = _.extend(true, {},
-            Http.options, this.options, options
+        request = _.extend({url: url}, options);
+        request = _.extend(true, {},
+            Http.options, this.options, request
         );
 
-        if (options.crossOrigin === null) {
-            options.crossOrigin = crossOrigin(options.url);
-        }
+        request.client = require('./client/xhr')(_);
 
-        options.method = options.method.toUpperCase();
-        options.headers = _.extend({}, Http.headers.common,
-            !options.crossOrigin ? Http.headers.custom : {},
-            Http.headers[options.method.toLowerCase()],
-            options.headers
-        );
+        var promise = factory(Http.interceptors).run(request);
 
-        if (_.isPlainObject(options.data) && /^(GET|JSONP)$/i.test(options.method)) {
-            _.extend(options.params, options.data);
-            delete options.data;
-        }
-
-        if (options.emulateHTTP && !options.crossOrigin && /^(PUT|PATCH|DELETE)$/i.test(options.method)) {
-            options.headers['X-HTTP-Method-Override'] = options.method;
-            options.method = 'POST';
-        }
-
-        if (options.emulateJSON && _.isPlainObject(options.data)) {
-            options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-            options.data = _.url.params(options.data);
-        }
-
-        options = transform(Http.transforms.request, options.transformRequest, options, this.vm);
-        promise = (options.method == 'JSONP' ? jsonp : xhr).call(this.vm, _, options);
         promise = extendPromise(promise.then(function (response) {
 
-            response = transform(Http.transforms.response, options.transformResponse, response, this);
-            return response.reject ? Promise.reject(response) : response;
+            return response.ok ? response : Promise.reject(response);
 
-        }.bind(this.vm)), this.vm);
+        }), this.vm);
 
-        if (options.success) {
-            promise = promise.success(options.success);
+        if (request.success) {
+            promise = promise.success(request.success);
         }
 
-        if (options.error) {
-            promise = promise.error(options.error);
+        if (request.error) {
+            promise = promise.error(request.error);
         }
 
         return promise;
@@ -101,28 +74,6 @@ module.exports = function (_) {
         return promise;
     }
 
-    function transform(transforms, custom, arg, vm) {
-
-        if (_.isArray(custom)) {
-            transforms = custom;
-        } else if (custom) {
-            transforms = transforms.concat([custom]);
-        }
-
-        return transforms.reduce(function (arg, transform) {
-            return transform.call(vm, arg);
-        }, arg);
-    }
-
-    function crossOrigin(url) {
-
-        var requestUrl = _.url.parse(url);
-
-        return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
-    }
-
-    Http.transforms = Transforms.call(this, _);
-
     Http.options = {
         method: 'get',
         params: {},
@@ -133,10 +84,17 @@ module.exports = function (_) {
         crossOrigin: null,
         emulateHTTP: false,
         emulateJSON: false,
-        timeout: 0,
-        transformRequest: null,
-        transformResponse: null
+        timeout: 0
     };
+
+    Http.interceptors = [
+        require('./interceptor/timeout')(_),
+        require('./interceptor/cors')(_),
+        require('./interceptor/header')(_),
+        require('./interceptor/mime')(_),
+        require('./interceptor/jsonp')(_),
+        require('./interceptor/beforeSend')(_)
+    ];
 
     Http.headers = {
         put: jsonType,

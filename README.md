@@ -23,14 +23,6 @@ Set default values using the global configuration.
 ```javascript
 Vue.http.options.root = '/root';
 Vue.http.headers.common['Authorization'] = 'Basic YXBpOnBhc3N3b3Jk';
-
-Vue.http.transforms.request.push(function (options) {
-    return options;
-});
-
-Vue.http.transforms.response.push(function (response) {
-    return response;
-});
 ```
 
 Set default values inside your Vue component options.
@@ -70,13 +62,51 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 * **headers** - `Object` - Headers object to be sent as HTTP request headers
 * **success** - `function(data, status, request)` - Callback function to be called when the request finishes
 * **error** - `function(data, status, request)` - Callback function to be called when the request fails
+* **beforeSend** - `function(request, options)` - Callback function to modify the request object before it is sent
 * **emulateHTTP** - `boolean` - Send PUT, PATCH and DELETE requests with a HTTP POST and set the `X-HTTP-Method-Override` header
 * **emulateJSON** - `boolean` -  Send request data as `application/x-www-form-urlencoded` content type
 * **xhr** - `Object` - Parameters object to be set on the native XHR object
 * **jsonp** - `string` - Callback function name in a JSONP request
 * **timeout** - `unsigned long` - Request timeout in milliseconds (`0` means no timeout)
-* **transformRequest** - `function(options)|array` - Callback function to modify the request options before it is sent (if an array is passed, the default transformations are overwritten)
-* **transformResponse** - `function(options)|array` - Callback function to modify the response before it is passed to the handler functions (if an array is passed, the default transformations are overwritten)
+
+### Interceptors
+
+Interceptors can be defined globally and are used for pre- and postprocessing of a request.
+
+```javascript
+Vue.http.interceptors.push({
+
+    request: function (options) {
+        return options;
+    },
+
+    response: function (response) {
+        return response;
+    }
+
+});
+```
+
+#### Interceptor Factory
+
+If Promises are needed inside of a Interceptor, a factory function can be used.
+
+```javascript
+Vue.http.interceptors.push(function (Promise) {
+    return {
+           request: function (options) {
+               if (reject) {
+                   return Promise.reject();
+               }
+           },
+           response: function (response) {
+                 if (reject) {
+                    return Promise.reject();
+                 }
+           }
+       };
+});
+```
 
 ### Example
 
