@@ -19,11 +19,11 @@ module.exports = function (_) {
                 request.headers = {};
             }
 
-            return new Promise(function (resolve) {
+            if (_.isPlainObject(request.xhr)) {
+                _.extend(client, request.xhr);
+            }
 
-                if (_.isFunction(request.beforeSend)) {
-                    request.beforeSend.call(this, client, request);
-                }
+            return new Promise(function (resolve) {
 
                 client.open(request.method, _.url(request), true);
 

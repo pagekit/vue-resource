@@ -92,7 +92,8 @@ module.exports = function (_) {
         require('./interceptor/cors')(_),
         require('./interceptor/header')(_),
         require('./interceptor/mime')(_),
-        require('./interceptor/jsonp')(_)
+        require('./interceptor/jsonp')(_),
+        require('./interceptor/beforeSend')(_)
     ];
 
     Http.headers = {

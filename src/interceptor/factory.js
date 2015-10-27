@@ -10,6 +10,10 @@ module.exports = function (_) {
 
         var stack = {
 
+            request: [],
+
+            response: [],
+
             run: function (request, vm) {
 
                 var chain = [].concat(this.request, [function (request) {
@@ -22,15 +26,11 @@ module.exports = function (_) {
 
                     return sequence.then(function (carry) {
                         return segment.call(vm, carry);
-                    })
+                    });
 
                 }, Promise.resolve(request));
 
-            },
-
-            request: [],
-
-            response: []
+            }
 
         };
 

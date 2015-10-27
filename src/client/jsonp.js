@@ -16,10 +16,6 @@ module.exports = function (_) {
 
             request.params[request.jsonp] = callback;
 
-            if (_.isFunction(request.beforeSend)) {
-                request.beforeSend.call(this, {}, request);
-            }
-
             return new Promise(function (resolve) {
 
                 script = document.createElement('script');
