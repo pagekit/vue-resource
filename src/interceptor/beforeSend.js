@@ -13,7 +13,6 @@ module.exports = function (_) {
             }
 
             return request;
-
         }
 
     };

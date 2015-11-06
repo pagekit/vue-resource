@@ -3,11 +3,11 @@
  */
 
 var Promise = require('./lib/promise');
+var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
 
 module.exports = function (_) {
 
-    var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
-    var factory = require('./interceptor/factory')(_);
+    var interceptor = require('./interceptor/factory')(_);
 
     function Http(url, options) {
 
@@ -23,9 +23,9 @@ module.exports = function (_) {
             Http.options, this.options, request
         );
 
-        request.client = require('./client/xhr')(_);
+        request.client = require('./lib/xhr')(_);
 
-        var promise = factory(Http.interceptors).run(request);
+        var promise = interceptor(Http.interceptors).run(request);
 
         promise = extendPromise(promise.then(function (response) {
 

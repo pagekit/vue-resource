@@ -15,7 +15,6 @@ module.exports = function (_) {
             }
 
             return request;
-
         }
 
     };
@@ -25,7 +24,6 @@ module.exports = function (_) {
         var requestUrl = _.url.parse(url);
 
         return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
-
     }
 
 };

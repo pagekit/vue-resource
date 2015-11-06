@@ -12,14 +12,11 @@ module.exports = function (_) {
 
             if (request.timeout) {
                 timeout = setTimeout(function () {
-
                     request.client.cancel();
-
                 }, request.timeout);
             }
 
             return request;
-
         },
 
         response: function (response) {
@@ -27,7 +24,6 @@ module.exports = function (_) {
             clearTimeout(timeout);
 
             return response;
-
         }
 
     };

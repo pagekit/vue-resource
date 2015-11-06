@@ -27,7 +27,6 @@ module.exports = function (_) {
             }
 
             return request;
-
         },
 
         response: function (response) {
@@ -39,7 +38,6 @@ module.exports = function (_) {
             }
 
             return response;
-
         }
 
     };

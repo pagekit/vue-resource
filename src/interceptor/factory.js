@@ -17,17 +17,13 @@ module.exports = function (_) {
             run: function (request, vm) {
 
                 var chain = [].concat(this.request, [function (request) {
-
                     return request.client.send(request);
-
                 }], this.response);
 
                 return chain.reduce(function (sequence, segment) {
-
                     return sequence.then(function (carry) {
                         return segment.call(vm, carry);
                     });
-
                 }, Promise.resolve(request));
 
             }
@@ -51,6 +47,6 @@ module.exports = function (_) {
         });
 
         return stack;
-
     };
+
 };

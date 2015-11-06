@@ -2,7 +2,8 @@
  * JSONP request.
  */
 
-var Promise = require('../lib/promise');
+var Promise = require('./promise');
+var Response = require('./response');
 
 module.exports = function (_) {
 
@@ -12,7 +13,7 @@ module.exports = function (_) {
 
         send: function (request) {
 
-            var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {}, script, body;
+            var callback = '_jsonp' + Math.random().toString(36).substr(2), script, status, body;
 
             request.params[request.jsonp] = callback;
 
@@ -40,23 +41,16 @@ module.exports = function (_) {
 
                     switch (event.type) {
                         case 'load':
-                            response.status = 200;
+                            status = 200;
                             break;
                         case 'error':
-                            response.status = 404;
+                            status = 404;
                             break;
                         default:
-                            response.status = 0;
+                            status = 0;
                     }
 
-                    response.ok = event.type === 'load';
-                    response.reject = !response.ok;
-                    response.responseText = body ? body : '';
-                    response.header = function () {
-                        return null
-                    };
-
-                    resolve(response);
+                    resolve(Response(body, status));
                 };
 
                 script.onload = handler;
@@ -68,9 +62,7 @@ module.exports = function (_) {
         },
 
         cancel: function () {
-
             handler({type: 'cancel'});
-
         }
 
     };

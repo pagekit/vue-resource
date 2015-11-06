@@ -9,11 +9,10 @@ module.exports = function (_) {
         request: function (request) {
 
             if (request.method == 'JSONP') {
-                request.client = require('../client/jsonp')(_);
+                request.client = require('../lib/jsonp')(_);
             }
 
             return request;
-
         }
 
     };
