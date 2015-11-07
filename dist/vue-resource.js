@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.1.16
+ * vue-resource v0.1.17
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -8,7 +8,7 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
-		define(factory);
+		define([], factory);
 	else if(typeof exports === 'object')
 		exports["VueResource"] = factory();
 	else
@@ -76,13 +76,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        $url: {
 	            get: function () {
-	                return this._url || (this._url = _.options(Vue.url, this, this.$options.url));
+	                return _.options(Vue.url, this, this.$options.url);
 	            }
 	        },
 
 	        $http: {
 	            get: function () {
-	                return this._http || (this._http = _.options(Vue.http, this, this.$options.http));
+	                return _.options(Vue.http, this, this.$options.http);
 	            }
 	        },
 
@@ -855,7 +855,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    function Resource(url, params, actions) {
+	    function Resource(url, params, actions, options) {
 
 	        var self = this, resource = {};
 
@@ -866,7 +866,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        _.each(actions, function (action, name) {
 
-	            action = _.extend(true, {url: url, params: params || {}}, action);
+	            action = _.extend(true, {url: url, params: params || {}}, options, action);
 
 	            resource[name] = function () {
 	                return (self.$http || _.http)(opts(action, arguments));
