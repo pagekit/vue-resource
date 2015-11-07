@@ -70,19 +70,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    Vue.url = __webpack_require__(2)(_);
 	    Vue.http = __webpack_require__(3)(_);
-	    Vue.resource = __webpack_require__(7)(_);
+	    Vue.resource = __webpack_require__(15)(_);
 
 	    Object.defineProperties(Vue.prototype, {
 
 	        $url: {
 	            get: function () {
-	                return this._url || (this._url = _.options(Vue.url, this, this.$options.url));
+	                return _.options(Vue.url, this, this.$options.url);
 	            }
 	        },
 
 	        $http: {
 	            get: function () {
-	                return this._http || (this._http = _.options(Vue.http, this, this.$options.http));
+	                return _.options(Vue.http, this, this.$options.http);
 	            }
 	        },
 
@@ -101,6 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = install;
 
+
 /***/ },
 /* 1 */
 /***/ function(module, exports) {
@@ -111,7 +112,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (Vue) {
 
-	    var _ = Vue.util.extend({}, Vue.util);
+	    var _ = Vue.util.extend({}, Vue.util), config = Vue.config;
+
+	    _.warn = function (msg) {
+	        if (window.console && (!config.silent || config.debug)) {
+	            console.warn('[VueResource warn]: ' + msg);
+	        }
+	    };
 
 	    _.isString = function (value) {
 	        return typeof value === 'string';
@@ -358,72 +365,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Service for sending network requests.
 	 */
 
-	var xhr = __webpack_require__(4);
-	var jsonp = __webpack_require__(6);
-	var Promise = __webpack_require__(5);
+	var Promise = __webpack_require__(4);
+	var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
 
 	module.exports = function (_) {
 
-	    var originUrl = _.url.parse(location.href);
-	    var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
+	    var interceptor = __webpack_require__(5)(_);
 
 	    function Http(url, options) {
 
-	        var promise;
+	        var request;
 
 	        if (_.isPlainObject(url)) {
 	            options = url;
 	            url = '';
 	        }
 
-	        options = _.extend({url: url}, options);
-	        options = _.extend(true, {},
-	            Http.options, this.options, options
+	        request = _.extend({url: url}, options);
+	        request = _.extend(true, {},
+	            Http.options, this.options, request
 	        );
 
-	        if (options.crossOrigin === null) {
-	            options.crossOrigin = crossOrigin(options.url);
+	        request.client = __webpack_require__(6)(_);
+
+	        var promise = interceptor(Http.interceptors).run(request);
+
+	        promise = extendPromise(promise.then(function (response) {
+
+	            return response.ok ? response : Promise.reject(response);
+
+	        }), this.vm);
+
+	        if (request.success) {
+	            promise = promise.success(request.success);
 	        }
 
-	        options.method = options.method.toUpperCase();
-	        options.headers = _.extend({}, Http.headers.common,
-	            !options.crossOrigin ? Http.headers.custom : {},
-	            Http.headers[options.method.toLowerCase()],
-	            options.headers
-	        );
-
-	        if (_.isPlainObject(options.data) && /^(GET|JSONP)$/i.test(options.method)) {
-	            _.extend(options.params, options.data);
-	            delete options.data;
-	        }
-
-	        if (options.emulateHTTP && !options.crossOrigin && /^(PUT|PATCH|DELETE)$/i.test(options.method)) {
-	            options.headers['X-HTTP-Method-Override'] = options.method;
-	            options.method = 'POST';
-	        }
-
-	        if (options.emulateJSON && _.isPlainObject(options.data)) {
-	            options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-	            options.data = _.url.params(options.data);
-	        }
-
-	        if (_.isObject(options.data) && /FormData/i.test(options.data.toString())) {
-	            delete options.headers['Content-Type'];
-	        }
-
-	        if (_.isPlainObject(options.data)) {
-	            options.data = JSON.stringify(options.data);
-	        }
-
-	        promise = (options.method == 'JSONP' ? jsonp : xhr).call(this.vm, _, options);
-	        promise = extendPromise(promise.then(transformResponse, transformResponse), this.vm);
-
-	        if (options.success) {
-	            promise = promise.success(options.success);
-	        }
-
-	        if (options.error) {
-	            promise = promise.error(options.error);
+	        if (request.error) {
+	            promise = promise.error(request.error);
 	        }
 
 	        return promise;
@@ -459,24 +437,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return promise;
 	    }
 
-	    function transformResponse(response) {
-
-	        try {
-	            response.data = JSON.parse(response.responseText);
-	        } catch (e) {
-	            response.data = response.responseText;
-	        }
-
-	        return response.ok ? response : Promise.reject(response);
-	    }
-
-	    function crossOrigin(url) {
-
-	        var requestUrl = _.url.parse(url);
-
-	        return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
-	    }
-
 	    Http.options = {
 	        method: 'get',
 	        params: {},
@@ -486,8 +446,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        beforeSend: null,
 	        crossOrigin: null,
 	        emulateHTTP: false,
-	        emulateJSON: false
+	        emulateJSON: false,
+	        timeout: 0
 	    };
+
+	    Http.interceptors = [
+	        __webpack_require__(8)(_),
+	        __webpack_require__(9)(_),
+	        __webpack_require__(10)(_),
+	        __webpack_require__(11)(_),
+	        __webpack_require__(12)(_),
+	        __webpack_require__(14)(_)
+	    ];
 
 	    Http.headers = {
 	        put: jsonType,
@@ -518,63 +488,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * XMLHttp request.
-	 */
-
-	var Promise = __webpack_require__(5);
-	var XDomain = window.XDomainRequest;
-
-	module.exports = function (_, options) {
-
-	    var request = new XMLHttpRequest(), promise;
-
-	    if (XDomain && options.crossOrigin) {
-	        request = new XDomainRequest(); options.headers = {};
-	    }
-
-	    if (_.isPlainObject(options.xhr)) {
-	        _.extend(request, options.xhr);
-	    }
-
-	    if (_.isFunction(options.beforeSend)) {
-	        options.beforeSend.call(this, request, options);
-	    }
-
-	    promise = new Promise(function (resolve, reject) {
-
-	        request.open(options.method, _.url(options), true);
-
-	        _.each(options.headers, function (value, header) {
-	            request.setRequestHeader(header, value);
-	        });
-
-	        var handler = function (event) {
-
-	            request.ok = event.type === 'load';
-
-	            if (request.ok && request.status) {
-	                request.ok = request.status >= 200 && request.status < 300;
-	            }
-
-	            (request.ok ? resolve : reject)(request);
-	        };
-
-	        request.onload = handler;
-	        request.onabort = handler;
-	        request.onerror = handler;
-
-	        request.send(options.data);
-	    });
-
-	    return promise;
-	};
-
-
-/***/ },
-/* 5 */
 /***/ function(module, exports) {
 
 	/**
@@ -790,58 +703,119 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Interceptor factory.
+	 */
+
+	var Promise = __webpack_require__(4);
+
+	module.exports = function (_) {
+
+	    return function (list) {
+
+	        var stack = {
+
+	            request: [],
+
+	            response: [],
+
+	            run: function (request, vm) {
+
+	                var chain = [].concat(this.request, [function (request) {
+	                    return request.client.send(request);
+	                }], this.response);
+
+	                return chain.reduce(function (sequence, segment) {
+	                    return sequence.then(function (carry) {
+	                        return segment.call(vm, carry);
+	                    });
+	                }, Promise.resolve(request));
+
+	            }
+
+	        };
+
+	        list.forEach(function (interceptor) {
+
+	            if (_.isFunction(interceptor)) {
+	                interceptor = interceptor.call(this, Promise);
+	            }
+
+	            if (_.isPlainObject(interceptor) && interceptor.request) {
+	                stack.request.push(interceptor.request);
+	            }
+
+	            if (_.isPlainObject(interceptor) && interceptor.response) {
+	                stack.response.push(interceptor.response);
+	            }
+
+	        });
+
+	        return stack;
+	    };
+
+	};
+
+
+/***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * JSONP request.
+	 * XMLHttp request.
 	 */
 
-	var Promise = __webpack_require__(5);
+	var Promise = __webpack_require__(4);
+	var Response = __webpack_require__(7);
 
-	module.exports = function (_, options) {
+	module.exports = function (_) {
 
-	    var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {}, script, body;
+	    var xhr, handler;
 
-	    options.params[options.jsonp] = callback;
+	    return {
 
-	    if (_.isFunction(options.beforeSend)) {
-	        options.beforeSend.call(this, {}, options);
-	    }
+	        send: function (request) {
 
-	    return new Promise(function (resolve, reject) {
+	            xhr = new XMLHttpRequest();
 
-	        script = document.createElement('script');
-	        script.src = _.url(options);
-	        script.type = 'text/javascript';
-	        script.async = true;
-
-	        window[callback] = function (data) {
-	            body = data;
-	        };
-
-	        var handler = function (event) {
-
-	            delete window[callback];
-	            document.body.removeChild(script);
-
-	            if (event.type === 'load' && !body) {
-	                event.type = 'error';
+	            if (request.crossOrigin && !('withCredentials' in xhr)) {
+	                xhr = new XDomainRequest();
+	                request.headers = {};
 	            }
 
-	            response.ok = event.type !== 'error';
-	            response.status = response.ok ? 200 : 404;
-	            response.responseText = body ? body : event.type;
+	            if (_.isPlainObject(request.xhr)) {
+	                _.extend(xhr, request.xhr);
+	            }
 
-	            (response.ok ? resolve : reject)(response);
-	        };
+	            return new Promise(function (resolve) {
 
-	        script.onload = handler;
-	        script.onerror = handler;
+	                xhr.open(request.method, _.url(request), true);
 
-	        document.body.appendChild(script);
-	    });
+	                _.each(request.headers, function (value, header) {
+	                    xhr.setRequestHeader(header, value);
+	                });
 
+	                handler = function (event) {
+	                    resolve(Response(xhr.responseText, xhr.status));
+	                };
+
+	                xhr.onload = handler;
+	                xhr.onabort = handler;
+	                xhr.onerror = handler;
+
+	                xhr.send(request.data);
+	            });
+
+	        },
+
+	        cancel: function () {
+	            xhr.abort();
+	        }
+
+	    };
 	};
 
 
@@ -850,12 +824,315 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	/**
+	 * Response object.
+	 */
+
+	module.exports = function (body, status) {
+
+	    return {
+	        ok: status >= 200 && status < 300,
+	        status: status || 0,
+	        responseText: body || ''
+	    };
+
+	};
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	/**
+	 * Timeout Interceptor.
+	 */
+
+	module.exports = function (_) {
+
+	    var timeout;
+
+	    return {
+
+	        request: function (request) {
+
+	            if (request.timeout) {
+	                timeout = setTimeout(function () {
+	                    request.client.cancel();
+	                }, request.timeout);
+	            }
+
+	            return request;
+	        },
+
+	        response: function (response) {
+
+	            clearTimeout(timeout);
+
+	            return response;
+	        }
+
+	    };
+
+	};
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	/**
+	 * CORS Interceptor.
+	 */
+
+	module.exports = function (_) {
+
+	    var originUrl = _.url.parse(location.href);
+
+	    return {
+
+	        request: function (request) {
+
+	            if (request.crossOrigin === null) {
+	                request.crossOrigin = crossOrigin(request.url);
+	            }
+
+	            return request;
+	        }
+
+	    };
+
+	    function crossOrigin(url) {
+
+	        var requestUrl = _.url.parse(url);
+
+	        return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
+	    }
+
+	};
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	/**
+	 * Header Interceptor.
+	 */
+
+	module.exports = function (_) {
+
+	    return {
+
+	        request: function (request) {
+
+	            request.method = request.method.toUpperCase();
+	            request.headers = _.extend({}, _.http.headers.common,
+	                !request.crossOrigin ? _.http.headers.custom : {},
+	                _.http.headers[request.method.toLowerCase()],
+	                request.headers
+	            );
+
+	            if (_.isPlainObject(request.data) && /^(GET|JSONP)$/i.test(request.method)) {
+	                _.extend(request.params, request.data);
+	                delete request.data;
+	            }
+
+	            return request;
+	        }
+
+	    };
+
+	};
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	/**
+	 * Mime Interceptor.
+	 */
+
+	module.exports = function (_) {
+
+	    return {
+
+	        request: function (request) {
+
+	            if (request.emulateJSON && _.isPlainObject(request.data)) {
+	                request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+	                request.data = _.url.params(request.data);
+	            }
+
+	            if (request.emulateHTTP && !request.crossOrigin && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
+	                request.headers['X-HTTP-Method-Override'] = request.method;
+	                request.method = 'POST';
+	            }
+
+	            if (_.isObject(request.data) && /FormData/i.test(request.data.toString())) {
+	                delete request.headers['Content-Type'];
+	            }
+
+	            if (_.isPlainObject(request.data)) {
+	                request.data = JSON.stringify(request.data);
+	            }
+
+	            return request;
+	        },
+
+	        response: function (response) {
+
+	            try {
+	                response.data = JSON.parse(response.responseText);
+	            } catch (e) {
+	                response.data = response.responseText;
+	            }
+
+	            return response;
+	        }
+
+	    };
+
+	};
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * JSONP Interceptor.
+	 */
+
+	module.exports = function (_) {
+
+	    return {
+
+	        request: function (request) {
+
+	            if (request.method == 'JSONP') {
+	                request.client = __webpack_require__(13)(_);
+	            }
+
+	            return request;
+	        }
+
+	    };
+
+	};
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * JSONP request.
+	 */
+
+	var Promise = __webpack_require__(4);
+	var Response = __webpack_require__(7);
+
+	module.exports = function (_) {
+
+	    var handler;
+
+	    return {
+
+	        send: function (request) {
+
+	            var callback = '_jsonp' + Math.random().toString(36).substr(2), script, status, body;
+
+	            request.params[request.jsonp] = callback;
+
+	            return new Promise(function (resolve) {
+
+	                script = document.createElement('script');
+	                script.src = _.url(request);
+	                script.type = 'text/javascript';
+	                script.async = true;
+
+	                window[callback] = function (data) {
+	                    body = data;
+	                };
+
+	                handler = function (event) {
+
+	                    if (event.type === 'load') {
+	                        delete window[callback];
+	                        document.body.removeChild(script);
+	                    }
+
+	                    if (event.type === 'load' && !body) {
+	                        event.type = 'error';
+	                    }
+
+	                    switch (event.type) {
+	                        case 'load':
+	                            status = 200;
+	                            break;
+	                        case 'error':
+	                            status = 404;
+	                            break;
+	                        default:
+	                            status = 0;
+	                    }
+
+	                    resolve(Response(body, status));
+	                };
+
+	                script.onload = handler;
+	                script.onerror = handler;
+
+	                document.body.appendChild(script);
+	            });
+
+	        },
+
+	        cancel: function () {
+	            handler({type: 'cancel'});
+	        }
+
+	    };
+	};
+
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	/**
+	 * BeforeSend Interceptor.
+	 */
+
+	module.exports = function (_) {
+
+	    return {
+
+	        request: function (request) {
+
+	            if (_.isFunction(request.beforeSend)) {
+	                request.beforeSend.call(this, request);
+	            }
+
+	            return request;
+	        }
+
+	    };
+
+	};
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports) {
+
+	/**
 	 * Service for interacting with RESTful services.
 	 */
 
 	module.exports = function (_) {
 
-	    function Resource(url, params, actions) {
+	    function Resource(url, params, actions, options) {
 
 	        var self = this, resource = {};
 
@@ -866,7 +1143,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        _.each(actions, function (action, name) {
 
-	            action = _.extend(true, {url: url, params: params || {}}, action);
+	            action = _.extend(true, {url: url, params: params || {}}, options, action);
 
 	            resource[name] = function () {
 	                return (self.$http || _.http)(opts(action, arguments));
