@@ -96,7 +96,7 @@ The resource service can be used globally `Vue.resource` or in a Vue instance `t
 
 ### Methods
 
-* `resource(url, [params], [actions])`
+* `resource(url, [params], [actions], [options])`
 
 ### Default Actions
 
