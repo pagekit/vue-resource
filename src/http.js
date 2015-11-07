@@ -9,7 +9,7 @@ var Promise = require('./lib/promise');
 module.exports = function (_) {
 
     var originUrl = _.url.parse(location.href);
-    var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
+    var jsonType = {'Content-Type': 'application/json'};
 
     function Http(url, options) {
 
