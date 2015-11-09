@@ -122,7 +122,11 @@ module.exports = function (_) {
             hash = _.isObject(value) || _.isArray(value);
 
             if (scope) {
-                key = scope + '[' + (plain || hash ? key : '') + ']';
+                if (plain) {
+                    key = scope + '.' + key;
+                } else {
+                    key = scope + '[' + (hash ? key : '') + ']';
+                }
             }
 
             if (!scope && array) {
