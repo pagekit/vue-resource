@@ -535,6 +535,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        request = new XDomainRequest(); options.headers = {};
 	    }
 
+	    // IE 9, 10 fix
+	    // The following methods and timeout option should predefined for IE lower than 11
+	    request.ontimeout = function() {};
+	    request.onprogress = function() {};
+	    request.timeout = 0;
+
 	    if (_.isPlainObject(options.xhr)) {
 	        _.extend(request, options.xhr);
 	    }
@@ -566,7 +572,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        request.onabort = handler;
 	        request.onerror = handler;
 
-	        request.send(options.data);
+	        // IE fix for to many request at the same time
+	        setTimeout(function() {
+	            request.send(options.data);
+	        }, 0);
+
 	    });
 
 	    return promise;
