@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    Vue.url = __webpack_require__(2)(_);
 	    Vue.http = __webpack_require__(3)(_);
-	    Vue.resource = __webpack_require__(15)(_);
+	    Vue.resource = __webpack_require__(16)(_);
 
 	    Object.defineProperties(Vue.prototype, {
 
@@ -118,6 +118,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (window.console && (!config.silent || config.debug)) {
 	            console.warn('[VueResource warn]: ' + msg);
 	        }
+	    };
+
+	    _.trim = function (str) {
+	        return str.replace(/^\s*|\s*$/g, '');
+	    };
+
+	    _.toLower = function (str) {
+	        return str ? str.toLowerCase() : '';
 	    };
 
 	    _.isString = function (value) {
@@ -366,15 +374,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	var Promise = __webpack_require__(4);
-	var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
+	var jsonType = {'Content-Type': 'application/json'};
 
 	module.exports = function (_) {
 
 	    var interceptor = __webpack_require__(5)(_);
+	    var defaultClient = __webpack_require__(6)(_);
 
 	    function Http(url, options) {
 
-	        var request;
+	        var client = defaultClient, request, promise;
 
 	        if (_.isPlainObject(url)) {
 	            options = url;
@@ -386,12 +395,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            Http.options, this.options, request
 	        );
 
-	        request.client = __webpack_require__(6)(_);
+	        Http.interceptors.forEach(function (i) {
+	            client = interceptor(i, this.vm)(client);
+	        }, this);
 
-	        var promise = interceptor(Http.interceptors).run(request);
+	        promise = extendPromise(client(request).then(function (response) {
 
-	        promise = extendPromise(promise.then(function (response) {
-
+	            response.ok = response.status >= 200 && response.status < 300;
 	            return response.ok ? response : Promise.reject(response);
 
 	        }), this.vm);
@@ -451,12 +461,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    Http.interceptors = [
+	        __webpack_require__(7)(_),
 	        __webpack_require__(8)(_),
-	        __webpack_require__(9)(_),
 	        __webpack_require__(10)(_),
 	        __webpack_require__(11)(_),
 	        __webpack_require__(12)(_),
-	        __webpack_require__(14)(_)
+	        __webpack_require__(13)(_),
+	        __webpack_require__(15)(_)
 	    ];
 
 	    Http.headers = {
@@ -714,48 +725,38 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    return function (list) {
+	    return function (handler, vm) {
+	        return function (client) {
+	            return function (request) {
 
-	        var stack = {
+	                if (_.isFunction(handler.request)) {
+	                    request = handler.request.call(vm, request);
+	                }
 
-	            request: [],
+	                return when(request, function (request) {
+	                    return when(client(request), function (response) {
 
-	            response: [],
+	                        if (_.isFunction(handler.response)) {
+	                            response = handler.response.call(vm, response);
+	                        }
 
-	            run: function (request, vm) {
-
-	                var chain = [].concat(this.request, [function (request) {
-	                    return request.client.send(request);
-	                }], this.response);
-
-	                return chain.reduce(function (sequence, segment) {
-	                    return sequence.then(function (carry) {
-	                        return segment.call(vm, carry);
+	                        return response;
 	                    });
-	                }, Promise.resolve(request));
-
-	            }
-
+	                });
+	            };
 	        };
-
-	        list.forEach(function (interceptor) {
-
-	            if (_.isFunction(interceptor)) {
-	                interceptor = interceptor.call(this, Promise);
-	            }
-
-	            if (_.isPlainObject(interceptor) && interceptor.request) {
-	                stack.request.push(interceptor.request);
-	            }
-
-	            if (_.isPlainObject(interceptor) && interceptor.response) {
-	                stack.response.push(interceptor.response);
-	            }
-
-	        });
-
-	        return stack;
 	    };
+
+	    function when(value, fulfilled, rejected) {
+
+	        var promise = Promise.resolve(value);
+
+	        if (arguments.length < 2) {
+	            return promise;
+	        }
+
+	        return promise.then(fulfilled, rejected);
+	    }
 
 	};
 
@@ -769,53 +770,95 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	var Promise = __webpack_require__(4);
-	var Response = __webpack_require__(7);
 
 	module.exports = function (_) {
 
-	    var xhr, handler;
+	    return function (request) {
+	        return new Promise(function (resolve) {
 
-	    return {
+	            var xhr = new XMLHttpRequest(), response = {}, handler;
 
-	        send: function (request) {
+	            request.cancel = function () {
+	                xhr.abort();
+	            };
 
-	            xhr = new XMLHttpRequest();
-
-	            if (request.crossOrigin && !('withCredentials' in xhr)) {
-	                xhr = new XDomainRequest();
-	                request.headers = {};
-	            }
+	            xhr.open(request.method, _.url(request), true);
 
 	            if (_.isPlainObject(request.xhr)) {
 	                _.extend(xhr, request.xhr);
 	            }
 
-	            return new Promise(function (resolve) {
-
-	                xhr.open(request.method, _.url(request), true);
-
-	                _.each(request.headers, function (value, header) {
-	                    xhr.setRequestHeader(header, value);
-	                });
-
-	                handler = function (event) {
-	                    resolve(Response(xhr.responseText, xhr.status));
-	                };
-
-	                xhr.onload = handler;
-	                xhr.onabort = handler;
-	                xhr.onerror = handler;
-
-	                xhr.send(request.data);
+	            _.each(request.headers || {}, function (value, header) {
+	                xhr.setRequestHeader(header, value);
 	            });
 
-	        },
+	            handler = function (event) {
 
-	        cancel: function () {
-	            xhr.abort();
-	        }
+	                response.data = xhr.responseText;
+	                response.status = xhr.status;
+	                response.statusText = xhr.statusText;
+	                response.headers = getHeaders(xhr);
+
+	                resolve(response);
+	            };
+
+	            xhr.onload = handler;
+	            xhr.onabort = handler;
+	            xhr.onerror = handler;
+
+	            xhr.send(request.data);
+	        });
 
 	    };
+
+	    function getHeaders(xhr) {
+
+	        var headers;
+
+	        if (!headers) {
+	            headers = parseHeaders(xhr.getAllResponseHeaders());
+	        }
+
+	        return function (name) {
+
+	            if (name) {
+	                return headers[_.toLower(name)];
+	            }
+
+	            return headers;
+	        };
+	    }
+
+	    function parseHeaders(str) {
+
+	        var headers = {}, value, name, i;
+
+	        if (_.isString(str)) {
+	            _.each(str.split('\n'), function (row) {
+
+	                i = row.indexOf(':');
+	                name = _.trim(_.toLower(row.slice(0, i)));
+	                value = _.trim(row.slice(i + 1));
+
+	                if (headers[name]) {
+
+	                    if (_.isArray(headers[name])) {
+	                        headers[name].push(value);
+	                    } else {
+	                        headers[name] = [headers[name], value];
+	                    }
+
+	                } else {
+
+	                    headers[name] = value;
+	                }
+
+	            });
+	        }
+
+	        return headers;
+	    }
+
 	};
 
 
@@ -824,15 +867,22 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	/**
-	 * Response object.
+	 * Before Interceptor.
 	 */
 
-	module.exports = function (body, status) {
+	module.exports = function (_) {
 
 	    return {
-	        ok: status >= 200 && status < 300,
-	        status: status || 0,
-	        responseText: body || ''
+
+	        request: function (request) {
+
+	            if (_.isFunction(request.beforeSend)) {
+	                request.beforeSend.call(this, request);
+	            }
+
+	            return request;
+	        }
+
 	    };
 
 	};
@@ -840,6 +890,289 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * JSONP Interceptor.
+	 */
+
+	module.exports = function (_) {
+
+	    return {
+
+	        request: function (request) {
+
+	            if (request.method == 'JSONP') {
+	                request.client = __webpack_require__(9)(_);
+	            }
+
+	            return request;
+	        }
+
+	    };
+
+	};
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * JSONP request.
+	 */
+
+	var Promise = __webpack_require__(4);
+
+	module.exports = function (_) {
+
+	    return function (request) {
+	        return new Promise(function (resolve) {
+
+	            var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {}, handler, script;
+
+	            request.params[request.jsonp] = callback;
+	            request.cancel = function () {
+	                handler({type: 'cancel'});
+	            };
+
+	            script = document.createElement('script');
+	            script.src = _.url(request);
+	            script.type = 'text/javascript';
+	            script.async = true;
+
+	            window[callback] = function (data) {
+	                response.data = data;
+	            };
+
+	            handler = function (event) {
+
+	                if (event.type === 'load') {
+	                    delete window[callback];
+	                    document.body.removeChild(script);
+	                }
+
+	                if (event.type === 'load' && !response.data) {
+	                    event.type = 'error';
+	                }
+
+	                switch (event.type) {
+	                    case 'load':
+	                        response.status = 200;
+	                        break;
+	                    case 'error':
+	                        response.status = 404;
+	                        break;
+	                    default:
+	                        response.status = 0;
+	                }
+
+	                resolve(response);
+	            };
+
+	            script.onload = handler;
+	            script.onerror = handler;
+
+	            document.body.appendChild(script);
+	        });
+
+	    };
+
+	};
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	/**
+	 * HTTP method override Interceptor.
+	 */
+
+	module.exports = function (_) {
+
+	    return {
+
+	        request: function (request) {
+
+	            if (request.emulateHTTP && !request.crossOrigin && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
+	                request.headers['X-HTTP-Method-Override'] = request.method;
+	                request.method = 'POST';
+	            }
+
+	            return request;
+	        }
+
+	    };
+
+	};
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	/**
+	 * Mime Interceptor.
+	 */
+
+	module.exports = function (_) {
+
+	    return {
+
+	        request: function (request) {
+
+	            if (request.emulateJSON && _.isPlainObject(request.data)) {
+	                request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+	                request.data = _.url.params(request.data);
+	            }
+
+	            if (_.isObject(request.data) && /FormData/i.test(request.data.toString())) {
+	                delete request.headers['Content-Type'];
+	            }
+
+	            if (_.isPlainObject(request.data)) {
+	                request.data = JSON.stringify(request.data);
+	            }
+
+	            return request;
+	        },
+
+	        response: function (response) {
+
+	            try {
+	                response.data = JSON.parse(response.data);
+	            } catch (e) {}
+
+	            return response;
+	        }
+
+	    };
+
+	};
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	/**
+	 * Header Interceptor.
+	 */
+
+	module.exports = function (_) {
+
+	    return {
+
+	        request: function (request) {
+
+	            request.method = request.method.toUpperCase();
+	            request.headers = _.extend({}, _.http.headers.common,
+	                !request.crossOrigin ? _.http.headers.custom : {},
+	                _.http.headers[request.method.toLowerCase()],
+	                request.headers
+	            );
+
+	            if (_.isPlainObject(request.data) && /^(GET|JSONP)$/i.test(request.method)) {
+	                _.extend(request.params, request.data);
+	                delete request.data;
+	            }
+
+	            return request;
+	        }
+
+	    };
+
+	};
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * CORS Interceptor.
+	 */
+
+	module.exports = function (_) {
+
+	    var xhrCors = 'withCredentials' in new XMLHttpRequest();
+	    var originUrl = _.url.parse(location.href);
+
+	    return {
+
+	        request: function (request) {
+
+	            if (request.crossOrigin === null) {
+	                request.crossOrigin = crossOrigin(request.url);
+	            }
+
+	            if (request.crossOrigin && !xhrCors) {
+	                request.client = __webpack_require__(14)(_);
+	            }
+
+	            return request;
+	        }
+
+	    };
+
+	    function crossOrigin(url) {
+
+	        var requestUrl = _.url.parse(url);
+
+	        return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
+	    }
+
+	};
+
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * XDomain request (Internet Explorer).
+	 */
+
+	var Promise = __webpack_require__(4);
+
+	module.exports = function (_) {
+
+	    return function (request) {
+	        return new Promise(function (resolve) {
+
+	            var xdr = new XDomainRequest(), response = {}, handler;
+
+	            request.cancel = function () {
+	                xdr.abort();
+	            };
+
+	            xdr.open(request.method, _.url(request), true);
+
+	            handler = function (event) {
+
+	                response.data = xdr.responseText;
+	                response.status = xdr.status;
+	                response.statusText = xdr.statusText;
+
+	                resolve(response);
+	            };
+
+	            xdr.onload = handler;
+	            xdr.onabort = handler;
+	            xdr.onerror = handler;
+	            xdr.onprogress = function () {};
+
+	            xdr.send(request.data);
+	        });
+
+	    };
+
+	};
+
+
+/***/ },
+/* 15 */
 /***/ function(module, exports) {
 
 	/**
@@ -876,254 +1209,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
-/***/ function(module, exports) {
-
-	/**
-	 * CORS Interceptor.
-	 */
-
-	module.exports = function (_) {
-
-	    var originUrl = _.url.parse(location.href);
-
-	    return {
-
-	        request: function (request) {
-
-	            if (request.crossOrigin === null) {
-	                request.crossOrigin = crossOrigin(request.url);
-	            }
-
-	            return request;
-	        }
-
-	    };
-
-	    function crossOrigin(url) {
-
-	        var requestUrl = _.url.parse(url);
-
-	        return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
-	    }
-
-	};
-
-
-/***/ },
-/* 10 */
-/***/ function(module, exports) {
-
-	/**
-	 * Header Interceptor.
-	 */
-
-	module.exports = function (_) {
-
-	    return {
-
-	        request: function (request) {
-
-	            request.method = request.method.toUpperCase();
-	            request.headers = _.extend({}, _.http.headers.common,
-	                !request.crossOrigin ? _.http.headers.custom : {},
-	                _.http.headers[request.method.toLowerCase()],
-	                request.headers
-	            );
-
-	            if (_.isPlainObject(request.data) && /^(GET|JSONP)$/i.test(request.method)) {
-	                _.extend(request.params, request.data);
-	                delete request.data;
-	            }
-
-	            return request;
-	        }
-
-	    };
-
-	};
-
-
-/***/ },
-/* 11 */
-/***/ function(module, exports) {
-
-	/**
-	 * Mime Interceptor.
-	 */
-
-	module.exports = function (_) {
-
-	    return {
-
-	        request: function (request) {
-
-	            if (request.emulateJSON && _.isPlainObject(request.data)) {
-	                request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-	                request.data = _.url.params(request.data);
-	            }
-
-	            if (request.emulateHTTP && !request.crossOrigin && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
-	                request.headers['X-HTTP-Method-Override'] = request.method;
-	                request.method = 'POST';
-	            }
-
-	            if (_.isObject(request.data) && /FormData/i.test(request.data.toString())) {
-	                delete request.headers['Content-Type'];
-	            }
-
-	            if (_.isPlainObject(request.data)) {
-	                request.data = JSON.stringify(request.data);
-	            }
-
-	            return request;
-	        },
-
-	        response: function (response) {
-
-	            try {
-	                response.data = JSON.parse(response.responseText);
-	            } catch (e) {
-	                response.data = response.responseText;
-	            }
-
-	            return response;
-	        }
-
-	    };
-
-	};
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * JSONP Interceptor.
-	 */
-
-	module.exports = function (_) {
-
-	    return {
-
-	        request: function (request) {
-
-	            if (request.method == 'JSONP') {
-	                request.client = __webpack_require__(13)(_);
-	            }
-
-	            return request;
-	        }
-
-	    };
-
-	};
-
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * JSONP request.
-	 */
-
-	var Promise = __webpack_require__(4);
-	var Response = __webpack_require__(7);
-
-	module.exports = function (_) {
-
-	    var handler;
-
-	    return {
-
-	        send: function (request) {
-
-	            var callback = '_jsonp' + Math.random().toString(36).substr(2), script, status, body;
-
-	            request.params[request.jsonp] = callback;
-
-	            return new Promise(function (resolve) {
-
-	                script = document.createElement('script');
-	                script.src = _.url(request);
-	                script.type = 'text/javascript';
-	                script.async = true;
-
-	                window[callback] = function (data) {
-	                    body = data;
-	                };
-
-	                handler = function (event) {
-
-	                    if (event.type === 'load') {
-	                        delete window[callback];
-	                        document.body.removeChild(script);
-	                    }
-
-	                    if (event.type === 'load' && !body) {
-	                        event.type = 'error';
-	                    }
-
-	                    switch (event.type) {
-	                        case 'load':
-	                            status = 200;
-	                            break;
-	                        case 'error':
-	                            status = 404;
-	                            break;
-	                        default:
-	                            status = 0;
-	                    }
-
-	                    resolve(Response(body, status));
-	                };
-
-	                script.onload = handler;
-	                script.onerror = handler;
-
-	                document.body.appendChild(script);
-	            });
-
-	        },
-
-	        cancel: function () {
-	            handler({type: 'cancel'});
-	        }
-
-	    };
-	};
-
-
-/***/ },
-/* 14 */
-/***/ function(module, exports) {
-
-	/**
-	 * BeforeSend Interceptor.
-	 */
-
-	module.exports = function (_) {
-
-	    return {
-
-	        request: function (request) {
-
-	            if (_.isFunction(request.beforeSend)) {
-	                request.beforeSend.call(this, request);
-	            }
-
-	            return request;
-	        }
-
-	    };
-
-	};
-
-
-/***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	/**

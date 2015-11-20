@@ -4,6 +4,7 @@
 
 module.exports = function (_) {
 
+    var xhrCors = 'withCredentials' in new XMLHttpRequest();
     var originUrl = _.url.parse(location.href);
 
     return {
@@ -12,6 +13,10 @@ module.exports = function (_) {
 
             if (request.crossOrigin === null) {
                 request.crossOrigin = crossOrigin(request.url);
+            }
+
+            if (request.crossOrigin && !xhrCors) {
+                request.client = require('../client/xdr')(_);
             }
 
             return request;

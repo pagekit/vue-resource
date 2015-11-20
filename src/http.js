@@ -3,15 +3,16 @@
  */
 
 var Promise = require('./lib/promise');
-var jsonType = {'Content-Type': 'application/json;charset=utf-8'};
+var jsonType = {'Content-Type': 'application/json'};
 
 module.exports = function (_) {
 
-    var interceptor = require('./interceptor/factory')(_);
+    var interceptor = require('./interceptor')(_);
+    var defaultClient = require('./client/xhr')(_);
 
     function Http(url, options) {
 
-        var request;
+        var client = defaultClient, request, promise;
 
         if (_.isPlainObject(url)) {
             options = url;
@@ -23,12 +24,13 @@ module.exports = function (_) {
             Http.options, this.options, request
         );
 
-        request.client = require('./lib/xhr')(_);
+        Http.interceptors.forEach(function (i) {
+            client = interceptor(i, this.vm)(client);
+        }, this);
 
-        var promise = interceptor(Http.interceptors).run(request);
+        promise = extendPromise(client(request).then(function (response) {
 
-        promise = extendPromise(promise.then(function (response) {
-
+            response.ok = response.status >= 200 && response.status < 300;
             return response.ok ? response : Promise.reject(response);
 
         }), this.vm);
@@ -88,12 +90,13 @@ module.exports = function (_) {
     };
 
     Http.interceptors = [
-        require('./interceptor/timeout')(_),
-        require('./interceptor/cors')(_),
-        require('./interceptor/header')(_),
-        require('./interceptor/mime')(_),
+        require('./interceptor/before')(_),
         require('./interceptor/jsonp')(_),
-        require('./interceptor/beforeSend')(_)
+        require('./interceptor/method')(_),
+        require('./interceptor/mime')(_),
+        require('./interceptor/header')(_),
+        require('./interceptor/cors')(_),
+        require('./interceptor/timeout')(_)
     ];
 
     Http.headers = {

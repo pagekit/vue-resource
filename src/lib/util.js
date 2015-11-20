@@ -12,6 +12,14 @@ module.exports = function (Vue) {
         }
     };
 
+    _.trim = function (str) {
+        return str.replace(/^\s*|\s*$/g, '');
+    };
+
+    _.toLower = function (str) {
+        return str ? str.toLowerCase() : '';
+    };
+
     _.isString = function (value) {
         return typeof value === 'string';
     };

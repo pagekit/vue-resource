@@ -1,5 +1,5 @@
 /**
- * BeforeSend Interceptor.
+ * Before Interceptor.
  */
 
 module.exports = function (_) {

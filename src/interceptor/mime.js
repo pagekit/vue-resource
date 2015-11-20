@@ -13,11 +13,6 @@ module.exports = function (_) {
                 request.data = _.url.params(request.data);
             }
 
-            if (request.emulateHTTP && !request.crossOrigin && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
-                request.headers['X-HTTP-Method-Override'] = request.method;
-                request.method = 'POST';
-            }
-
             if (_.isObject(request.data) && /FormData/i.test(request.data.toString())) {
                 delete request.headers['Content-Type'];
             }
@@ -32,10 +27,8 @@ module.exports = function (_) {
         response: function (response) {
 
             try {
-                response.data = JSON.parse(response.responseText);
-            } catch (e) {
-                response.data = response.responseText;
-            }
+                response.data = JSON.parse(response.data);
+            } catch (e) {}
 
             return response;
         }
