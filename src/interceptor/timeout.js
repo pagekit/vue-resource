@@ -12,7 +12,7 @@ module.exports = function (_) {
 
             if (request.timeout) {
                 timeout = setTimeout(function () {
-                    request.client.cancel();
+                    request.cancel();
                 }, request.timeout);
             }
 

@@ -1,5 +1,5 @@
 /**
- * XDomain request (Internet Explorer).
+ * XDomain client (Internet Explorer).
  */
 
 var Promise = require('../lib/promise');

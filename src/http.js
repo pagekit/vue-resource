@@ -8,7 +8,7 @@ var jsonType = {'Content-Type': 'application/json'};
 module.exports = function (_) {
 
     var interceptor = require('./interceptor')(_);
-    var defaultClient = require('./client/xhr')(_);
+    var defaultClient = require('./client/default')(_);
 
     function Http(url, options) {
 

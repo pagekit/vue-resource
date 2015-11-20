@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    Vue.url = __webpack_require__(2)(_);
 	    Vue.http = __webpack_require__(3)(_);
-	    Vue.resource = __webpack_require__(16)(_);
+	    Vue.resource = __webpack_require__(17)(_);
 
 	    Object.defineProperties(Vue.prototype, {
 
@@ -461,13 +461,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    Http.interceptors = [
-	        __webpack_require__(7)(_),
 	        __webpack_require__(8)(_),
-	        __webpack_require__(10)(_),
+	        __webpack_require__(9)(_),
 	        __webpack_require__(11)(_),
 	        __webpack_require__(12)(_),
 	        __webpack_require__(13)(_),
-	        __webpack_require__(15)(_)
+	        __webpack_require__(14)(_),
+	        __webpack_require__(16)(_)
 	    ];
 
 	    Http.headers = {
@@ -766,7 +766,26 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * XMLHttp request.
+	 * Default client.
+	 */
+
+	module.exports = function (_) {
+
+	    var xhrClient = __webpack_require__(7)(_);
+
+	    return function (request) {
+	        return (request.client || xhrClient)(request);
+	    };
+
+	};
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * XMLHttp client.
 	 */
 
 	var Promise = __webpack_require__(4);
@@ -808,7 +827,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            xhr.send(request.data);
 	        });
-
 	    };
 
 	    function getHeaders(xhr) {
@@ -863,7 +881,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	/**
@@ -889,7 +907,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -898,12 +916,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
+	    var jsonpClient = __webpack_require__(10)(_);
+
 	    return {
 
 	        request: function (request) {
 
 	            if (request.method == 'JSONP') {
-	                request.client = __webpack_require__(9)(_);
+	                request.client = jsonpClient;
 	            }
 
 	            return request;
@@ -915,11 +935,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * JSONP request.
+	 * JSONP client.
 	 */
 
 	var Promise = __webpack_require__(4);
@@ -975,14 +995,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            document.body.appendChild(script);
 	        });
-
 	    };
 
 	};
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	/**
@@ -1009,7 +1028,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
 	/**
@@ -1053,7 +1072,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	/**
@@ -1087,7 +1106,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1108,7 +1127,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            if (request.crossOrigin && !xhrCors) {
-	                request.client = __webpack_require__(14)(_);
+	                request.client = __webpack_require__(15)(_);
 	            }
 
 	            return request;
@@ -1127,11 +1146,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * XDomain request (Internet Explorer).
+	 * XDomain client (Internet Explorer).
 	 */
 
 	var Promise = __webpack_require__(4);
@@ -1165,14 +1184,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            xdr.send(request.data);
 	        });
-
 	    };
 
 	};
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	/**
@@ -1189,7 +1207,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            if (request.timeout) {
 	                timeout = setTimeout(function () {
-	                    request.client.cancel();
+	                    request.cancel();
 	                }, request.timeout);
 	            }
 
@@ -1209,7 +1227,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	/**

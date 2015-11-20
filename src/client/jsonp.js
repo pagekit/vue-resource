@@ -1,5 +1,5 @@
 /**
- * JSONP request.
+ * JSONP client.
  */
 
 var Promise = require('../lib/promise');

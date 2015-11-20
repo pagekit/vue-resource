@@ -1,5 +1,5 @@
 /**
- * XMLHttp request.
+ * XMLHttp client.
  */
 
 var Promise = require('../lib/promise');
