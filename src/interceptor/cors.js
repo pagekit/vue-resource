@@ -4,8 +4,9 @@
 
 module.exports = function (_) {
 
-    var xhrCors = 'withCredentials' in new XMLHttpRequest();
     var originUrl = _.url.parse(location.href);
+    var xdrClient = require('../client/jsonp')(_);
+    var xhrCors = 'withCredentials' in new XMLHttpRequest();
 
     return {
 
@@ -16,7 +17,7 @@ module.exports = function (_) {
             }
 
             if (request.crossOrigin && !xhrCors) {
-                request.client = require('../client/xdr')(_);
+                request.client = xdrClient;
             }
 
             return request;

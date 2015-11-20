@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    Vue.url = __webpack_require__(2)(_);
 	    Vue.http = __webpack_require__(3)(_);
-	    Vue.resource = __webpack_require__(17)(_);
+	    Vue.resource = __webpack_require__(16)(_);
 
 	    Object.defineProperties(Vue.prototype, {
 
@@ -467,7 +467,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        __webpack_require__(12)(_),
 	        __webpack_require__(13)(_),
 	        __webpack_require__(14)(_),
-	        __webpack_require__(16)(_)
+	        __webpack_require__(15)(_)
 	    ];
 
 	    Http.headers = {
@@ -1115,8 +1115,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    var xhrCors = 'withCredentials' in new XMLHttpRequest();
 	    var originUrl = _.url.parse(location.href);
+	    var xdrClient = __webpack_require__(10)(_);
+	    var xhrCors = 'withCredentials' in new XMLHttpRequest();
 
 	    return {
 
@@ -1127,7 +1128,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            if (request.crossOrigin && !xhrCors) {
-	                request.client = __webpack_require__(15)(_);
+	                request.client = xdrClient;
 	            }
 
 	            return request;
@@ -1147,50 +1148,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * XDomain client (Internet Explorer).
-	 */
-
-	var Promise = __webpack_require__(4);
-
-	module.exports = function (_) {
-
-	    return function (request) {
-	        return new Promise(function (resolve) {
-
-	            var xdr = new XDomainRequest(), response = {}, handler;
-
-	            request.cancel = function () {
-	                xdr.abort();
-	            };
-
-	            xdr.open(request.method, _.url(request), true);
-
-	            handler = function (event) {
-
-	                response.data = xdr.responseText;
-	                response.status = xdr.status;
-	                response.statusText = xdr.statusText;
-
-	                resolve(response);
-	            };
-
-	            xdr.onload = handler;
-	            xdr.onabort = handler;
-	            xdr.onerror = handler;
-	            xdr.onprogress = function () {};
-
-	            xdr.send(request.data);
-	        });
-	    };
-
-	};
-
-
-/***/ },
-/* 16 */
 /***/ function(module, exports) {
 
 	/**
@@ -1227,7 +1184,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 16 */
 /***/ function(module, exports) {
 
 	/**
