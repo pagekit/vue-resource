@@ -795,7 +795,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return function (request) {
 	        return new Promise(function (resolve) {
 
-	            var xhr = new XMLHttpRequest(), response = {}, handler;
+	            var xhr = new XMLHttpRequest(), response = {request: request}, handler;
 
 	            request.cancel = function () {
 	                xhr.abort();
@@ -949,7 +949,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return function (request) {
 	        return new Promise(function (resolve) {
 
-	            var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {}, handler, script;
+	            var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {request: request}, handler, script;
 
 	            request.params[request.jsonp] = callback;
 	            request.cancel = function () {

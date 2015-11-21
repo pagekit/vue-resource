@@ -9,7 +9,7 @@ module.exports = function (_) {
     return function (request) {
         return new Promise(function (resolve) {
 
-            var xdr = new XDomainRequest(), response = {}, handler;
+            var xdr = new XDomainRequest(), response = {request: request}, handler;
 
             request.cancel = function () {
                 xdr.abort();

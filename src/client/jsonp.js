@@ -9,7 +9,7 @@ module.exports = function (_) {
     return function (request) {
         return new Promise(function (resolve) {
 
-            var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {}, handler, script;
+            var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {request: request}, handler, script;
 
             request.params[request.jsonp] = callback;
             request.cancel = function () {
