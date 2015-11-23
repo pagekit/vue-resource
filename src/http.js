@@ -91,12 +91,12 @@ module.exports = function (_) {
 
     Http.interceptors = [
         require('./interceptor/before')(_),
+        require('./interceptor/timeout')(_),
         require('./interceptor/jsonp')(_),
         require('./interceptor/method')(_),
         require('./interceptor/mime')(_),
         require('./interceptor/header')(_),
-        require('./interceptor/cors')(_),
-        require('./interceptor/timeout')(_)
+        require('./interceptor/cors')(_)
     ];
 
     Http.headers = {

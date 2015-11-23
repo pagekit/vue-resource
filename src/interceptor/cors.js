@@ -16,8 +16,13 @@ module.exports = function (_) {
                 request.crossOrigin = crossOrigin(request.url);
             }
 
-            if (request.crossOrigin && !xhrCors) {
-                request.client = xdrClient;
+            if (request.crossOrigin) {
+
+                if (!xhrCors) {
+                    request.client = xdrClient;
+                }
+
+                request.emulateHTTP = false;
             }
 
             return request;

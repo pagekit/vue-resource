@@ -8,7 +8,7 @@ module.exports = function (_) {
 
         request: function (request) {
 
-            if (request.emulateHTTP && !request.crossOrigin && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
+            if (request.emulateHTTP && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
                 request.headers['X-HTTP-Method-Override'] = request.method;
                 request.method = 'POST';
             }

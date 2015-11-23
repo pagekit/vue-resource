@@ -4,28 +4,31 @@
 
 module.exports = function (_) {
 
-    var timeout;
+    return function () {
 
-    return {
+        var timeout;
 
-        request: function (request) {
+        return {
 
-            if (request.timeout) {
-                timeout = setTimeout(function () {
-                    request.cancel();
-                }, request.timeout);
+            request: function (request) {
+
+                if (request.timeout) {
+                    timeout = setTimeout(function () {
+                        request.cancel();
+                    }, request.timeout);
+                }
+
+                return request;
+            },
+
+            response: function (response) {
+
+                clearTimeout(timeout);
+
+                return response;
             }
 
-            return request;
-        },
-
-        response: function (response) {
-
-            clearTimeout(timeout);
-
-            return response;
-        }
-
+        };
     };
 
 };

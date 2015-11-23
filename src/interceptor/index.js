@@ -8,6 +8,11 @@ module.exports = function (_) {
 
     return function (handler, vm) {
         return function (client) {
+
+            if (_.isFunction(handler)) {
+                handler = handler.call(vm, Promise);
+            }
+
             return function (request) {
 
                 if (_.isFunction(handler.request)) {

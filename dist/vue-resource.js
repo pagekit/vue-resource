@@ -463,7 +463,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Http.interceptors = [
 	        __webpack_require__(8)(_),
 	        __webpack_require__(9)(_),
-	        __webpack_require__(11)(_),
+	        __webpack_require__(10)(_),
 	        __webpack_require__(12)(_),
 	        __webpack_require__(13)(_),
 	        __webpack_require__(14)(_),
@@ -727,6 +727,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    return function (handler, vm) {
 	        return function (client) {
+
+	            if (_.isFunction(handler)) {
+	                handler = handler.call(vm, Promise);
+	            }
+
 	            return function (request) {
 
 	                if (_.isFunction(handler.request)) {
@@ -908,6 +913,46 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 9 */
+/***/ function(module, exports) {
+
+	/**
+	 * Timeout Interceptor.
+	 */
+
+	module.exports = function (_) {
+
+	    return function () {
+
+	        var timeout;
+
+	        return {
+
+	            request: function (request) {
+
+	                if (request.timeout) {
+	                    timeout = setTimeout(function () {
+	                        request.cancel();
+	                    }, request.timeout);
+	                }
+
+	                return request;
+	            },
+
+	            response: function (response) {
+
+	                clearTimeout(timeout);
+
+	                return response;
+	            }
+
+	        };
+	    };
+
+	};
+
+
+/***/ },
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -916,7 +961,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    var jsonpClient = __webpack_require__(10)(_);
+	    var jsonpClient = __webpack_require__(11)(_);
 
 	    return {
 
@@ -935,7 +980,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1001,7 +1046,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
 	/**
@@ -1014,7 +1059,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        request: function (request) {
 
-	            if (request.emulateHTTP && !request.crossOrigin && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
+	            if (request.emulateHTTP && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
 	                request.headers['X-HTTP-Method-Override'] = request.method;
 	                request.method = 'POST';
 	            }
@@ -1028,7 +1073,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	/**
@@ -1072,7 +1117,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	/**
@@ -1106,7 +1151,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1116,7 +1161,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = function (_) {
 
 	    var originUrl = _.url.parse(location.href);
-	    var xdrClient = __webpack_require__(10)(_);
+	    var xdrClient = __webpack_require__(11)(_);
 	    var xhrCors = 'withCredentials' in new XMLHttpRequest();
 
 	    return {
@@ -1127,8 +1172,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                request.crossOrigin = crossOrigin(request.url);
 	            }
 
-	            if (request.crossOrigin && !xhrCors) {
-	                request.client = xdrClient;
+	            if (request.crossOrigin) {
+
+	                if (!xhrCors) {
+	                    request.client = xdrClient;
+	                }
+
+	                request.emulateHTTP = false;
 	            }
 
 	            return request;
@@ -1142,43 +1192,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
 	    }
-
-	};
-
-
-/***/ },
-/* 15 */
-/***/ function(module, exports) {
-
-	/**
-	 * Timeout Interceptor.
-	 */
-
-	module.exports = function (_) {
-
-	    var timeout;
-
-	    return {
-
-	        request: function (request) {
-
-	            if (request.timeout) {
-	                timeout = setTimeout(function () {
-	                    request.cancel();
-	                }, request.timeout);
-	            }
-
-	            return request;
-	        },
-
-	        response: function (response) {
-
-	            clearTimeout(timeout);
-
-	            return response;
-	        }
-
-	    };
 
 	};
 
