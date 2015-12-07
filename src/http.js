@@ -26,7 +26,7 @@ module.exports = function (_) {
         );
 
         if (options.crossOrigin === null) {
-            options.crossOrigin = crossOrigin(options.url);
+            options.crossOrigin = crossOrigin(_.url(options));
         }
 
         options.method = options.method.toUpperCase();
