@@ -56,8 +56,8 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 ### Options
 
 * **url** - `string` - URL to which the request is sent
-* **data** - `Object|string` - Data to be sent as the request message data
 * **method** - `string` - HTTP method (e.g. GET, POST, ...)
+* **data** - `Object|string` - Data to be sent as the request message data
 * **params** - `Object` - Parameters object to be appended as GET parameters
 * **headers** - `Object` - Headers object to be sent as HTTP request headers
 * **beforeSend** - `function(request, options)` - Callback function to modify the request object before it is sent
@@ -67,46 +67,6 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 * **jsonp** - `string` - Callback function name in a JSONP request
 * **timeout** - `number` - Request timeout in milliseconds (`0` means no timeout)
 
-### Interceptors
-
-Interceptors can be defined globally and are used for pre- and postprocessing of a request.
-
-```javascript
-Vue.http.interceptors.push({
-
-    request: function (request) {
-        return request;
-    },
-
-    response: function (response) {
-        return response;
-    }
-
-});
-```
-
-#### Interceptor Factory
-
-If Promises are needed inside of a Interceptor, a factory function can be used.
-
-```javascript
-Vue.http.interceptors.push(function (Promise) {
-    return {
-
-           request: function (request) {
-               if (reject) {
-                   return Promise.reject();
-               }
-           },
-
-           response: function (response) {
-                 if (reject) {
-                    return Promise.reject();
-                 }
-           }
-       };
-});
-```
 
 ### Example
 
@@ -189,4 +149,45 @@ new Vue({
     }
 
 })
+```
+
+## Interceptors
+
+Interceptors can be defined globally and are used for pre- and postprocessing of a request.
+
+```javascript
+Vue.http.interceptors.push({
+
+    request: function (request) {
+        return request;
+    },
+
+    response: function (response) {
+        return response;
+    }
+
+});
+```
+
+#### Interceptor Factory
+
+If Promises are needed inside of a Interceptor, a factory function can be used.
+
+```javascript
+Vue.http.interceptors.push(function (Promise) {
+    return {
+
+           request: function (request) {
+               if (reject) {
+                   return Promise.reject();
+               }
+           },
+
+           response: function (response) {
+                 if (reject) {
+                    return Promise.reject();
+                 }
+           }
+       };
+});
 ```
