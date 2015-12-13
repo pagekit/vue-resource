@@ -421,6 +421,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        promise.success = function (fn) {
 
+	            _.warn('The `success` method has been deprecated. Use the `then` method instead.');
+
 	            return extendPromise(promise.then(function (response) {
 	                return fn.call(this, response.data, response.status, response) || response;
 	            }));
@@ -429,6 +431,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        promise.error = function (fn) {
 
+	            _.warn('The `error` method has been deprecated. Use the `catch` method instead.');
+
 	            return extendPromise(promise.then(undefined, function (response) {
 	                return fn.call(this, response.data, response.status, response) || response;
 	            }));
@@ -436,6 +440,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        };
 
 	        promise.always = function (fn) {
+
+	            _.warn('The `always` method has been deprecated. Use the `finally` method instead.');
 
 	            var cb = function (response) {
 	                return fn.call(this, response.data, response.status, response) || response;
@@ -666,15 +672,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	    };
 
-	    p.bind = function (context) {
-	        this.context = context;
-	        return this;
-	    };
-
-	    p.catch = function (onRejected) {
-	        return this.then(undefined, onRejected);
-	    };
-
 	    p.then = function then(onResolved, onRejected) {
 	        var promise = this;
 
@@ -690,6 +687,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	            promise.deferred.push([onResolved, onRejected, resolve, reject]);
 	            promise.notify();
 	        }).bind(this.context);
+	    };
+
+	    p.catch = function (onRejected) {
+	        return this.then(undefined, onRejected);
+	    };
+
+	    p.finally = function (callback) {
+	        return this.then(function (value) {
+	            return Promise.resolve(callback.call(this, value)).bind(this).then(function () {
+	                return value;
+	            });
+	        }, function (reason) {
+	            return Promise.resolve(callback.call(this, reason)).bind(this).then(function () {
+	                return Promise.reject(reason);
+	            });
+	        });
+	    };
+
+	    p.bind = function (context) {
+	        this.context = context;
+	        return this;
 	    };
 
 	    _.promise = function (executor) {
