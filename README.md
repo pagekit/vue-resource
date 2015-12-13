@@ -60,8 +60,6 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 * **method** - `string` - HTTP method (e.g. GET, POST, ...)
 * **params** - `Object` - Parameters object to be appended as GET parameters
 * **headers** - `Object` - Headers object to be sent as HTTP request headers
-* **success** - `function(data, status, request)` - Callback function to be called when the request finishes
-* **error** - `function(data, status, request)` - Callback function to be called when the request fails
 * **beforeSend** - `function(request, options)` - Callback function to modify the request object before it is sent
 * **emulateHTTP** - `boolean` - Send PUT, PATCH and DELETE requests with a HTTP POST and set the `X-HTTP-Method-Override` header
 * **emulateJSON** - `boolean` -  Send request data as `application/x-www-form-urlencoded` content type

@@ -47,6 +47,7 @@ describe('this.$http', function () {
                     expect(res.data.foo).toBe('bar');
 
                     done();
+
                 });
 
             }

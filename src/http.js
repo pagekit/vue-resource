@@ -49,6 +49,8 @@ module.exports = function (_) {
 
         promise.success = function (fn) {
 
+            _.warn('The `success` method has been deprecated. Use the `then` method instead.');
+
             return extendPromise(promise.then(function (response) {
                 return fn.call(this, response.data, response.status, response) || response;
             }));
@@ -57,6 +59,8 @@ module.exports = function (_) {
 
         promise.error = function (fn) {
 
+            _.warn('The `error` method has been deprecated. Use the `catch` method instead.');
+
             return extendPromise(promise.then(undefined, function (response) {
                 return fn.call(this, response.data, response.status, response) || response;
             }));
@@ -64,6 +68,8 @@ module.exports = function (_) {
         };
 
         promise.always = function (fn) {
+
+            _.warn('The `always` method has been deprecated. Use the `finally` method instead.');
 
             var cb = function (response) {
                 return fn.call(this, response.data, response.status, response) || response;

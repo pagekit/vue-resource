@@ -163,15 +163,6 @@ module.exports = function (_) {
         });
     };
 
-    p.bind = function (context) {
-        this.context = context;
-        return this;
-    };
-
-    p.catch = function (onRejected) {
-        return this.then(undefined, onRejected);
-    };
-
     p.then = function then(onResolved, onRejected) {
         var promise = this;
 
@@ -187,6 +178,27 @@ module.exports = function (_) {
             promise.deferred.push([onResolved, onRejected, resolve, reject]);
             promise.notify();
         }).bind(this.context);
+    };
+
+    p.catch = function (onRejected) {
+        return this.then(undefined, onRejected);
+    };
+
+    p.finally = function (callback) {
+        return this.then(function (value) {
+            return Promise.resolve(callback.call(this, value)).bind(this).then(function () {
+                return value;
+            });
+        }, function (reason) {
+            return Promise.resolve(callback.call(this, reason)).bind(this).then(function () {
+                return Promise.reject(reason);
+            });
+        });
+    };
+
+    p.bind = function (context) {
+        this.context = context;
+        return this;
     };
 
     _.promise = function (executor) {
