@@ -2,9 +2,9 @@
  * XDomain client (Internet Explorer).
  */
 
-var Promise = require('../lib/promise');
-
 module.exports = function (_) {
+
+    var Promise = require('../lib/promise')(_);
 
     return function (request) {
         return new Promise(function (resolve) {
@@ -26,9 +26,11 @@ module.exports = function (_) {
                 resolve(response);
             };
 
+            xdr.timeout = 0;
             xdr.onload = handler;
             xdr.onabort = handler;
             xdr.onerror = handler;
+            xdr.ontimeout = function () {};
             xdr.onprogress = function () {};
 
             xdr.send(request.data);

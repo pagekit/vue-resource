@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.1.16
+ * vue-resource v0.2.0
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -8,7 +8,7 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
-		define(factory);
+		define([], factory);
 	else if(typeof exports === 'object')
 		exports["VueResource"] = factory();
 	else
@@ -71,6 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Vue.url = __webpack_require__(2)(_);
 	    Vue.http = __webpack_require__(3)(_);
 	    Vue.resource = __webpack_require__(16)(_);
+	    Vue.promise = __webpack_require__(4)(_);
 
 	    Object.defineProperties(Vue.prototype, {
 
@@ -373,13 +374,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Service for sending network requests.
 	 */
 
-	var Promise = __webpack_require__(4);
-	var jsonType = {'Content-Type': 'application/json'};
-
 	module.exports = function (_) {
 
+	    var Promise = __webpack_require__(4)(_);
 	    var interceptor = __webpack_require__(5)(_);
 	    var defaultClient = __webpack_require__(6)(_);
+	    var jsonType = {'Content-Type': 'application/json'};
 
 	    function Http(url, options) {
 
@@ -399,12 +399,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            client = interceptor(i, this.vm)(client);
 	        }, this);
 
-	        promise = extendPromise(client(request).then(function (response) {
+	        promise = extendPromise(client(request).bind(this.vm).then(function (response) {
 
 	            response.ok = response.status >= 200 && response.status < 300;
 	            return response.ok ? response : Promise.reject(response);
 
-	        }), this.vm);
+	        }));
 
 	        if (request.success) {
 	            promise = promise.success(request.success);
@@ -417,31 +417,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return promise;
 	    }
 
-	    function extendPromise(promise, vm) {
+	    function extendPromise(promise) {
 
 	        promise.success = function (fn) {
 
 	            return extendPromise(promise.then(function (response) {
-	                return fn.call(vm, response.data, response.status, response) || response;
-	            }), vm);
+	                return fn.call(this, response.data, response.status, response) || response;
+	            }));
 
 	        };
 
 	        promise.error = function (fn) {
 
 	            return extendPromise(promise.then(undefined, function (response) {
-	                return fn.call(vm, response.data, response.status, response) || response;
-	            }), vm);
+	                return fn.call(this, response.data, response.status, response) || response;
+	            }));
 
 	        };
 
 	        promise.always = function (fn) {
 
 	            var cb = function (response) {
-	                return fn.call(vm, response.data, response.status, response) || response;
+	                return fn.call(this, response.data, response.status, response) || response;
 	            };
 
-	            return extendPromise(promise.then(cb, cb), vm);
+	            return extendPromise(promise.then(cb, cb));
 	        };
 
 	        return promise;
@@ -502,215 +502,202 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	/**
-	 * Promises/A+ polyfill v1.1.0 (https://github.com/bramstein/promis)
+	 * Promises/A+ polyfill v1.1.4 (https://github.com/bramstein/promis)
 	 */
 
-	var RESOLVED = 0;
-	var REJECTED = 1;
-	var PENDING  = 2;
+	module.exports = function (_) {
 
-	function Promise(executor) {
+	    var RESOLVED = 0;
+	    var REJECTED = 1;
+	    var PENDING  = 2;
 
-	    this.state = PENDING;
-	    this.value = undefined;
-	    this.deferred = [];
+	    function Promise(executor) {
 
-	    var promise = this;
+	        this.state = PENDING;
+	        this.value = undefined;
+	        this.deferred = [];
 
-	    try {
-	        executor(function (x) {
-	            promise.resolve(x);
-	        }, function (r) {
-	            promise.reject(r);
-	        });
-	    } catch (e) {
-	        promise.reject(e);
-	    }
-	}
-
-	Promise.reject = function (r) {
-	    return new Promise(function (resolve, reject) {
-	        reject(r);
-	    });
-	};
-
-	Promise.resolve = function (x) {
-	    return new Promise(function (resolve, reject) {
-	        resolve(x);
-	    });
-	};
-
-	Promise.all = function all(iterable) {
-	    return new Promise(function (resolve, reject) {
-	        var count = 0,
-	            result = [];
-
-	        if (iterable.length === 0) {
-	            resolve(result);
-	        }
-
-	        function resolver(i) {
-	            return function (x) {
-	                result[i] = x;
-	                count += 1;
-
-	                if (count === iterable.length) {
-	                    resolve(result);
-	                }
-	            };
-	        }
-
-	        for (var i = 0; i < iterable.length; i += 1) {
-	            iterable[i].then(resolver(i), reject);
-	        }
-	    });
-	};
-
-	Promise.race = function race(iterable) {
-	    return new Promise(function (resolve, reject) {
-	        for (var i = 0; i < iterable.length; i += 1) {
-	            iterable[i].then(resolve, reject);
-	        }
-	    });
-	};
-
-	var p = Promise.prototype;
-
-	p.resolve = function resolve(x) {
-	    var promise = this;
-
-	    if (promise.state === PENDING) {
-	        if (x === promise) {
-	            throw new TypeError('Promise settled with itself.');
-	        }
-
-	        var called = false;
+	        var promise = this;
 
 	        try {
-	            var then = x && x['then'];
+	            executor(function (x) {
+	                promise.resolve(x);
+	            }, function (r) {
+	                promise.reject(r);
+	            });
+	        } catch (e) {
+	            promise.reject(e);
+	        }
+	    }
 
-	            if (x !== null && typeof x === 'object' && typeof then === 'function') {
-	                then.call(x, function (x) {
-	                    if (!called) {
-	                        promise.resolve(x);
-	                    }
-	                    called = true;
+	    Promise.reject = function (r) {
+	        return new Promise(function (resolve, reject) {
+	            reject(r);
+	        });
+	    };
 
-	                }, function (r) {
-	                    if (!called) {
-	                        promise.reject(r);
+	    Promise.resolve = function (x) {
+	        return new Promise(function (resolve, reject) {
+	            resolve(x);
+	        });
+	    };
+
+	    Promise.all = function all(iterable) {
+	        return new Promise(function (resolve, reject) {
+	            var count = 0, result = [];
+
+	            if (iterable.length === 0) {
+	                resolve(result);
+	            }
+
+	            function resolver(i) {
+	                return function (x) {
+	                    result[i] = x;
+	                    count += 1;
+
+	                    if (count === iterable.length) {
+	                        resolve(result);
 	                    }
-	                    called = true;
-	                });
+	                };
+	            }
+
+	            for (var i = 0; i < iterable.length; i += 1) {
+	                Promise.resolve(iterable[i]).then(resolver(i), reject);
+	            }
+	        });
+	    };
+
+	    Promise.race = function race(iterable) {
+	        return new Promise(function (resolve, reject) {
+	            for (var i = 0; i < iterable.length; i += 1) {
+	                Promise.resolve(iterable[i]).then(resolve, reject);
+	            }
+	        });
+	    };
+
+	    var p = Promise.prototype;
+
+	    p.resolve = function resolve(x) {
+	        var promise = this;
+
+	        if (promise.state === PENDING) {
+	            if (x === promise) {
+	                throw new TypeError('Promise settled with itself.');
+	            }
+
+	            var called = false;
+
+	            try {
+	                var then = x && x['then'];
+
+	                if (x !== null && typeof x === 'object' && typeof then === 'function') {
+	                    then.call(x, function (x) {
+	                        if (!called) {
+	                            promise.resolve(x);
+	                        }
+	                        called = true;
+
+	                    }, function (r) {
+	                        if (!called) {
+	                            promise.reject(r);
+	                        }
+	                        called = true;
+	                    });
+	                    return;
+	                }
+	            } catch (e) {
+	                if (!called) {
+	                    promise.reject(e);
+	                }
 	                return;
 	            }
-	        } catch (e) {
-	            if (!called) {
-	                promise.reject(e);
+
+	            promise.state = RESOLVED;
+	            promise.value = x;
+	            promise.notify();
+	        }
+	    };
+
+	    p.reject = function reject(reason) {
+	        var promise = this;
+
+	        if (promise.state === PENDING) {
+	            if (reason === promise) {
+	                throw new TypeError('Promise settled with itself.');
 	            }
-	            return;
+
+	            promise.state = REJECTED;
+	            promise.value = reason;
+	            promise.notify();
 	        }
-	        promise.state = RESOLVED;
-	        promise.value = x;
-	        promise.notify();
-	    }
-	};
+	    };
 
-	p.reject = function reject(reason) {
-	    var promise = this;
+	    p.notify = function notify() {
+	        var promise = this;
 
-	    if (promise.state === PENDING) {
-	        if (reason === promise) {
-	            throw new TypeError('Promise settled with itself.');
-	        }
+	        _.nextTick(function () {
+	            if (promise.state !== PENDING) {
+	                while (promise.deferred.length) {
+	                    var deferred = promise.deferred.shift(),
+	                        onResolved = deferred[0],
+	                        onRejected = deferred[1],
+	                        resolve = deferred[2],
+	                        reject = deferred[3];
 
-	        promise.state = REJECTED;
-	        promise.value = reason;
-	        promise.notify();
-	    }
-	};
-
-	p.notify = function notify() {
-	    var promise = this;
-
-	    async(function () {
-	        if (promise.state !== PENDING) {
-	            while (promise.deferred.length) {
-	                var deferred = promise.deferred.shift(),
-	                    onResolved = deferred[0],
-	                    onRejected = deferred[1],
-	                    resolve = deferred[2],
-	                    reject = deferred[3];
-
-	                try {
-	                    if (promise.state === RESOLVED) {
-	                        if (typeof onResolved === 'function') {
-	                            resolve(onResolved.call(undefined, promise.value));
-	                        } else {
-	                            resolve(promise.value);
+	                    try {
+	                        if (promise.state === RESOLVED) {
+	                            if (typeof onResolved === 'function') {
+	                                resolve(onResolved.call(undefined, promise.value));
+	                            } else {
+	                                resolve(promise.value);
+	                            }
+	                        } else if (promise.state === REJECTED) {
+	                            if (typeof onRejected === 'function') {
+	                                resolve(onRejected.call(undefined, promise.value));
+	                            } else {
+	                                reject(promise.value);
+	                            }
 	                        }
-	                    } else if (promise.state === REJECTED) {
-	                        if (typeof onRejected === 'function') {
-	                            resolve(onRejected.call(undefined, promise.value));
-	                        } else {
-	                            reject(promise.value);
-	                        }
+	                    } catch (e) {
+	                        reject(e);
 	                    }
-	                } catch (e) {
-	                    reject(e);
 	                }
 	            }
+	        });
+	    };
+
+	    p.bind = function (context) {
+	        this.context = context;
+	        return this;
+	    };
+
+	    p.catch = function (onRejected) {
+	        return this.then(undefined, onRejected);
+	    };
+
+	    p.then = function then(onResolved, onRejected) {
+	        var promise = this;
+
+	        if (onResolved && this.context) {
+	            onResolved = onResolved.bind(this.context);
 	        }
-	    });
-	};
 
-	p.catch = function (onRejected) {
-	    return this.then(undefined, onRejected);
-	};
+	        if (onRejected && this.context) {
+	            onRejected = onRejected.bind(this.context);
+	        }
 
-	p.then = function then(onResolved, onRejected) {
-	    var promise = this;
-
-	    return new Promise(function (resolve, reject) {
-	        promise.deferred.push([onResolved, onRejected, resolve, reject]);
-	        promise.notify();
-	    });
-	};
-
-	var queue = [];
-	var async = function (callback) {
-	    queue.push(callback);
-
-	    if (queue.length === 1) {
-	        async.async();
-	    }
-	};
-
-	async.run = function () {
-	    while (queue.length) {
-	        queue[0]();
-	        queue.shift();
-	    }
-	};
-
-	if (window.MutationObserver) {
-	    var el = document.createElement('div');
-	    var mo = new MutationObserver(async.run);
-
-	    mo.observe(el, {
-	        attributes: true
-	    });
-
-	    async.async = function () {
-	        el.setAttribute("x", 0);
+	        return new Promise(function (resolve, reject) {
+	            promise.deferred.push([onResolved, onRejected, resolve, reject]);
+	            promise.notify();
+	        }).bind(this.context);
 	    };
-	} else {
-	    async.async = function () {
-	        setTimeout(async.run);
-	    };
-	}
 
-	module.exports = window.Promise || Promise;
+	    _.promise = function (executor) {
+	        return new Promise(executor);
+	    };
+
+	    return Promise;
+	};
 
 
 /***/ },
@@ -721,9 +708,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Interceptor factory.
 	 */
 
-	var Promise = __webpack_require__(4);
-
 	module.exports = function (_) {
+
+	    var Promise = __webpack_require__(4)(_);
 
 	    return function (handler, vm) {
 	        return function (client) {
@@ -793,9 +780,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * XMLHttp client.
 	 */
 
-	var Promise = __webpack_require__(4);
-
 	module.exports = function (_) {
+
+	    var Promise = __webpack_require__(4)(_);
 
 	    return function (request) {
 	        return new Promise(function (resolve) {
@@ -987,14 +974,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * JSONP client.
 	 */
 
-	var Promise = __webpack_require__(4);
-
 	module.exports = function (_) {
+
+	    var Promise = __webpack_require__(4)(_);
 
 	    return function (request) {
 	        return new Promise(function (resolve) {
 
-	            var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {request: request}, handler, script;
+	            var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {request: request, data: null}, handler, script;
 
 	            request.params[request.jsonp] = callback;
 	            request.cancel = function () {
@@ -1012,27 +999,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            handler = function (event) {
 
-	                if (event.type === 'load') {
-	                    delete window[callback];
-	                    document.body.removeChild(script);
-	                }
-
-	                if (event.type === 'load' && !response.data) {
-	                    event.type = 'error';
-	                }
-
-	                switch (event.type) {
-	                    case 'load':
-	                        response.status = 200;
-	                        break;
-	                    case 'error':
-	                        response.status = 404;
-	                        break;
-	                    default:
-	                        response.status = 0;
+	                if (event.type === 'load' && response.data !== null) {
+	                    response.status = 200;
+	                } else if (event.type === 'error') {
+	                    response.status = 404;
+	                } else {
+	                    response.status = 0;
 	                }
 
 	                resolve(response);
+
+	                delete window[callback];
+	                document.body.removeChild(script);
 	            };
 
 	            script.onload = handler;
@@ -1169,7 +1147,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        request: function (request) {
 
 	            if (request.crossOrigin === null) {
-	                request.crossOrigin = crossOrigin(request.url);
+	                request.crossOrigin = crossOrigin(request);
 	            }
 
 	            if (request.crossOrigin) {
@@ -1186,9 +1164,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    };
 
-	    function crossOrigin(url) {
+	    function crossOrigin(request) {
 
-	        var requestUrl = _.url.parse(url);
+	        var requestUrl = _.url.parse(_.url(request));
 
 	        return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
 	    }

@@ -76,8 +76,8 @@ Interceptors can be defined globally and are used for pre- and postprocessing of
 ```javascript
 Vue.http.interceptors.push({
 
-    request: function (options) {
-        return options;
+    request: function (request) {
+        return request;
     },
 
     response: function (response) {
@@ -94,11 +94,13 @@ If Promises are needed inside of a Interceptor, a factory function can be used.
 ```javascript
 Vue.http.interceptors.push(function (Promise) {
     return {
-           request: function (options) {
+
+           request: function (request) {
                if (reject) {
                    return Promise.reject();
                }
            },
+
            response: function (response) {
                  if (reject) {
                     return Promise.reject();
@@ -116,14 +118,24 @@ new Vue({
     ready: function() {
 
       // GET request
-      this.$http.get('/someUrl', function (data, status, request) {
+      this.$http.get('/someUrl').then(function (response) {
+
+          // get status
+          response.status;
+
+          // get all headers
+          response.headers();
+
+          // get 'expires' header
+          response.headers('expires');
 
           // set data on vm
-          this.$set('someData', data)
+          this.$set('someData', response.data)
 
-      }).error(function (data, status, request) {
+      }, function (response) {
+
           // handle error
-      })
+      });
 
     }
 
@@ -158,23 +170,23 @@ new Vue({
       var resource = this.$resource('someItem/:id');
 
       // get item
-      resource.get({id: 1}, function (item, status, request) {
-          this.$set('item', item)
-      })
+      resource.get({id: 1}).then(function (response) {
+          this.$set('item', response.item)
+      });
 
       // save item
-      resource.save({id: 1}, {item: this.item}, function (data, status, request) {
+      resource.save({id: 1}, {item: this.item}).then(function (response) {
           // handle success
-      }).error(function (data, status, request) {
+      }, function (response) {
           // handle error
-      })
+      });
 
       // delete item
-      resource.delete({id: 1}, function (data, status, request) {
+      resource.delete({id: 1}).then(function (response) {
           // handle success
-      }).error(function (data, status, request) {
+      }, function (response) {
           // handle error
-      })
+      });
 
     }
 

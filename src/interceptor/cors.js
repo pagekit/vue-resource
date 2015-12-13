@@ -13,7 +13,7 @@ module.exports = function (_) {
         request: function (request) {
 
             if (request.crossOrigin === null) {
-                request.crossOrigin = crossOrigin(request.url);
+                request.crossOrigin = crossOrigin(request);
             }
 
             if (request.crossOrigin) {
@@ -30,9 +30,9 @@ module.exports = function (_) {
 
     };
 
-    function crossOrigin(url) {
+    function crossOrigin(request) {
 
-        var requestUrl = _.url.parse(url);
+        var requestUrl = _.url.parse(_.url(request));
 
         return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
     }

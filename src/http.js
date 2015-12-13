@@ -2,13 +2,12 @@
  * Service for sending network requests.
  */
 
-var Promise = require('./lib/promise');
-var jsonType = {'Content-Type': 'application/json'};
-
 module.exports = function (_) {
 
+    var Promise = require('./lib/promise')(_);
     var interceptor = require('./interceptor')(_);
     var defaultClient = require('./client/default')(_);
+    var jsonType = {'Content-Type': 'application/json'};
 
     function Http(url, options) {
 
@@ -28,12 +27,12 @@ module.exports = function (_) {
             client = interceptor(i, this.vm)(client);
         }, this);
 
-        promise = extendPromise(client(request).then(function (response) {
+        promise = extendPromise(client(request).bind(this.vm).then(function (response) {
 
             response.ok = response.status >= 200 && response.status < 300;
             return response.ok ? response : Promise.reject(response);
 
-        }), this.vm);
+        }));
 
         if (request.success) {
             promise = promise.success(request.success);
@@ -46,31 +45,31 @@ module.exports = function (_) {
         return promise;
     }
 
-    function extendPromise(promise, vm) {
+    function extendPromise(promise) {
 
         promise.success = function (fn) {
 
             return extendPromise(promise.then(function (response) {
-                return fn.call(vm, response.data, response.status, response) || response;
-            }), vm);
+                return fn.call(this, response.data, response.status, response) || response;
+            }));
 
         };
 
         promise.error = function (fn) {
 
             return extendPromise(promise.then(undefined, function (response) {
-                return fn.call(vm, response.data, response.status, response) || response;
-            }), vm);
+                return fn.call(this, response.data, response.status, response) || response;
+            }));
 
         };
 
         promise.always = function (fn) {
 
             var cb = function (response) {
-                return fn.call(vm, response.data, response.status, response) || response;
+                return fn.call(this, response.data, response.status, response) || response;
             };
 
-            return extendPromise(promise.then(cb, cb), vm);
+            return extendPromise(promise.then(cb, cb));
         };
 
         return promise;

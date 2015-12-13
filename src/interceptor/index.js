@@ -2,9 +2,9 @@
  * Interceptor factory.
  */
 
-var Promise = require('../lib/promise');
-
 module.exports = function (_) {
+
+    var Promise = require('../lib/promise')(_);
 
     return function (handler, vm) {
         return function (client) {
