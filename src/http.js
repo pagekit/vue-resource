@@ -131,6 +131,11 @@ module.exports = function (_) {
                 data = undefined;
             }
 
+            if (_.isObject(success)) {
+                options = success;
+                success = undefined;
+            }
+
             return this(url, _.extend({method: method, data: data, success: success}, options));
         };
     });
