@@ -201,9 +201,5 @@ module.exports = function (_) {
         return this;
     };
 
-    _.promise = function (executor) {
-        return new Promise(executor);
-    };
-
     return Promise;
 };

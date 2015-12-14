@@ -32,6 +32,13 @@ module.exports = function (_) {
             response.ok = response.status >= 200 && response.status < 300;
             return response.ok ? response : Promise.reject(response);
 
+        }, function (response) {
+
+            if (response instanceof Error) {
+                console.error(response);
+            }
+
+            return Promise.reject(response);
         }));
 
         if (request.success) {
@@ -83,8 +90,9 @@ module.exports = function (_) {
 
     Http.options = {
         method: 'get',
-        params: {},
         data: '',
+        params: {},
+        headers: {},
         xhr: null,
         jsonp: 'callback',
         beforeSend: null,
