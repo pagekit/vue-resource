@@ -7,13 +7,13 @@ module.exports = function (Vue) {
     var _ = Vue.util.extend({}, Vue.util), config = Vue.config, console = window.console;
 
     _.warn = function (msg) {
-        if (console && Vue.util.warn &&(!config.silent || config.debug)) {
+        if (console && Vue.util.warn && (!config.silent || config.debug)) {
             console.warn('[VueResource warn]: ' + msg);
         }
     };
 
     _.error = function (msg) {
-        if (console && Vue.util.error && (!config.silent || config.debug)) {
+        if (console) {
             console.error(msg);
         }
     };
