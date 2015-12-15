@@ -35,7 +35,7 @@ module.exports = function (_) {
         }, function (response) {
 
             if (response instanceof Error) {
-                console.error(response);
+                _.error(response);
             }
 
             return Promise.reject(response);

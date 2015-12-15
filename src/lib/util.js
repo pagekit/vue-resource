@@ -4,11 +4,17 @@
 
 module.exports = function (Vue) {
 
-    var _ = Vue.util.extend({}, Vue.util), config = Vue.config;
+    var _ = Vue.util.extend({}, Vue.util), config = Vue.config, console = window.console;
 
     _.warn = function (msg) {
-        if (window.console && (!config.silent || config.debug)) {
+        if (console && (!config.silent || config.debug)) {
             console.warn('[VueResource warn]: ' + msg);
+        }
+    };
+
+    _.error = function (msg) {
+        if (console && (!config.silent || config.debug)) {
+            console.error(msg);
         }
     };
 
