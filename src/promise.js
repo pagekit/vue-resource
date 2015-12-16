@@ -57,6 +57,28 @@ module.exports = function (_) {
         return this;
     };
 
+    Adapter.prototype.finally = function (callback) {
+
+        return this.then(
+
+            function (value) {
+
+                callback.call(this);
+                return value;
+
+            },
+
+            function (value) {
+
+                callback.call(this);
+                return Promise.reject(value);
+
+            }
+
+        );
+
+    };
+
     return Adapter;
 
 };

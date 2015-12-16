@@ -29,6 +29,28 @@ var specs = function (Promise) {
 
     });
 
+    it('finally fulfill', function (done) {
+
+        Promise.resolve(1).finally(function (arg) {
+            expect(arg).toBe(undefined);
+        }).then(function (arg) {
+            expect(arg).toBe(1);
+            done();
+        });
+
+    });
+
+    it('finally reject', function (done) {
+
+        Promise.reject(1).finally(function (arg) {
+            expect(arg).toBe(undefined);
+        }).catch(function (arg) {
+            expect(arg).toBe(1);
+            done();
+        });
+
+    });
+
     it('all', function (done) {
 
         Promise.all([
@@ -71,11 +93,29 @@ var specs = function (Promise) {
 
     });
 
-    it('context chain', function (done) {
+    it('context chain fulfill', function (done) {
 
         var context = {foo: 'bar'};
 
-        Promise.resolve().bind(context).catch(undefined).then(function () {
+        Promise.resolve().bind(context).catch(undefined).finally(function () {
+            expect(this).toBe(context);
+        }).then(function () {
+            expect(this).toBe(context);
+            done();
+        });
+
+    });
+
+    it('context chain reject', function (done) {
+
+        var context = {foo: 'bar'};
+
+        Promise.reject().bind(context).catch(function () {
+            expect(this).toBe(context);
+            return Promise.reject();
+        }).finally(function () {
+            expect(this).toBe(context);
+        }).catch(function () {
             expect(this).toBe(context);
             done();
         });
@@ -127,9 +167,11 @@ describe('Promise Adapter (native)', function () {
 describe('Promise Adapter (polyfill)', function () {
 
     var native = window.Promise;
+
     delete window.Promise;
 
     var Promise = require('../src/promise')(Vue.util);
+
     window.Promise = native;
 
     it('is polyfill', function () {
