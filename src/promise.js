@@ -14,6 +14,7 @@ module.exports = function (_) {
             this.promise = new Promise(executor);
         }
 
+        this.context = undefined;
     };
 
     Adapter.all = function (iterable) {
