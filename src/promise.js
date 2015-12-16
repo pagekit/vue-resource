@@ -1,3 +1,7 @@
+/**
+ * Promise adapter.
+ */
+
 module.exports = function (_) {
 
     var Promise = window.Promise || require('./lib/promise')(_);
@@ -28,57 +32,50 @@ module.exports = function (_) {
         return new Adapter(Promise.race(iterable));
     };
 
-    Adapter.prototype.bind = function (context) {
+    var p = Adapter.prototype;
+
+    p.bind = function (context) {
         this.context = context;
         return this;
     };
 
-    Adapter.prototype.catch = function (onRejected) {
+    p.then = function (fulfilled, rejected) {
 
-        if (onRejected && this.context) {
-            onRejected = onRejected.bind(this.context);
+        if (fulfilled && fulfilled.bind && this.context) {
+            fulfilled = fulfilled.bind(this.context);
         }
 
-        this.promise = this.promise.catch(onRejected);
+        if (rejected && rejected.bind && this.context) {
+            rejected = rejected.bind(this.context);
+        }
+
+        this.promise = this.promise.then(fulfilled, rejected);
+
         return this;
     };
 
-    Adapter.prototype.then = function (onFulfilled, onRejected) {
+    p.catch = function (rejected) {
 
-        if (onFulfilled && this.context) {
-            onFulfilled = onFulfilled.bind(this.context);
+        if (rejected && rejected.bind && this.context) {
+            rejected = rejected.bind(this.context);
         }
 
-        if (onRejected && this.context) {
-            onRejected = onRejected.bind(this.context);
-        }
+        this.promise = this.promise.catch(rejected);
 
-        this.promise = this.promise.then(onFulfilled, onRejected);
         return this;
     };
 
-    Adapter.prototype.finally = function (callback) {
+    p.finally = function (callback) {
 
-        return this.then(
-
-            function (value) {
-
+        return this.then(function (value) {
                 callback.call(this);
                 return value;
-
-            },
-
-            function (value) {
-
+            }, function (reason) {
                 callback.call(this);
-                return Promise.reject(value);
-
+                return Promise.reject(reason);
             }
-
         );
-
     };
 
     return Adapter;
-
 };

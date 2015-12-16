@@ -142,7 +142,7 @@ var specs = function (Promise) {
 
 };
 
-describe('Promise Adapter (native)', function () {
+describe('Vue.promise (native)', function () {
 
     if (window.Promise) {
 
@@ -158,13 +158,13 @@ describe('Promise Adapter (native)', function () {
 
         it('no native promise', function () {
             expect(true).toBe(true);
-        })
+        });
 
     }
 
 });
 
-describe('Promise Adapter (polyfill)', function () {
+describe('Vue.promise (polyfill)', function () {
 
     var native = window.Promise;
 
