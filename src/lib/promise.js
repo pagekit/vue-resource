@@ -166,39 +166,14 @@ module.exports = function (_) {
     p.then = function then(onResolved, onRejected) {
         var promise = this;
 
-        if (onResolved && this.context) {
-            onResolved = onResolved.bind(this.context);
-        }
-
-        if (onRejected && this.context) {
-            onRejected = onRejected.bind(this.context);
-        }
-
         return new Promise(function (resolve, reject) {
             promise.deferred.push([onResolved, onRejected, resolve, reject]);
             promise.notify();
-        }).bind(this.context);
+        });
     };
 
     p.catch = function (onRejected) {
         return this.then(undefined, onRejected);
-    };
-
-    p.finally = function (callback) {
-        return this.then(function (value) {
-            return Promise.resolve(callback.call(this, value)).bind(this).then(function () {
-                return value;
-            });
-        }, function (reason) {
-            return Promise.resolve(callback.call(this, reason)).bind(this).then(function () {
-                return Promise.reject(reason);
-            });
-        });
-    };
-
-    p.bind = function (context) {
-        this.context = context;
-        return this;
     };
 
     return Promise;

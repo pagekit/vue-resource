@@ -1,7 +1,7 @@
 module.exports = {
-    entry: './test/index.js',
+    entry: __dirname + '/index.js',
     output: {
-        path: './test',
+        path: __dirname + '/',
         filename: 'specs.js'
     }
 };
