@@ -78,5 +78,34 @@ module.exports = function (_) {
         );
     };
 
+    p.success = function (callback) {
+
+        _.warn('The `success` method has been deprecated. Use the `then` method instead.');
+
+        return this.then(function (response) {
+            return callback.call(this, response.data, response.status, response) || response;
+        });
+    };
+
+    p.error = function (callback) {
+
+        _.warn('The `error` method has been deprecated. Use the `catch` method instead.');
+
+        return this.catch(function (response) {
+            return callback.call(this, response.data, response.status, response) || response;
+        });
+    };
+
+    p.always = function (callback) {
+
+        _.warn('The `always` method has been deprecated. Use the `finally` method instead.');
+
+        var cb = function (response) {
+            return callback.call(this, response.data, response.status, response) || response;
+        };
+
+        return this.then(cb, cb);
+    };
+
     return Adapter;
 };

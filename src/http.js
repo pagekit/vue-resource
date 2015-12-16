@@ -27,7 +27,7 @@ module.exports = function (_) {
             client = interceptor(i, this.vm)(client);
         }, this);
 
-        promise = extendPromise(client(request).bind(this.vm).then(function (response) {
+        promise = client(request).bind(this.vm).then(function (response) {
 
             response.ok = response.status >= 200 && response.status < 300;
             return response.ok ? response : Promise.reject(response);
@@ -39,51 +39,15 @@ module.exports = function (_) {
             }
 
             return Promise.reject(response);
-        }));
+        });
 
         if (request.success) {
-            promise = promise.success(request.success);
+            promise.success(request.success);
         }
 
         if (request.error) {
-            promise = promise.error(request.error);
+            promise.error(request.error);
         }
-
-        return promise;
-    }
-
-    function extendPromise(promise) {
-
-        promise.success = function (fn) {
-
-            _.warn('The `success` method has been deprecated. Use the `then` method instead.');
-
-            return extendPromise(promise.then(function (response) {
-                return fn.call(this, response.data, response.status, response) || response;
-            }));
-
-        };
-
-        promise.error = function (fn) {
-
-            _.warn('The `error` method has been deprecated. Use the `catch` method instead.');
-
-            return extendPromise(promise.then(undefined, function (response) {
-                return fn.call(this, response.data, response.status, response) || response;
-            }));
-
-        };
-
-        promise.always = function (fn) {
-
-            _.warn('The `always` method has been deprecated. Use the `finally` method instead.');
-
-            var cb = function (response) {
-                return fn.call(this, response.data, response.status, response) || response;
-            };
-
-            return extendPromise(promise.then(cb, cb));
-        };
 
         return promise;
     }
