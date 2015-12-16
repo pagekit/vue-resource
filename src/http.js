@@ -4,7 +4,7 @@
 
 module.exports = function (_) {
 
-    var Promise = require('./lib/promise')(_);
+    var Promise = require('./promise')(_);
     var interceptor = require('./interceptor')(_);
     var defaultClient = require('./client/default')(_);
     var jsonType = {'Content-Type': 'application/json'};

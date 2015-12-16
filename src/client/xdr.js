@@ -4,7 +4,7 @@
 
 module.exports = function (_) {
 
-    var Promise = require('../lib/promise')(_);
+    var Promise = require('../promise')(_);
 
     return function (request) {
         return new Promise(function (resolve) {
