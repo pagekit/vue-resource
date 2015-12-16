@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    Vue.url = __webpack_require__(2)(_);
 	    Vue.http = __webpack_require__(3)(_);
-	    Vue.resource = __webpack_require__(16)(_);
+	    Vue.resource = __webpack_require__(17)(_);
 	    Vue.promise = __webpack_require__(4)(_);
 
 	    Object.defineProperties(Vue.prototype, {
@@ -113,11 +113,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (Vue) {
 
-	    var _ = Vue.util.extend({}, Vue.util), config = Vue.config;
+	    var _ = Vue.util.extend({}, Vue.util), config = Vue.config, console = window.console;
 
 	    _.warn = function (msg) {
-	        if (window.console && (!config.silent || config.debug)) {
+	        if (console && Vue.util.warn && (!config.silent || config.debug)) {
 	            console.warn('[VueResource warn]: ' + msg);
+	        }
+	    };
+
+	    _.error = function (msg) {
+	        if (console) {
+	            console.error(msg);
 	        }
 	    };
 
@@ -377,8 +383,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = function (_) {
 
 	    var Promise = __webpack_require__(4)(_);
-	    var interceptor = __webpack_require__(5)(_);
-	    var defaultClient = __webpack_require__(6)(_);
+	    var interceptor = __webpack_require__(6)(_);
+	    var defaultClient = __webpack_require__(7)(_);
 	    var jsonType = {'Content-Type': 'application/json'};
 
 	    function Http(url, options) {
@@ -404,6 +410,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            response.ok = response.status >= 200 && response.status < 300;
 	            return response.ok ? response : Promise.reject(response);
 
+	        }, function (response) {
+
+	            if (response instanceof Error) {
+	                _.error(response);
+	            }
+
+	            return Promise.reject(response);
 	        }));
 
 	        if (request.success) {
@@ -455,8 +468,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    Http.options = {
 	        method: 'get',
-	        params: {},
 	        data: '',
+	        params: {},
+	        headers: {},
 	        xhr: null,
 	        jsonp: 'callback',
 	        beforeSend: null,
@@ -467,13 +481,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    Http.interceptors = [
-	        __webpack_require__(8)(_),
 	        __webpack_require__(9)(_),
 	        __webpack_require__(10)(_),
-	        __webpack_require__(12)(_),
+	        __webpack_require__(11)(_),
 	        __webpack_require__(13)(_),
 	        __webpack_require__(14)(_),
-	        __webpack_require__(15)(_)
+	        __webpack_require__(15)(_),
+	        __webpack_require__(16)(_)
 	    ];
 
 	    Http.headers = {
@@ -495,6 +509,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                data = undefined;
 	            }
 
+	            if (_.isObject(success)) {
+	                options = success;
+	                success = undefined;
+	            }
+
 	            return this(url, _.extend({method: method, data: data, success: success}, options));
 	        };
 	    });
@@ -505,6 +524,93 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Promise adapter.
+	 */
+
+	module.exports = function (_) {
+
+	    var Promise = window.Promise || __webpack_require__(5)(_);
+
+	    var Adapter = function (executor) {
+
+	        if (executor instanceof Promise) {
+	            this.promise = executor;
+	        } else {
+	            this.promise = new Promise(executor);
+	        }
+
+	    };
+
+	    Adapter.all = function (iterable) {
+	        return new Adapter(Promise.all(iterable));
+	    };
+
+	    Adapter.resolve = function (value) {
+	        return new Adapter(Promise.resolve(value));
+	    };
+
+	    Adapter.reject = function (reason) {
+	        return new Adapter(Promise.reject(reason));
+	    };
+
+	    Adapter.race = function (iterable) {
+	        return new Adapter(Promise.race(iterable));
+	    };
+
+	    var p = Adapter.prototype;
+
+	    p.bind = function (context) {
+	        this.context = context;
+	        return this;
+	    };
+
+	    p.then = function (fulfilled, rejected) {
+
+	        if (fulfilled && fulfilled.bind && this.context) {
+	            fulfilled = fulfilled.bind(this.context);
+	        }
+
+	        if (rejected && rejected.bind && this.context) {
+	            rejected = rejected.bind(this.context);
+	        }
+
+	        this.promise = this.promise.then(fulfilled, rejected);
+
+	        return this;
+	    };
+
+	    p.catch = function (rejected) {
+
+	        if (rejected && rejected.bind && this.context) {
+	            rejected = rejected.bind(this.context);
+	        }
+
+	        this.promise = this.promise.catch(rejected);
+
+	        return this;
+	    };
+
+	    p.finally = function (callback) {
+
+	        return this.then(function (value) {
+	                callback.call(this);
+	                return value;
+	            }, function (reason) {
+	                callback.call(this);
+	                return Promise.reject(reason);
+	            }
+	        );
+	    };
+
+	    return Adapter;
+	};
+
+
+/***/ },
+/* 5 */
 /***/ function(module, exports) {
 
 	/**
@@ -675,43 +781,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    p.then = function then(onResolved, onRejected) {
 	        var promise = this;
 
-	        if (onResolved && this.context) {
-	            onResolved = onResolved.bind(this.context);
-	        }
-
-	        if (onRejected && this.context) {
-	            onRejected = onRejected.bind(this.context);
-	        }
-
 	        return new Promise(function (resolve, reject) {
 	            promise.deferred.push([onResolved, onRejected, resolve, reject]);
 	            promise.notify();
-	        }).bind(this.context);
+	        });
 	    };
 
 	    p.catch = function (onRejected) {
 	        return this.then(undefined, onRejected);
-	    };
-
-	    p.finally = function (callback) {
-	        return this.then(function (value) {
-	            return Promise.resolve(callback.call(this, value)).bind(this).then(function () {
-	                return value;
-	            });
-	        }, function (reason) {
-	            return Promise.resolve(callback.call(this, reason)).bind(this).then(function () {
-	                return Promise.reject(reason);
-	            });
-	        });
-	    };
-
-	    p.bind = function (context) {
-	        this.context = context;
-	        return this;
-	    };
-
-	    _.promise = function (executor) {
-	        return new Promise(executor);
 	    };
 
 	    return Promise;
@@ -719,7 +796,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -772,7 +849,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -781,7 +858,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    var xhrClient = __webpack_require__(7)(_);
+	    var xhrClient = __webpack_require__(8)(_);
 
 	    return function (request) {
 	        return (request.client || xhrClient)(request);
@@ -791,7 +868,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -891,7 +968,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	/**
@@ -917,7 +994,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	/**
@@ -957,7 +1034,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -966,7 +1043,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    var jsonpClient = __webpack_require__(11)(_);
+	    var jsonpClient = __webpack_require__(12)(_);
 
 	    return {
 
@@ -985,7 +1062,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1042,7 +1119,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	/**
@@ -1069,7 +1146,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	/**
@@ -1113,7 +1190,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	/**
@@ -1147,7 +1224,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1157,7 +1234,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = function (_) {
 
 	    var originUrl = _.url.parse(location.href);
-	    var xdrClient = __webpack_require__(11)(_);
+	    var xdrClient = __webpack_require__(12)(_);
 	    var xhrCors = 'withCredentials' in new XMLHttpRequest();
 
 	    return {
@@ -1193,7 +1270,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	/**
