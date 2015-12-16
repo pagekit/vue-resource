@@ -46,12 +46,12 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 
 ### Methods
 
-* `get(url, [data], [success], [options])`
-* `post(url, [data], [success], [options])`
-* `put(url, [data], [success], [options])`
-* `patch(url, [data], [success], [options])`
-* `delete(url, [data], [success], [options])`
-* `jsonp(url, [data], [success], [options])`
+* `get(url, [data], [options])`
+* `post(url, [data], [options])`
+* `put(url, [data], [options])`
+* `patch(url, [data], [options])`
+* `delete(url, [data], [options])`
+* `jsonp(url, [data], [options])`
 
 ### Options
 
@@ -60,7 +60,7 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 * **data** - `Object|string` - Data to be sent as the request message data
 * **params** - `Object` - Parameters object to be appended as GET parameters
 * **headers** - `Object` - Headers object to be sent as HTTP request headers
-* **beforeSend** - `function(request, options)` - Callback function to modify the request object before it is sent
+* **beforeSend** - `function(request)` - Callback function to modify the request object before it is sent
 * **emulateHTTP** - `boolean` - Send PUT, PATCH and DELETE requests with a HTTP POST and set the `X-HTTP-Method-Override` header
 * **emulateJSON** - `boolean` -  Send request data as `application/x-www-form-urlencoded` content type
 * **xhr** - `Object` - Parameters object to be set on the native XHR object
@@ -177,17 +177,18 @@ If Promises are needed inside of a Interceptor, a factory function can be used.
 Vue.http.interceptors.push(function (Promise) {
     return {
 
-           request: function (request) {
-               if (reject) {
-                   return Promise.reject();
-               }
-           },
-
-           response: function (response) {
-                 if (reject) {
+            request: function (request) {
+                if (reject) {
                     return Promise.reject();
-                 }
-           }
+                }
+            },
+
+            response: function (response) {
+                if (reject) {
+                    return Promise.reject();
+                }
+            }
+
        };
 });
 ```
