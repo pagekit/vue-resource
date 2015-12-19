@@ -2,14 +2,16 @@
  * Service for URL templating.
  */
 
-var ie = document.documentMode;
-var el = document.createElement('a');
+var UrlTemplate = require('./lib/url-template');
 
 module.exports = function (_) {
 
+    var ie = document.documentMode;
+    var el = document.createElement('a');
+
     function Url(url, params) {
 
-        var urlParams = {}, queryParams = {}, options = url, query;
+        var urlParams = [], queryParams = {}, options = url, query;
 
         if (!_.isPlainObject(options)) {
             options = {url: url, params: params};
@@ -19,10 +21,12 @@ module.exports = function (_) {
             Url.options, this.options, options
         );
 
-        url = options.url.replace(/(\/?):([a-z]\w*)/gi, function (match, slash, name) {
+        url = UrlTemplate.expand(options.url, options.params, urlParams);
+
+        url = url.replace(/(\/?):([a-z]\w*)/gi, function (match, slash, name) {
 
             if (options.params[name]) {
-                urlParams[name] = true;
+                urlParams.push(name);
                 return slash + encodeUriSegment(options.params[name]);
             }
 
@@ -34,7 +38,7 @@ module.exports = function (_) {
         }
 
         _.each(options.params, function (value, key) {
-            if (!urlParams[key]) {
+            if (urlParams.indexOf(key) === -1) {
                 queryParams[key] = value;
             }
         });
