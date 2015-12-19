@@ -1,7 +1,13 @@
 var Vue = require('vue');
-var Url = require('url-template');
 
 describe('Vue.url', function () {
+
+    it('data/:id', function () {
+
+        expect(Vue.url('data/:id')).toBe('data');
+        expect(Vue.url('data/:id', {id: 1})).toBe('data/1');
+
+    });
 
     it('data{/id}', function () {
 
@@ -10,10 +16,17 @@ describe('Vue.url', function () {
 
     });
 
-    it('data/:id (deprecated)', function () {
+    it('{+path}data', function () {
 
-        expect(Vue.url('data/:id')).toBe('data');
-        expect(Vue.url('data/:id', {id: 1})).toBe('data/1');
+        expect(Vue.url('{+path}data')).toBe('data');
+        expect(Vue.url('{+path}data', {path: 'path1/path2/'})).toBe('path1/path2/data');
+
+    });
+
+    it('{+base}data', function () {
+
+        Vue.url.options.params.base = 'base/path/';
+        expect(Vue.url('{+base}data')).toBe('base/path/data');
 
     });
 

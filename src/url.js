@@ -11,7 +11,7 @@ module.exports = function (_) {
 
     function Url(url, params) {
 
-        var urlParams = [], queryParams = {}, options = url, query;
+        var urlParams = Object.keys(Url.options.params), queryParams = {}, options = url, query;
 
         if (!_.isPlainObject(options)) {
             options = {url: url, params: params};
