@@ -25,6 +25,8 @@ module.exports = function (_) {
 
         url = url.replace(/(\/?):([a-z]\w*)/gi, function (match, slash, name) {
 
+            _.warn('The `:' + name + '` parameter syntax has been deprecated. Use the `{' + name + '}` syntax instead.');
+
             if (options.params[name]) {
                 urlParams.push(name);
                 return slash + encodeUriSegment(options.params[name]);
