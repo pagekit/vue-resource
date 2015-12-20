@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.2.0
+ * vue-resource v0.5.0
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -69,9 +69,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var _ = __webpack_require__(1)(Vue);
 
 	    Vue.url = __webpack_require__(2)(_);
-	    Vue.http = __webpack_require__(3)(_);
-	    Vue.resource = __webpack_require__(17)(_);
-	    Vue.promise = __webpack_require__(4)(_);
+	    Vue.http = __webpack_require__(4)(_);
+	    Vue.resource = __webpack_require__(18)(_);
+	    Vue.promise = __webpack_require__(5)(_);
 
 	    Object.defineProperties(Vue.prototype, {
 
@@ -211,20 +211,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Service for URL templating.
 	 */
 
-	var ie = document.documentMode;
-	var el = document.createElement('a');
+	var UrlTemplate = __webpack_require__(3);
 
 	module.exports = function (_) {
 
+	    var ie = document.documentMode;
+	    var el = document.createElement('a');
+
 	    function Url(url, params) {
 
-	        var urlParams = {}, queryParams = {}, options = url, query;
+	        var urlParams = Object.keys(Url.options.params), queryParams = {}, options = url, query;
 
 	        if (!_.isPlainObject(options)) {
 	            options = {url: url, params: params};
@@ -234,10 +236,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            Url.options, this.options, options
 	        );
 
-	        url = options.url.replace(/(\/?):([a-z]\w*)/gi, function (match, slash, name) {
+	        url = UrlTemplate.expand(options.url, options.params, urlParams);
+
+	        url = url.replace(/(\/?):([a-z]\w*)/gi, function (match, slash, name) {
+
+	            _.warn('The `:' + name + '` parameter syntax has been deprecated. Use the `{' + name + '}` syntax instead.');
 
 	            if (options.params[name]) {
-	                urlParams[name] = true;
+	                urlParams.push(name);
 	                return slash + encodeUriSegment(options.params[name]);
 	            }
 
@@ -249,7 +255,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        _.each(options.params, function (value, key) {
-	            if (!urlParams[key]) {
+	            if (urlParams.indexOf(key) === -1) {
 	                queryParams[key] = value;
 	            }
 	        });
@@ -374,6 +380,162 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 3 */
+/***/ function(module, exports) {
+
+	/**
+	 * URL Template v2.0.6 (https://github.com/bramstein/url-template)
+	 */
+
+	exports.expand = function (url, params, variables) {
+
+	    var tmpl = this.parse(url), expanded = tmpl.expand(params);
+
+	    if (variables) {
+	        variables.push.apply(variables, tmpl.vars);
+	    }
+
+	    return expanded;
+	};
+
+	exports.parse = function (template) {
+
+	    var operators = ['+', '#', '.', '/', ';', '?', '&'], variables = [];
+
+	    return {
+	        vars: variables,
+	        expand: function (context) {
+	            return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function (_, expression, literal) {
+	                if (expression) {
+
+	                    var operator = null, values = [];
+
+	                    if (operators.indexOf(expression.charAt(0)) !== -1) {
+	                        operator = expression.charAt(0);
+	                        expression = expression.substr(1);
+	                    }
+
+	                    expression.split(/,/g).forEach(function (variable) {
+	                        var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
+	                        values.push.apply(values, exports.getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
+	                        variables.push(tmp[1]);
+	                    });
+
+	                    if (operator && operator !== '+') {
+
+	                        var separator = ',';
+
+	                        if (operator === '?') {
+	                            separator = '&';
+	                        } else if (operator !== '#') {
+	                            separator = operator;
+	                        }
+
+	                        return (values.length !== 0 ? operator : '') + values.join(separator);
+	                    } else {
+	                        return values.join(',');
+	                    }
+
+	                } else {
+	                    return exports.encodeReserved(literal);
+	                }
+	            });
+	        }
+	    };
+	};
+
+	exports.getValues = function (context, operator, key, modifier) {
+
+	    var value = context[key], result = [];
+
+	    if (this.isDefined(value) && value !== '') {
+	        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+	            value = value.toString();
+
+	            if (modifier && modifier !== '*') {
+	                value = value.substring(0, parseInt(modifier, 10));
+	            }
+
+	            result.push(this.encodeValue(operator, value, this.isKeyOperator(operator) ? key : null));
+	        } else {
+	            if (modifier === '*') {
+	                if (Array.isArray(value)) {
+	                    value.filter(this.isDefined).forEach(function (value) {
+	                        result.push(this.encodeValue(operator, value, this.isKeyOperator(operator) ? key : null));
+	                    }, this);
+	                } else {
+	                    Object.keys(value).forEach(function (k) {
+	                        if (this.isDefined(value[k])) {
+	                            result.push(this.encodeValue(operator, value[k], k));
+	                        }
+	                    }, this);
+	                }
+	            } else {
+	                var tmp = [];
+
+	                if (Array.isArray(value)) {
+	                    value.filter(this.isDefined).forEach(function (value) {
+	                        tmp.push(this.encodeValue(operator, value));
+	                    }, this);
+	                } else {
+	                    Object.keys(value).forEach(function (k) {
+	                        if (this.isDefined(value[k])) {
+	                            tmp.push(encodeURIComponent(k));
+	                            tmp.push(this.encodeValue(operator, value[k].toString()));
+	                        }
+	                    }, this);
+	                }
+
+	                if (this.isKeyOperator(operator)) {
+	                    result.push(encodeURIComponent(key) + '=' + tmp.join(','));
+	                } else if (tmp.length !== 0) {
+	                    result.push(tmp.join(','));
+	                }
+	            }
+	        }
+	    } else {
+	        if (operator === ';') {
+	            result.push(encodeURIComponent(key));
+	        } else if (value === '' && (operator === '&' || operator === '?')) {
+	            result.push(encodeURIComponent(key) + '=');
+	        } else if (value === '') {
+	            result.push('');
+	        }
+	    }
+
+	    return result;
+	};
+
+	exports.isDefined = function (value) {
+	    return value !== undefined && value !== null;
+	};
+
+	exports.isKeyOperator = function (operator) {
+	    return operator === ';' || operator === '&' || operator === '?';
+	};
+
+	exports.encodeValue = function (operator, value, key) {
+
+	    value = (operator === '+' || operator === '#') ? this.encodeReserved(value) : encodeURIComponent(value);
+
+	    if (key) {
+	        return encodeURIComponent(key) + '=' + value;
+	    } else {
+	        return value;
+	    }
+	};
+
+	exports.encodeReserved = function (str) {
+	    return str.split(/(%[0-9A-Fa-f]{2})/g).map(function (part) {
+	        if (!/%[0-9A-Fa-f]/.test(part)) {
+	            part = encodeURI(part);
+	        }
+	        return part;
+	    }).join('');
+	};
+
+
+/***/ },
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -382,9 +544,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    var Promise = __webpack_require__(4)(_);
-	    var interceptor = __webpack_require__(6)(_);
-	    var defaultClient = __webpack_require__(7)(_);
+	    var Promise = __webpack_require__(5)(_);
+	    var interceptor = __webpack_require__(7)(_);
+	    var defaultClient = __webpack_require__(8)(_);
 	    var jsonType = {'Content-Type': 'application/json'};
 
 	    function Http(url, options) {
@@ -405,7 +567,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            client = interceptor(i, this.vm)(client);
 	        }, this);
 
-	        promise = extendPromise(client(request).bind(this.vm).then(function (response) {
+	        promise = client(request).bind(this.vm).then(function (response) {
 
 	            response.ok = response.status >= 200 && response.status < 300;
 	            return response.ok ? response : Promise.reject(response);
@@ -417,51 +579,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            return Promise.reject(response);
-	        }));
+	        });
 
 	        if (request.success) {
-	            promise = promise.success(request.success);
+	            promise.success(request.success);
 	        }
 
 	        if (request.error) {
-	            promise = promise.error(request.error);
+	            promise.error(request.error);
 	        }
-
-	        return promise;
-	    }
-
-	    function extendPromise(promise) {
-
-	        promise.success = function (fn) {
-
-	            _.warn('The `success` method has been deprecated. Use the `then` method instead.');
-
-	            return extendPromise(promise.then(function (response) {
-	                return fn.call(this, response.data, response.status, response) || response;
-	            }));
-
-	        };
-
-	        promise.error = function (fn) {
-
-	            _.warn('The `error` method has been deprecated. Use the `catch` method instead.');
-
-	            return extendPromise(promise.then(undefined, function (response) {
-	                return fn.call(this, response.data, response.status, response) || response;
-	            }));
-
-	        };
-
-	        promise.always = function (fn) {
-
-	            _.warn('The `always` method has been deprecated. Use the `finally` method instead.');
-
-	            var cb = function (response) {
-	                return fn.call(this, response.data, response.status, response) || response;
-	            };
-
-	            return extendPromise(promise.then(cb, cb));
-	        };
 
 	        return promise;
 	    }
@@ -481,13 +607,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    Http.interceptors = [
-	        __webpack_require__(9)(_),
 	        __webpack_require__(10)(_),
 	        __webpack_require__(11)(_),
-	        __webpack_require__(13)(_),
+	        __webpack_require__(12)(_),
 	        __webpack_require__(14)(_),
 	        __webpack_require__(15)(_),
-	        __webpack_require__(16)(_)
+	        __webpack_require__(16)(_),
+	        __webpack_require__(17)(_)
 	    ];
 
 	    Http.headers = {
@@ -523,7 +649,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -532,7 +658,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    var Promise = window.Promise || __webpack_require__(5)(_);
+	    var Promise = window.Promise || __webpack_require__(6)(_);
 
 	    var Adapter = function (executor) {
 
@@ -542,6 +668,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.promise = new Promise(executor);
 	        }
 
+	        this.context = undefined;
 	    };
 
 	    Adapter.all = function (iterable) {
@@ -605,12 +732,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	        );
 	    };
 
+	    p.success = function (callback) {
+
+	        _.warn('The `success` method has been deprecated. Use the `then` method instead.');
+
+	        return this.then(function (response) {
+	            return callback.call(this, response.data, response.status, response) || response;
+	        });
+	    };
+
+	    p.error = function (callback) {
+
+	        _.warn('The `error` method has been deprecated. Use the `catch` method instead.');
+
+	        return this.catch(function (response) {
+	            return callback.call(this, response.data, response.status, response) || response;
+	        });
+	    };
+
+	    p.always = function (callback) {
+
+	        _.warn('The `always` method has been deprecated. Use the `finally` method instead.');
+
+	        var cb = function (response) {
+	            return callback.call(this, response.data, response.status, response) || response;
+	        };
+
+	        return this.then(cb, cb);
+	    };
+
 	    return Adapter;
 	};
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	/**
@@ -796,7 +952,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -805,7 +961,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    var Promise = __webpack_require__(4)(_);
+	    var Promise = __webpack_require__(5)(_);
 
 	    return function (handler, vm) {
 	        return function (client) {
@@ -849,7 +1005,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -858,7 +1014,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    var xhrClient = __webpack_require__(8)(_);
+	    var xhrClient = __webpack_require__(9)(_);
 
 	    return function (request) {
 	        return (request.client || xhrClient)(request);
@@ -868,7 +1024,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -877,7 +1033,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    var Promise = __webpack_require__(4)(_);
+	    var Promise = __webpack_require__(5)(_);
 
 	    return function (request) {
 	        return new Promise(function (resolve) {
@@ -968,7 +1124,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	/**
@@ -994,7 +1150,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	/**
@@ -1034,7 +1190,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1043,7 +1199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    var jsonpClient = __webpack_require__(12)(_);
+	    var jsonpClient = __webpack_require__(13)(_);
 
 	    return {
 
@@ -1062,7 +1218,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1071,7 +1227,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    var Promise = __webpack_require__(4)(_);
+	    var Promise = __webpack_require__(5)(_);
 
 	    return function (request) {
 	        return new Promise(function (resolve) {
@@ -1119,7 +1275,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	/**
@@ -1146,7 +1302,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	/**
@@ -1190,7 +1346,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	/**
@@ -1224,7 +1380,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1234,7 +1390,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = function (_) {
 
 	    var originUrl = _.url.parse(location.href);
-	    var xdrClient = __webpack_require__(12)(_);
+	    var xdrClient = __webpack_require__(13)(_);
 	    var xhrCors = 'withCredentials' in new XMLHttpRequest();
 
 	    return {
@@ -1270,7 +1426,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports) {
 
 	/**
