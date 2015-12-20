@@ -4,7 +4,27 @@
 
 module.exports = function (Vue) {
 
-    var _ = Vue.util.extend({}, Vue.util);
+    var _ = Vue.util.extend({}, Vue.util), config = Vue.config, console = window.console;
+
+    _.warn = function (msg) {
+        if (console && Vue.util.warn && (!config.silent || config.debug)) {
+            console.warn('[VueResource warn]: ' + msg);
+        }
+    };
+
+    _.error = function (msg) {
+        if (console) {
+            console.error(msg);
+        }
+    };
+
+    _.trim = function (str) {
+        return str.replace(/^\s*|\s*$/g, '');
+    };
+
+    _.toLower = function (str) {
+        return str ? str.toLowerCase() : '';
+    };
 
     _.isString = function (value) {
         return typeof value === 'string';

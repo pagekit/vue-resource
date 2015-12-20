@@ -9,6 +9,7 @@ function install(Vue) {
     Vue.url = require('./url')(_);
     Vue.http = require('./http')(_);
     Vue.resource = require('./resource')(_);
+    Vue.promise = require('./promise')(_);
 
     Object.defineProperties(Vue.prototype, {
 
