@@ -5,8 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "webpack --config build/webpack.build.config.js",
-    "test": "webpack --config test/webpack.config.js",
-    "install": "npm run build && npm run test"
+    "test": "webpack --config test/webpack.config.js"
   },
   "repository": {
     "type": "git",
