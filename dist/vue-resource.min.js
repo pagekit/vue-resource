@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.5.0
+ * vue-resource v0.5.1
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
