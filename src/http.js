@@ -80,7 +80,7 @@ module.exports = function (_) {
         put: jsonType,
         post: jsonType,
         patch: jsonType,
-        delete: jsonType,
+        delete: {},
         common: {'Accept': 'application/json, text/plain, */*'},
         custom: {'X-Requested-With': 'XMLHttpRequest'}
     };
