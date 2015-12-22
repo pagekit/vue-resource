@@ -29,6 +29,14 @@ function install(Vue) {
             get: function () {
                 return Vue.resource.bind(this);
             }
+        },
+
+        $promise: {
+            get: function () {
+                return function (executor) {
+                    return new Vue.Promise(executor, this);
+                }.bind(this);
+            }
         }
 
     });
