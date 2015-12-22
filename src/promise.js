@@ -4,36 +4,36 @@
 
 module.exports = function (_) {
 
-    var Promise = window.Promise || require('./lib/promise')(_);
+    var PromiseObj = window.Promise || require('./lib/promise')(_);
 
-    var Adapter = function (executor) {
+    function Promise(executor, context) {
 
-        if (executor instanceof Promise) {
+        if (executor instanceof PromiseObj) {
             this.promise = executor;
         } else {
-            this.promise = new Promise(executor);
+            this.promise = new PromiseObj(executor);
         }
 
-        this.context = undefined;
+        this.context = context;
+    }
+
+    Promise.all = function (iterable, context) {
+        return new Promise(PromiseObj.all(iterable), context);
     };
 
-    Adapter.all = function (iterable) {
-        return new Adapter(Promise.all(iterable));
+    Promise.resolve = function (value, context) {
+        return new Promise(PromiseObj.resolve(value), context);
     };
 
-    Adapter.resolve = function (value) {
-        return new Adapter(Promise.resolve(value));
+    Promise.reject = function (reason, context) {
+        return new Promise(PromiseObj.reject(reason), context);
     };
 
-    Adapter.reject = function (reason) {
-        return new Adapter(Promise.reject(reason));
+    Promise.race = function (iterable, context) {
+        return new Promise(PromiseObj.race(iterable), context);
     };
 
-    Adapter.race = function (iterable) {
-        return new Adapter(Promise.race(iterable));
-    };
-
-    var p = Adapter.prototype;
+    var p = Promise.prototype;
 
     p.bind = function (context) {
         this.context = context;
@@ -73,7 +73,7 @@ module.exports = function (_) {
                 return value;
             }, function (reason) {
                 callback.call(this);
-                return Promise.reject(reason);
+                return PromiseObj.reject(reason);
             }
         );
     };
@@ -107,5 +107,5 @@ module.exports = function (_) {
         return this.then(cb, cb);
     };
 
-    return Adapter;
+    return Promise;
 };
