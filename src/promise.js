@@ -10,7 +10,7 @@ function Promise(executor, context) {
     if (executor instanceof PromiseObj) {
         this.promise = executor;
     } else {
-        this.promise = new PromiseObj(executor);
+        this.promise = new PromiseObj(executorr.bind(context));
     }
 
     this.context = context;
