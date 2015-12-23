@@ -4,12 +4,16 @@
 
 function install(Vue) {
 
-    var _ = require('./lib/util')(Vue);
+    var _ = require('lib/util');
 
-    Vue.url = require('./url')(_);
-    Vue.http = require('./http')(_);
-    Vue.resource = require('./resource')(_);
-    Vue.Promise = require('./promise')(_);
+    _.util = Vue.util;
+    _.config = Vue.config;
+    _.defaults(_, Vue.util);
+
+    Vue.url = require('./url');
+    Vue.http = require('./http');
+    Vue.resource = require('./resource');
+    Vue.Promise = require('./promise');
 
     Object.defineProperties(Vue.prototype, {
 

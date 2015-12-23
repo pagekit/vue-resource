@@ -17,6 +17,12 @@ module.exports = [
             library: "VueResource",
             libraryTarget: "umd"
         },
+        resolve: {
+            alias: {
+                lib: __dirname + "/../src/lib",
+                promise$: __dirname + "/../src/promise"
+            }
+        },
         plugins: [
             new webpack.BannerPlugin(banner, {raw: true})
         ]
@@ -29,6 +35,12 @@ module.exports = [
             filename: "vue-resource.min.js",
             library: "VueResource",
             libraryTarget: "umd"
+        },
+        resolve: {
+            alias: {
+                lib: __dirname + "/../src/lib",
+                promise$: __dirname + "/../src/promise"
+            }
         },
         plugins: [
             new webpack.optimize.UglifyJsPlugin,

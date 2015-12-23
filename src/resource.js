@@ -2,110 +2,109 @@
  * Service for interacting with RESTful services.
  */
 
-module.exports = function (_) {
+var _ = require('lib/util');
 
-    function Resource(url, params, actions, options) {
+function Resource(url, params, actions, options) {
 
-        var self = this, resource = {};
+    var self = this, resource = {};
 
-        actions = _.extend({},
-            Resource.actions,
-            actions
-        );
+    actions = _.extend({},
+        Resource.actions,
+        actions
+    );
 
-        _.each(actions, function (action, name) {
+    _.each(actions, function (action, name) {
 
-            action = _.extend(true, {url: url, params: params || {}}, options, action);
+        action = _.merge({url: url, params: params || {}}, options, action);
 
-            resource[name] = function () {
-                return (self.$http || _.http)(opts(action, arguments));
-            };
-        });
+        resource[name] = function () {
+            return (self.$http || _.http)(opts(action, arguments));
+        };
+    });
 
-        return resource;
-    }
+    return resource;
+}
 
-    function opts(action, args) {
+function opts(action, args) {
 
-        var options = _.extend({}, action), params = {}, data, success, error;
+    var options = _.extend({}, action), params = {}, data, success, error;
 
-        switch (args.length) {
+    switch (args.length) {
 
-            case 4:
+        case 4:
 
-                error = args[3];
-                success = args[2];
+            error = args[3];
+            success = args[2];
 
-            case 3:
-            case 2:
+        case 3:
+        case 2:
 
-                if (_.isFunction(args[1])) {
+            if (_.isFunction(args[1])) {
 
-                    if (_.isFunction(args[0])) {
+                if (_.isFunction(args[0])) {
 
-                        success = args[0];
-                        error = args[1];
-
-                        break;
-                    }
-
-                    success = args[1];
-                    error = args[2];
-
-                } else {
-
-                    params = args[0];
-                    data = args[1];
-                    success = args[2];
+                    success = args[0];
+                    error = args[1];
 
                     break;
                 }
 
-            case 1:
+                success = args[1];
+                error = args[2];
 
-                if (_.isFunction(args[0])) {
-                    success = args[0];
-                } else if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
-                    data = args[0];
-                } else {
-                    params = args[0];
-                }
+            } else {
 
-                break;
-
-            case 0:
+                params = args[0];
+                data = args[1];
+                success = args[2];
 
                 break;
+            }
 
-            default:
+        case 1:
 
-                throw 'Expected up to 4 arguments [params, data, success, error], got ' + args.length + ' arguments';
-        }
+            if (_.isFunction(args[0])) {
+                success = args[0];
+            } else if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
+                data = args[0];
+            } else {
+                params = args[0];
+            }
 
-        options.data = data;
-        options.params = _.extend({}, options.params, params);
+            break;
 
-        if (success) {
-            options.success = success;
-        }
+        case 0:
 
-        if (error) {
-            options.error = error;
-        }
+            break;
 
-        return options;
+        default:
+
+            throw 'Expected up to 4 arguments [params, data, success, error], got ' + args.length + ' arguments';
     }
 
-    Resource.actions = {
+    options.data = data;
+    options.params = _.extend({}, options.params, params);
 
-        get: {method: 'GET'},
-        save: {method: 'POST'},
-        query: {method: 'GET'},
-        update: {method: 'PUT'},
-        remove: {method: 'DELETE'},
-        delete: {method: 'DELETE'}
+    if (success) {
+        options.success = success;
+    }
 
-    };
+    if (error) {
+        options.error = error;
+    }
 
-    return _.resource = Resource;
+    return options;
+}
+
+Resource.actions = {
+
+    get: {method: 'GET'},
+    save: {method: 'POST'},
+    query: {method: 'GET'},
+    update: {method: 'PUT'},
+    remove: {method: 'DELETE'},
+    delete: {method: 'DELETE'}
+
 };
+
+module.exports = _.resource = Resource;
