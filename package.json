@@ -24,7 +24,7 @@
   "homepage": "https://github.com/vuejs/vue-resource#readme",
   "devDependencies": {
     "jasmine-core": "^2.3.4",
-    "vue": "^1.0.11",
-    "webpack": "^1.11.0"
+    "vue": "^1.0.12",
+    "webpack": "^1.12.9"
   }
 }
