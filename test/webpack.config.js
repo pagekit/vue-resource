@@ -3,11 +3,5 @@ module.exports = {
     output: {
         path: __dirname + "/",
         filename: "specs.js"
-    },
-    resolve: {
-        alias: {
-            lib: __dirname + "/../src/lib",
-            promise$: __dirname + "/../src/promise"
-        }
     }
 };

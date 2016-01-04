@@ -2,8 +2,8 @@
  * Interceptor factory.
  */
 
-var _ = require('lib/util');
-var Promise = require('promise');
+var _ = require('../util');
+var Promise = require('../promise');
 
 module.exports = function (handler, vm) {
 

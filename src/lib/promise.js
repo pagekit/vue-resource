@@ -2,7 +2,7 @@
  * Promises/A+ polyfill v1.1.4 (https://github.com/bramstein/promis)
  */
 
-var _ = require('./util');
+var _ = require('../util');
 
 var RESOLVED = 0;
 var REJECTED = 1;

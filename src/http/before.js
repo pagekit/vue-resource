@@ -2,7 +2,7 @@
  * Before Interceptor.
  */
 
-var _ = require('lib/util');
+var _ = require('../util');
 
 module.exports = {
 

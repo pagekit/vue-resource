@@ -2,7 +2,7 @@
  * URL Template (RFC 6570) Transform.
  */
 
-var UrlTemplate = require('lib/url-template');
+var UrlTemplate = require('../lib/url-template');
 
 module.exports = function (options) {
 

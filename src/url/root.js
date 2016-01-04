@@ -2,7 +2,7 @@
  * Root Prefix Transform.
  */
 
-var _ = require('lib/util');
+var _ = require('../util');
 
 module.exports = function (options, next) {
 

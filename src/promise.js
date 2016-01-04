@@ -2,7 +2,7 @@
  * Promise adapter.
  */
 
-var _ = require('lib/util');
+var _ = require('./util');
 var PromiseObj = window.Promise || require('./lib/promise');
 
 function Promise(executor, context) {

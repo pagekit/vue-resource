@@ -2,7 +2,7 @@
  * Service for interacting with RESTful services.
  */
 
-var _ = require('lib/util');
+var _ = require('./util');
 
 function Resource(url, params, actions, options) {
 

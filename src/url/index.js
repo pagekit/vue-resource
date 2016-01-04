@@ -2,7 +2,7 @@
  * Service for URL templating.
  */
 
-var _ = require('lib/util');
+var _ = require('../util');
 var ie = document.documentMode;
 var el = document.createElement('a');
 
@@ -56,7 +56,7 @@ Url.params = function (obj) {
 
     params.add = function (key, value) {
 
-        if (_.isFunction (value)) {
+        if (_.isFunction(value)) {
             value = value();
         }
 

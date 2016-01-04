@@ -2,7 +2,7 @@
  * CORS Interceptor.
  */
 
-var _ = require('lib/util');
+var _ = require('../util');
 var xdrClient = require('./client/xdr');
 var xhrCors = 'withCredentials' in new XMLHttpRequest();
 var originUrl = _.url.parse(location.href);

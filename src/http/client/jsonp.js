@@ -2,8 +2,8 @@
  * JSONP client.
  */
 
-var _ = require('lib/util');
-var Promise = require('promise');
+var _ = require('../../util');
+var Promise = require('../../promise');
 
 module.exports = function (request) {
     return new Promise(function (resolve) {

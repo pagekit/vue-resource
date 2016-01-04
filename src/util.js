@@ -5,7 +5,7 @@
 var _ = exports, array = [], console = window.console;
 
 _.warn = function (msg) {
-    if (console && _.util.warn && (!_.config.silent || _.config.debug)) {
+    if (console && _.warning && (!_.config.silent || _.config.debug)) {
         console.warn('[VueResource warn]: ' + msg);
     }
 };
@@ -24,12 +24,22 @@ _.toLower = function (str) {
     return str ? str.toLowerCase() : '';
 };
 
-_.isString = function (value) {
-    return typeof value === 'string';
+_.isArray = Array.isArray;
+
+_.isString = function (val) {
+    return typeof val === 'string';
 };
 
-_.isFunction = function (value) {
-    return typeof value === 'function';
+_.isFunction = function (val) {
+    return typeof val === 'function';
+};
+
+_.isObject = function (obj) {
+    return obj !== null && typeof obj === 'object';
+};
+
+_.isPlainObject = function (obj) {
+    return _.isObject(obj) && Object.getPrototypeOf(obj) == Object.prototype;
 };
 
 _.options = function (fn, obj, options) {

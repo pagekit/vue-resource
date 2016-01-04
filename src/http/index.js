@@ -2,8 +2,8 @@
  * Service for sending network requests.
  */
 
-var _ = require('lib/util');
-var Promise = require('promise');
+var _ = require('../util');
+var Promise = require('../promise');
 var interceptor = require('./interceptor');
 var defaultClient = require('./client/default');
 var jsonType = {'Content-Type': 'application/json'};
@@ -12,14 +12,11 @@ function Http(url, options) {
 
     var client = defaultClient, request, promise;
 
-    if (_.isString(url)) {
-        options = _.extend({url: url}, options);
-    }
-
     Http.interceptors.forEach(function (handler) {
         client = interceptor(handler, this.$vm)(client);
     }, this);
 
+    options = _.isObject(url) ? url : _.extend({url: url}, options);
     request = _.merge({}, Http.options, this.$options, options);
     promise = client(request).bind(this.$vm).then(function (response) {
 
