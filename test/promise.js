@@ -1,6 +1,7 @@
-var Vue = require('vue');
+var Promise = require('../src/promise');
+var isNative = window.Promise !== undefined;
 
-var specs = function (Promise) {
+describe('Vue.promise ' + (isNative ? '(native)' : '(polyfill)'), function () {
 
     it('then fulfill', function (done) {
 
@@ -139,45 +140,5 @@ var specs = function (Promise) {
         ]).then(done);
 
     });
-
-};
-
-describe('Vue.promise (native)', function () {
-
-    if (window.Promise) {
-
-        var Promise = require('../src/promise')();
-
-        it('is native', function () {
-            expect((new Promise.resolve()).promise instanceof window.Promise).toBe(true);
-        });
-
-        specs(Promise);
-
-    } else {
-
-        it('no native promise', function () {
-            expect(true).toBe(true);
-        });
-
-    }
-
-});
-
-describe('Vue.promise (polyfill)', function () {
-
-    var native = window.Promise;
-
-    delete window.Promise;
-
-    var Promise = require('../src/promise')(Vue.util);
-
-    window.Promise = native;
-
-    it('is polyfill', function () {
-        expect((new Promise.resolve()).promise.state).toBe(0);
-    });
-
-    specs(Promise);
 
 });
