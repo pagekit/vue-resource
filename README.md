@@ -10,7 +10,7 @@ The plugin provides services for making web requests and handle responses using 
 
 Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then add these lines in your code:
 
-```javascript
+```js
 var Vue = require('vue');
 
 Vue.use(require('vue-resource'));
@@ -20,14 +20,14 @@ Vue.use(require('vue-resource'));
 
 Set default values using the global configuration.
 
-```javascript
+```js
 Vue.http.options.root = '/root';
 Vue.http.headers.common['Authorization'] = 'Basic YXBpOnBhc3N3b3Jk';
 ```
 
 Set default values inside your Vue component options.
 
-```javascript
+```js
 new Vue({
 
     http: {
@@ -70,7 +70,7 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 
 ### Example
 
-```javascript
+```js
 new Vue({
 
     ready: function() {
@@ -110,7 +110,7 @@ The resource service can be used globally `Vue.resource` or in a Vue instance `t
 
 ### Default Actions
 
-```javascript
+```js
 get: {method: 'GET'},
 save: {method: 'POST'},
 query: {method: 'GET'},
@@ -120,7 +120,7 @@ delete: {method: 'DELETE'}
 ```
 
 ### Example
-```javascript
+```js
 new Vue({
 
     ready: function() {
@@ -155,7 +155,7 @@ new Vue({
 
 Interceptors can be defined globally and are used for pre- and postprocessing of a request.
 
-```javascript
+```js
 Vue.http.interceptors.push({
 
     request: function (request) {
@@ -169,26 +169,20 @@ Vue.http.interceptors.push({
 });
 ```
 
-#### Interceptor Factory
+A factory function can also be used.
 
-If Promises are needed inside of a Interceptor, a factory function can be used.
-
-```javascript
-Vue.http.interceptors.push(function (Promise) {
+```js
+Vue.http.interceptors.push(function () {
     return {
 
-            request: function (request) {
-                if (reject) {
-                    return Promise.reject();
-                }
-            },
+        request: function (request) {
+            return request;
+        },
 
-            response: function (response) {
-                if (reject) {
-                    return Promise.reject();
-                }
-            }
+        response: function (response) {
+            return response;
+        }
 
-       };
+    };
 });
 ```
