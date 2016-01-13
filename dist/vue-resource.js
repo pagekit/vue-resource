@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.6.0
+ * vue-resource v0.6.1
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -75,7 +75,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Vue.url = __webpack_require__(2);
 	    Vue.http = __webpack_require__(8);
 	    Vue.resource = __webpack_require__(23);
-	    Vue.Promise = __webpack_require__(9);
+	    Vue.Promise = __webpack_require__(10);
 
 	    Object.defineProperties(Vue.prototype, {
 
@@ -670,14 +670,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	var _ = __webpack_require__(1);
-	var Promise = __webpack_require__(9);
-	var interceptor = __webpack_require__(11);
-	var defaultClient = __webpack_require__(12);
+	var Client = __webpack_require__(9);
+	var Promise = __webpack_require__(10);
+	var interceptor = __webpack_require__(13);
 	var jsonType = {'Content-Type': 'application/json'};
 
 	function Http(url, options) {
 
-	    var client = defaultClient, request, promise;
+	    var client = Client, request, promise;
 
 	    Http.interceptors.forEach(function (handler) {
 	        client = interceptor(handler, this.$vm)(client);
@@ -687,7 +687,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    request = _.merge({}, Http.options, this.$options, options);
 	    promise = client(request).bind(this.$vm).then(function (response) {
 
-	        response.ok = response.status >= 200 && response.status < 300;
 	        return response.ok ? response : Promise.reject(response);
 
 	    }, function (response) {
@@ -770,11 +769,82 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
+	 * Base client.
+	 */
+
+	var _ = __webpack_require__(1);
+	var Promise = __webpack_require__(10);
+	var xhrClient = __webpack_require__(12);
+
+	module.exports = function (request) {
+
+	    var response = (request.client || xhrClient)(request);
+
+	    return Promise.resolve(response).then(function (response) {
+
+	        if (response.headers) {
+
+	            var headers = parseHeaders(response.headers);
+
+	            response.headers = function (name) {
+
+	                if (name) {
+	                    return headers[_.toLower(name)];
+	                }
+
+	                return headers;
+	            };
+
+	        }
+
+	        response.ok = response.status >= 200 && response.status < 300;
+
+	        return response;
+	    });
+
+	};
+
+	function parseHeaders(str) {
+
+	    var headers = {}, value, name, i;
+
+	    if (_.isString(str)) {
+	        _.each(str.split('\n'), function (row) {
+
+	            i = row.indexOf(':');
+	            name = _.trim(_.toLower(row.slice(0, i)));
+	            value = _.trim(row.slice(i + 1));
+
+	            if (headers[name]) {
+
+	                if (_.isArray(headers[name])) {
+	                    headers[name].push(value);
+	                } else {
+	                    headers[name] = [headers[name], value];
+	                }
+
+	            } else {
+
+	                headers[name] = value;
+	            }
+
+	        });
+	    }
+
+	    return headers;
+	}
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
 	 * Promise adapter.
 	 */
 
 	var _ = __webpack_require__(1);
-	var PromiseObj = window.Promise || __webpack_require__(10);
+	var PromiseObj = window.Promise || __webpack_require__(11);
 
 	function Promise(executor, context) {
 
@@ -881,7 +951,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1066,7 +1136,56 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * XMLHttp client.
+	 */
+
+	var _ = __webpack_require__(1);
+	var Promise = __webpack_require__(10);
+
+	module.exports = function (request) {
+	    return new Promise(function (resolve) {
+
+	        var xhr = new XMLHttpRequest(), response = {request: request}, handler;
+
+	        request.cancel = function () {
+	            xhr.abort();
+	        };
+
+	        xhr.open(request.method, _.url(request), true);
+
+	        if (_.isPlainObject(request.xhr)) {
+	            _.extend(xhr, request.xhr);
+	        }
+
+	        _.each(request.headers || {}, function (value, header) {
+	            xhr.setRequestHeader(header, value);
+	        });
+
+	        handler = function (event) {
+
+	            response.data = xhr.responseText;
+	            response.status = xhr.status;
+	            response.statusText = xhr.statusText;
+	            response.headers = xhr.getAllResponseHeaders();
+
+	            resolve(response);
+	        };
+
+	        xhr.onload = handler;
+	        xhr.onabort = handler;
+	        xhr.onerror = handler;
+
+	        xhr.send(request.data);
+	    });
+	};
+
+
+/***/ },
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1074,7 +1193,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	var _ = __webpack_require__(1);
-	var Promise = __webpack_require__(9);
+	var Promise = __webpack_require__(10);
 
 	module.exports = function (handler, vm) {
 
@@ -1113,118 +1232,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    return promise.then(fulfilled, rejected);
-	}
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Default client.
-	 */
-
-	var xhrClient = __webpack_require__(13);
-
-	module.exports = function (request) {
-	    return (request.client || xhrClient)(request);
-	};
-
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * XMLHttp client.
-	 */
-
-	var _ = __webpack_require__(1);
-	var Promise = __webpack_require__(9);
-
-	module.exports = function (request) {
-	    return new Promise(function (resolve) {
-
-	        var xhr = new XMLHttpRequest(), response = {request: request}, handler;
-
-	        request.cancel = function () {
-	            xhr.abort();
-	        };
-
-	        xhr.open(request.method, _.url(request), true);
-
-	        if (_.isPlainObject(request.xhr)) {
-	            _.extend(xhr, request.xhr);
-	        }
-
-	        _.each(request.headers || {}, function (value, header) {
-	            xhr.setRequestHeader(header, value);
-	        });
-
-	        handler = function (event) {
-
-	            response.data = xhr.responseText;
-	            response.status = xhr.status;
-	            response.statusText = xhr.statusText;
-	            response.headers = getHeaders(xhr);
-
-	            resolve(response);
-	        };
-
-	        xhr.onload = handler;
-	        xhr.onabort = handler;
-	        xhr.onerror = handler;
-
-	        xhr.send(request.data);
-	    });
-	};
-
-	function getHeaders(xhr) {
-
-	    var headers;
-
-	    if (!headers) {
-	        headers = parseHeaders(xhr.getAllResponseHeaders());
-	    }
-
-	    return function (name) {
-
-	        if (name) {
-	            return headers[_.toLower(name)];
-	        }
-
-	        return headers;
-	    };
-	}
-
-	function parseHeaders(str) {
-
-	    var headers = {}, value, name, i;
-
-	    if (_.isString(str)) {
-	        _.each(str.split('\n'), function (row) {
-
-	            i = row.indexOf(':');
-	            name = _.trim(_.toLower(row.slice(0, i)));
-	            value = _.trim(row.slice(i + 1));
-
-	            if (headers[name]) {
-
-	                if (_.isArray(headers[name])) {
-	                    headers[name].push(value);
-	                } else {
-	                    headers[name] = [headers[name], value];
-	                }
-
-	            } else {
-
-	                headers[name] = value;
-	            }
-
-	        });
-	    }
-
-	    return headers;
 	}
 
 
@@ -1321,7 +1328,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	var _ = __webpack_require__(1);
-	var Promise = __webpack_require__(9);
+	var Promise = __webpack_require__(10);
 
 	module.exports = function (request) {
 	    return new Promise(function (resolve) {
@@ -1515,7 +1522,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	var _ = __webpack_require__(1);
-	var Promise = __webpack_require__(9);
+	var Promise = __webpack_require__(10);
 
 	module.exports = function (request) {
 	    return new Promise(function (resolve) {
