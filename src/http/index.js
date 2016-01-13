@@ -3,14 +3,14 @@
  */
 
 var _ = require('../util');
+var Client = require('./client');
 var Promise = require('../promise');
 var interceptor = require('./interceptor');
-var defaultClient = require('./client/default');
 var jsonType = {'Content-Type': 'application/json'};
 
 function Http(url, options) {
 
-    var client = defaultClient, request, promise;
+    var client = Client, request, promise;
 
     Http.interceptors.forEach(function (handler) {
         client = interceptor(handler, this.$vm)(client);
@@ -20,7 +20,6 @@ function Http(url, options) {
     request = _.merge({}, Http.options, this.$options, options);
     promise = client(request).bind(this.$vm).then(function (response) {
 
-        response.ok = response.status >= 200 && response.status < 300;
         return response.ok ? response : Promise.reject(response);
 
     }, function (response) {

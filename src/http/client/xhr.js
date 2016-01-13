@@ -29,7 +29,7 @@ module.exports = function (request) {
             response.data = xhr.responseText;
             response.status = xhr.status;
             response.statusText = xhr.statusText;
-            response.headers = getHeaders(xhr);
+            response.headers = xhr.getAllResponseHeaders();
 
             resolve(response);
         };
@@ -41,51 +41,3 @@ module.exports = function (request) {
         xhr.send(request.data);
     });
 };
-
-function getHeaders(xhr) {
-
-    var headers;
-
-    if (!headers) {
-        headers = parseHeaders(xhr.getAllResponseHeaders());
-    }
-
-    return function (name) {
-
-        if (name) {
-            return headers[_.toLower(name)];
-        }
-
-        return headers;
-    };
-}
-
-function parseHeaders(str) {
-
-    var headers = {}, value, name, i;
-
-    if (_.isString(str)) {
-        _.each(str.split('\n'), function (row) {
-
-            i = row.indexOf(':');
-            name = _.trim(_.toLower(row.slice(0, i)));
-            value = _.trim(row.slice(i + 1));
-
-            if (headers[name]) {
-
-                if (_.isArray(headers[name])) {
-                    headers[name].push(value);
-                } else {
-                    headers[name] = [headers[name], value];
-                }
-
-            } else {
-
-                headers[name] = value;
-            }
-
-        });
-    }
-
-    return headers;
-}
