@@ -133,7 +133,14 @@ new Vue({
       });
 
       // save item
-      resource.save({id: 1}, {item: this.item}).then(function (response) {
+      resource.save({item: this.item}).then(function (response) {
+          // handle success
+      }, function (response) {
+          // handle error
+      });
+      
+      // update item
+      resource.update({id: 1}, {item: this.item}).then(function (response) {
           // handle success
       }, function (response) {
           // handle error
