@@ -17,7 +17,7 @@ module.exports = function (request) {
         xhr.open(request.method, _.url(request), true);
 
         if (_.isPlainObject(request.xhr)) {
-            _.extend(xhr, request.xhr);
+            _.extend(true, xhr, request.xhr);
         }
 
         _.each(request.headers || {}, function (value, header) {
