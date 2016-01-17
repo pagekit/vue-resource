@@ -21,3 +21,11 @@ Vue.use(require('vue-resource'));
 - [Configuration](docs/config.md)
 - [HTTP Requests/Response](docs/http.md)
 - [Creating Resources](docs/resource.md)
+
+## Changelog
+
+Details changes for each release are documented in the [release notes](https://github.com/vuejs/vue-resource/releases).
+
+## Contribution
+
+If you find a bug or want to contribute to the code or documentation, you can help by submitting an [issue](https://github.com/vuejs/vue-resource/issues) or a pull request.
