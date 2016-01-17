@@ -26,7 +26,7 @@ new Vue({
 The response object properties:
 
 Property | Type | Description
------------- | -------------
+-------- | ---- | -----------
 data | `Object`, `string` | Response body data
 ok | `boolean` | HTTP status code between 200 and 299
 status | `number` | HTTP status code of the response
@@ -59,7 +59,7 @@ List of shortcut methods:
 ## Options
 
 Parameter | Type | Description
------------- | -------------
+--------- | ---- | -----------
 url | `string` | URL to which the request is sent
 method | `string` | HTTP method (e.g. GET, POST, ...)
 data | `Object`, `string` | Data to be sent as the request message data
