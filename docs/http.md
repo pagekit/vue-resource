@@ -68,7 +68,8 @@ headers | `Object` | Headers object to be sent as HTTP request headers
 beforeSend | `function(request)` | Callback function to modify the request object before it is sent
 emulateHTTP | `boolean` | Send PUT, PATCH and DELETE requests with a HTTP POST and set the `X-HTTP-Method-Override` header
 emulateJSON | `boolean` | Send request data as `application/x-www-form-urlencoded` content type
-xhr | `Object` | Parameters object to be set on the native XHR object
+xhr | `Object` | Parameters object to be set on the [XHR](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) object
+upload | `Object` | Parameters object to be set on the [XHR.upload](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/upload) property
 jsonp | `string` | Callback function name in a JSONP request
 timeout | `number` | Request timeout in milliseconds (`0` means no timeout)
 

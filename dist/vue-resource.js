@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.6.1
+ * vue-resource v0.7.0
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -715,6 +715,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    params: {},
 	    headers: {},
 	    xhr: null,
+	    upload: null,
 	    jsonp: 'callback',
 	    beforeSend: null,
 	    crossOrigin: null,
@@ -1157,14 +1158,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        xhr.open(request.method, _.url(request), true);
 
-	        if (_.isPlainObject(request.xhr)) {
-	            _.extend(xhr, request.xhr);
-	        }
-
-	        _.each(request.headers || {}, function (value, header) {
-	            xhr.setRequestHeader(header, value);
-	        });
-
 	        handler = function (event) {
 
 	            response.data = xhr.responseText;
@@ -1175,9 +1168,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	            resolve(response);
 	        };
 
+	        xhr.timeout = 0;
 	        xhr.onload = handler;
 	        xhr.onabort = handler;
 	        xhr.onerror = handler;
+	        xhr.ontimeout = function () {};
+	        xhr.onprogress = function () {};
+
+	        if (_.isPlainObject(request.xhr)) {
+	            _.extend(xhr, request.xhr);
+	        }
+
+	        if (_.isPlainObject(request.upload)) {
+	            _.extend(xhr.upload, request.upload);
+	        }
+
+	        _.each(request.headers || {}, function (value, header) {
+	            xhr.setRequestHeader(header, value);
+	        });
 
 	        xhr.send(request.data);
 	    });
