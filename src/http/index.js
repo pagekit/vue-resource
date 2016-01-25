@@ -48,6 +48,7 @@ Http.options = {
     params: {},
     headers: {},
     xhr: null,
+    upload: null,
     jsonp: 'callback',
     beforeSend: null,
     crossOrigin: null,

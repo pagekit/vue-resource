@@ -16,14 +16,6 @@ module.exports = function (request) {
 
         xhr.open(request.method, _.url(request), true);
 
-        if (_.isPlainObject(request.xhr)) {
-            _.extend(xhr, request.xhr);
-        }
-
-        _.each(request.headers || {}, function (value, header) {
-            xhr.setRequestHeader(header, value);
-        });
-
         handler = function (event) {
 
             response.data = xhr.responseText;
@@ -34,9 +26,24 @@ module.exports = function (request) {
             resolve(response);
         };
 
+        xhr.timeout = 0;
         xhr.onload = handler;
         xhr.onabort = handler;
         xhr.onerror = handler;
+        xhr.ontimeout = function () {};
+        xhr.onprogress = function () {};
+
+        if (_.isPlainObject(request.xhr)) {
+            _.extend(xhr, request.xhr);
+        }
+
+        if (_.isPlainObject(request.upload)) {
+            _.extend(xhr.upload, request.upload);
+        }
+
+        _.each(request.headers || {}, function (value, header) {
+            xhr.setRequestHeader(header, value);
+        });
 
         xhr.send(request.data);
     });
