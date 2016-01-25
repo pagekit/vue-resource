@@ -37,6 +37,10 @@ module.exports = function (request) {
             _.extend(xhr, request.xhr);
         }
 
+        if (_.isPlainObject(request.upload)) {
+            _.extend(xhr.upload, request.upload);
+        }
+
         _.each(request.headers || {}, function (value, header) {
             xhr.setRequestHeader(header, value);
         });
