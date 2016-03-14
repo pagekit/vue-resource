@@ -3,12 +3,7 @@
  */
 
 function install(Vue) {
-
-    var _ = require('./util');
-
-    _.config = Vue.config;
-    _.warning = Vue.util.warn;
-    _.nextTick = Vue.util.nextTick;
+    var _ = require('./util')(Vue);
 
     Vue.url = require('./url');
     Vue.http = require('./http');
