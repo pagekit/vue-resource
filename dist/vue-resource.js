@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.7.0
+ * vue-resource v0.7.1
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -468,7 +468,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.getValues = function (context, operator, key, modifier) {
 
-	    var value = context[key], result = [];
+	    // FIX for values that are functions
+	    var value = typeof context[key] === 'function' ? context[key]() : context[key] , result = [];
 
 	    if (this.isDefined(value) && value !== '') {
 	        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
@@ -577,7 +578,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (options.params[name]) {
 	            variables.push(name);
-	            return slash + encodeUriSegment(options.params[name]);
+	            // FIX for values that are functions
+	            return _.isFunction(options.params[name]) 
+	                        ? slash + encodeUriSegment(options.params[name]()) 
+	                        : slash + encodeUriSegment(options.params[name]);
+	            
 	        }
 
 	        return '';
