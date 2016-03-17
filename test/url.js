@@ -6,6 +6,8 @@ describe('Vue.url', function () {
 
         expect(Vue.url('data/:id')).toBe('data');
         expect(Vue.url('data/:id', {id: 1})).toBe('data/1');
+        expect(Vue.url('data/:id', {id: function() { return 'hello'; }})).toBe('data/hello');
+        expect(Vue.url('data/:id', {id: function() { return 'hello world'; }})).toBe('data/hello%20world');
 
     });
 
@@ -13,6 +15,8 @@ describe('Vue.url', function () {
 
         expect(Vue.url('data{/id}')).toBe('data');
         expect(Vue.url('data{/id}', {id: 1})).toBe('data/1');
+        expect(Vue.url('data{/id}', {id: function() { return 'hello'; }})).toBe('data/hello');
+        expect(Vue.url('data{/id}', {id: function() { return 'hello world'; }})).toBe('data/hello%20world');
 
     });
 

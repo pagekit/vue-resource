@@ -14,7 +14,11 @@ module.exports = function (options, next) {
 
         if (options.params[name]) {
             variables.push(name);
-            return slash + encodeUriSegment(options.params[name]);
+            // FIX for values that are functions
+            return _.isFunction(options.params[name]) 
+                        ? slash + encodeUriSegment(options.params[name]()) 
+                        : slash + encodeUriSegment(options.params[name]);
+            
         }
 
         return '';
