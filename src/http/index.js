@@ -16,6 +16,12 @@ function Http(url, options) {
         client = interceptor(handler, this.$vm)(client);
     }, this);
 
+    if (_.isObject(url) && _.isObject(url.interceptors)) {
+        Object.keys(url.interceptors).forEach(function (key) {
+            client = interceptor(url.interceptors[key], this.$vm)(client);
+        }, this);
+    }
+
     options = _.isObject(url) ? url : _.extend({url: url}, options);
     request = _.merge({}, Http.options, this.$options, options);
     promise = client(request).bind(this.$vm).then(function (response) {
