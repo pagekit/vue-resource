@@ -24,7 +24,7 @@ new Vue({
 
     ready: function() {
 
-      var resource = this.$resource('someItem{/id}');
+      var resource = this.$resource('someItem/:id');
 
       // get item
       resource.get({id: 1}).then(function (response) {
