@@ -61,7 +61,8 @@ exports.parse = function (template) {
 
 exports.getValues = function (context, operator, key, modifier) {
 
-    var value = context[key], result = [];
+    // FIX for values that are functions
+    var value = typeof context[key] === 'function' ? context[key]() : context[key] , result = [];
 
     if (this.isDefined(value) && value !== '') {
         if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
