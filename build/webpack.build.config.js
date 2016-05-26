@@ -31,6 +31,24 @@ module.exports = [
         entry: "./src/index",
         output: {
             path: "./dist",
+            filename: "vue-resource.common.js",
+            library: "VueResource",
+            libraryTarget: "commonjs2"
+        },
+        module: {
+            loaders: [
+                {test: /.js/, exclude: /node_modules/, loader: 'babel', query: {presets: ['es2015-without-strict']}}
+            ]
+        },
+        plugins: [
+            new webpack.BannerPlugin(banner, {raw: true})
+        ]
+    },
+
+    {
+        entry: "./src/index",
+        output: {
+            path: "./dist",
             filename: "vue-resource.min.js",
             library: "VueResource",
             libraryTarget: "umd"
