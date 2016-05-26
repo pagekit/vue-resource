@@ -13,7 +13,7 @@ function Http(url, options) {
     var client = Client, request, promise;
 
     Http.interceptors.forEach((handler) => {
-        client = interceptor(handler, this.$vm || null)(client);
+        client = interceptor(handler, this.$vm)(client);
     });
 
     options = _.isObject(url) ? url : _.extend({url: url}, options);
