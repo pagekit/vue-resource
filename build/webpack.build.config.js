@@ -17,6 +17,11 @@ module.exports = [
             library: "VueResource",
             libraryTarget: "umd"
         },
+        module: {
+            loaders: [
+                {test: /.js/, exclude: /node_modules/, loader: 'babel', query: {presets: ['es2015-without-strict']}}
+            ]
+        },
         plugins: [
             new webpack.BannerPlugin(banner, {raw: true})
         ]
@@ -29,6 +34,11 @@ module.exports = [
             filename: "vue-resource.min.js",
             library: "VueResource",
             libraryTarget: "umd"
+        },
+        module: {
+            loaders: [
+                {test: /.js/, exclude: /node_modules/, loader: 'babel', query: {presets: ['es2015-without-strict']}}
+            ]
         },
         plugins: [
             new webpack.optimize.UglifyJsPlugin,
