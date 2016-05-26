@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.7.0
+ * vue-resource v0.7.1
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -64,7 +64,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Install plugin.
 	 */
 
-	function install(Vue) {
+	function plugin(Vue) {
+
+	    if (plugin.installed) {
+	        return;
+	    }
 
 	    var _ = __webpack_require__(1);
 
@@ -80,50 +84,55 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Object.defineProperties(Vue.prototype, {
 
 	        $url: {
-	            get: function () {
+	            get: function get() {
 	                return _.options(Vue.url, this, this.$options.url);
 	            }
 	        },
 
 	        $http: {
-	            get: function () {
+	            get: function get() {
 	                return _.options(Vue.http, this, this.$options.http);
 	            }
 	        },
 
 	        $resource: {
-	            get: function () {
+	            get: function get() {
 	                return Vue.resource.bind(this);
 	            }
 	        },
 
 	        $promise: {
-	            get: function () {
+	            get: function get() {
+	                var _this = this;
+
 	                return function (executor) {
-	                    return new Vue.Promise(executor, this);
-	                }.bind(this);
+	                    return new Vue.Promise(executor, _this);
+	                };
 	            }
 	        }
 
 	    });
 	}
 
-	if (window.Vue) {
-	    Vue.use(install);
+	if (typeof window !== 'undefined' && window.Vue) {
+	    window.Vue.use(plugin);
 	}
 
-	module.exports = install;
-
+	module.exports = plugin;
 
 /***/ },
 /* 1 */
 /***/ function(module, exports) {
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	/**
 	 * Utility functions.
 	 */
 
-	var _ = exports, array = [], console = window.console;
+	var _ = exports,
+	    array = [],
+	    console = window.console;
 
 	_.warn = function (msg) {
 	    if (console && _.warning && (!_.config.silent || _.config.debug)) {
@@ -156,7 +165,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	_.isObject = function (obj) {
-	    return obj !== null && typeof obj === 'object';
+	    return obj !== null && (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object';
 	};
 
 	_.isPlainObject = function (obj) {
@@ -171,7 +180,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        options = options.call(obj);
 	    }
 
-	    return _.merge(fn.bind({$vm: obj, $options: options}), fn, {$options: options});
+	    return _.merge(fn.bind({ $vm: obj, $options: options }), fn, { $options: options });
 	};
 
 	_.each = function (obj, iterator) {
@@ -242,7 +251,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 
-
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
@@ -257,10 +265,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function Url(url, params) {
 
-	    var options = url, transform;
+	    var options = url,
+	        transform;
 
 	    if (_.isString(url)) {
-	        options = {url: url, params: params};
+	        options = { url: url, params: params };
 	    }
 
 	    options = _.merge({}, Url.options, this.$options, options);
@@ -286,12 +295,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Url transforms.
 	 */
 
-	Url.transforms = [
-	    __webpack_require__(3),
-	    __webpack_require__(5),
-	    __webpack_require__(6),
-	    __webpack_require__(7)
-	];
+	Url.transforms = [__webpack_require__(3), __webpack_require__(5), __webpack_require__(6), __webpack_require__(7)];
 
 	/**
 	 * Encodes a Url parameter string.
@@ -301,7 +305,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	Url.params = function (obj) {
 
-	    var params = [], escape = encodeURIComponent;
+	    var params = [],
+	        escape = encodeURIComponent;
 
 	    params.add = function (key, value) {
 
@@ -356,7 +361,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function serialize(params, obj, scope) {
 
-	    var array = _.isArray(obj), plain = _.isPlainObject(obj), hash;
+	    var array = _.isArray(obj),
+	        plain = _.isPlainObject(obj),
+	        hash;
 
 	    _.each(obj, function (value, key) {
 
@@ -378,7 +385,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = _.url = Url;
 
-
 /***/ },
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
@@ -391,7 +397,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (options) {
 
-	    var variables = [], url = UrlTemplate.expand(options.url, options.params, variables);
+	    var variables = [],
+	        url = UrlTemplate.expand(options.url, options.params, variables);
 
 	    variables.forEach(function (key) {
 	        delete options.params[key];
@@ -399,7 +406,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    return url;
 	};
-
 
 /***/ },
 /* 4 */
@@ -411,7 +417,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.expand = function (url, params, variables) {
 
-	    var tmpl = this.parse(url), expanded = tmpl.expand(params);
+	    var tmpl = this.parse(url),
+	        expanded = tmpl.expand(params);
 
 	    if (variables) {
 	        variables.push.apply(variables, tmpl.vars);
@@ -422,15 +429,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.parse = function (template) {
 
-	    var operators = ['+', '#', '.', '/', ';', '?', '&'], variables = [];
+	    var operators = ['+', '#', '.', '/', ';', '?', '&'],
+	        variables = [];
 
 	    return {
 	        vars: variables,
-	        expand: function (context) {
+	        expand: function expand(context) {
 	            return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function (_, expression, literal) {
 	                if (expression) {
 
-	                    var operator = null, values = [];
+	                    var operator = null,
+	                        values = [];
 
 	                    if (operators.indexOf(expression.charAt(0)) !== -1) {
 	                        operator = expression.charAt(0);
@@ -457,7 +466,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    } else {
 	                        return values.join(',');
 	                    }
-
 	                } else {
 	                    return exports.encodeReserved(literal);
 	                }
@@ -468,7 +476,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.getValues = function (context, operator, key, modifier) {
 
-	    var value = context[key], result = [];
+	    var value = context[key],
+	        result = [];
 
 	    if (this.isDefined(value) && value !== '') {
 	        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
@@ -538,7 +547,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.encodeValue = function (operator, value, key) {
 
-	    value = (operator === '+' || operator === '#') ? this.encodeReserved(value) : encodeURIComponent(value);
+	    value = operator === '+' || operator === '#' ? this.encodeReserved(value) : encodeURIComponent(value);
 
 	    if (key) {
 	        return encodeURIComponent(key) + '=' + value;
@@ -556,7 +565,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }).join('');
 	};
 
-
 /***/ },
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
@@ -569,7 +577,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (options, next) {
 
-	    var variables = [], url = next(options);
+	    var variables = [],
+	        url = next(options);
 
 	    url = url.replace(/(\/?):([a-z]\w*)/gi, function (match, slash, name) {
 
@@ -592,22 +601,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function encodeUriSegment(value) {
 
-	    return encodeUriQuery(value, true).
-	        replace(/%26/gi, '&').
-	        replace(/%3D/gi, '=').
-	        replace(/%2B/gi, '+');
+	    return encodeUriQuery(value, true).replace(/%26/gi, '&').replace(/%3D/gi, '=').replace(/%2B/gi, '+');
 	}
 
 	function encodeUriQuery(value, spaces) {
 
-	    return encodeURIComponent(value).
-	        replace(/%40/gi, '@').
-	        replace(/%3A/gi, ':').
-	        replace(/%24/g, '$').
-	        replace(/%2C/gi, ',').
-	        replace(/%20/g, (spaces ? '%20' : '+'));
+	    return encodeURIComponent(value).replace(/%40/gi, '@').replace(/%3A/gi, ':').replace(/%24/g, '$').replace(/%2C/gi, ',').replace(/%20/g, spaces ? '%20' : '+');
 	}
-
 
 /***/ },
 /* 6 */
@@ -621,9 +621,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (options, next) {
 
-	    var urlParams = Object.keys(_.url.options.params), query = {}, url = next(options);
+	    var urlParams = Object.keys(_.url.options.params),
+	        query = {},
+	        url = next(options);
 
-	   _.each(options.params, function (value, key) {
+	    _.each(options.params, function (value, key) {
 	        if (urlParams.indexOf(key) === -1) {
 	            query[key] = value;
 	        }
@@ -637,7 +639,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    return url;
 	};
-
 
 /***/ },
 /* 7 */
@@ -660,7 +661,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return url;
 	};
 
-
 /***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
@@ -673,22 +673,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Client = __webpack_require__(9);
 	var Promise = __webpack_require__(10);
 	var interceptor = __webpack_require__(13);
-	var jsonType = {'Content-Type': 'application/json'};
+	var jsonType = { 'Content-Type': 'application/json' };
 
 	function Http(url, options) {
+	    var _this = this;
 
-	    var client = Client, request, promise;
+	    var client = Client,
+	        request,
+	        promise;
 
 	    Http.interceptors.forEach(function (handler) {
-	        client = interceptor(handler, this.$vm)(client);
-	    }, this);
+	        client = interceptor(handler, _this.$vm)(client);
+	    });
 
-	    options = _.isObject(url) ? url : _.extend({url: url}, options);
+	    options = _.isObject(url) ? url : _.extend({ url: url }, options);
 	    request = _.merge({}, Http.options, this.$options, options);
 	    promise = client(request).bind(this.$vm).then(function (response) {
 
 	        return response.ok ? response : Promise.reject(response);
-
 	    }, function (response) {
 
 	        if (response instanceof Error) {
@@ -724,23 +726,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    timeout: 0
 	};
 
-	Http.interceptors = [
-	    __webpack_require__(14),
-	    __webpack_require__(15),
-	    __webpack_require__(16),
-	    __webpack_require__(18),
-	    __webpack_require__(19),
-	    __webpack_require__(20),
-	    __webpack_require__(21)
-	];
+	Http.interceptors = [__webpack_require__(14), __webpack_require__(15), __webpack_require__(16), __webpack_require__(18), __webpack_require__(19), __webpack_require__(20), __webpack_require__(21)];
 
 	Http.headers = {
 	    put: jsonType,
 	    post: jsonType,
 	    patch: jsonType,
 	    delete: jsonType,
-	    common: {'Accept': 'application/json, text/plain, */*'},
-	    custom: {'X-Requested-With': 'XMLHttpRequest'}
+	    common: { 'Accept': 'application/json, text/plain, */*' },
+	    custom: { 'X-Requested-With': 'XMLHttpRequest' }
 	};
 
 	['get', 'put', 'post', 'patch', 'delete', 'jsonp'].forEach(function (method) {
@@ -758,12 +752,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            success = undefined;
 	        }
 
-	        return this(url, _.extend({method: method, data: data, success: success}, options));
+	        return this(url, _.extend({ method: method, data: data, success: success }, options));
 	    };
 	});
 
 	module.exports = _.http = Http;
-
 
 /***/ },
 /* 9 */
@@ -795,19 +788,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                return headers;
 	            };
-
 	        }
 
 	        response.ok = response.status >= 200 && response.status < 300;
 
 	        return response;
 	    });
-
 	};
 
 	function parseHeaders(str) {
 
-	    var headers = {}, value, name, i;
+	    var headers = {},
+	        value,
+	        name,
+	        i;
 
 	    if (_.isString(str)) {
 	        _.each(str.split('\n'), function (row) {
@@ -823,18 +817,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	                } else {
 	                    headers[name] = [headers[name], value];
 	                }
-
 	            } else {
 
 	                headers[name] = value;
 	            }
-
 	        });
 	    }
 
 	    return headers;
 	}
-
 
 /***/ },
 /* 10 */
@@ -910,13 +901,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	p.finally = function (callback) {
 
 	    return this.then(function (value) {
-	            callback.call(this);
-	            return value;
-	        }, function (reason) {
-	            callback.call(this);
-	            return PromiseObj.reject(reason);
-	        }
-	    );
+	        callback.call(this);
+	        return value;
+	    }, function (reason) {
+	        callback.call(this);
+	        return PromiseObj.reject(reason);
+	    });
 	};
 
 	p.success = function (callback) {
@@ -941,7 +931,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    _.warn('The `always` method has been deprecated. Use the `finally` method instead.');
 
-	    var cb = function (response) {
+	    var cb = function cb(response) {
 	        return callback.call(this, response.data, response.status, response) || response;
 	    };
 
@@ -950,10 +940,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = Promise;
 
-
 /***/ },
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	/**
 	 * Promises/A+ polyfill v1.1.4 (https://github.com/bramstein/promis)
@@ -963,7 +954,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var RESOLVED = 0;
 	var REJECTED = 1;
-	var PENDING  = 2;
+	var PENDING = 2;
 
 	function Promise(executor) {
 
@@ -998,7 +989,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	Promise.all = function all(iterable) {
 	    return new Promise(function (resolve, reject) {
-	        var count = 0, result = [];
+	        var count = 0,
+	            result = [];
 
 	        if (iterable.length === 0) {
 	            resolve(result);
@@ -1044,13 +1036,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        try {
 	            var then = x && x['then'];
 
-	            if (x !== null && typeof x === 'object' && typeof then === 'function') {
+	            if (x !== null && (typeof x === 'undefined' ? 'undefined' : _typeof(x)) === 'object' && typeof then === 'function') {
 	                then.call(x, function (x) {
 	                    if (!called) {
 	                        promise.resolve(x);
 	                    }
 	                    called = true;
-
 	                }, function (r) {
 	                    if (!called) {
 	                        promise.reject(r);
@@ -1135,7 +1126,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = Promise;
 
-
 /***/ },
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
@@ -1150,7 +1140,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = function (request) {
 	    return new Promise(function (resolve) {
 
-	        var xhr = new XMLHttpRequest(), response = {request: request}, handler;
+	        var xhr = new XMLHttpRequest(),
+	            response = { request: request },
+	            handler;
 
 	        request.cancel = function () {
 	            xhr.abort();
@@ -1158,7 +1150,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        xhr.open(request.method, _.url(request), true);
 
-	        handler = function (event) {
+	        handler = function handler(event) {
 
 	            response.data = xhr.responseText;
 	            response.status = xhr.status;
@@ -1190,7 +1182,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        xhr.send(request.data);
 	    });
 	};
-
 
 /***/ },
 /* 13 */
@@ -1242,7 +1233,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return promise.then(fulfilled, rejected);
 	}
 
-
 /***/ },
 /* 14 */
 /***/ function(module, exports, __webpack_require__) {
@@ -1255,17 +1245,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 
-	    request: function (request) {
+	    request: function request(_request) {
 
-	        if (_.isFunction(request.beforeSend)) {
-	            request.beforeSend.call(this, request);
+	        if (_.isFunction(_request.beforeSend)) {
+	            _request.beforeSend.call(this, _request);
 	        }
 
-	        return request;
+	        return _request;
 	    }
 
 	};
-
 
 /***/ },
 /* 15 */
@@ -1281,27 +1270,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    return {
 
-	        request: function (request) {
+	        request: function request(_request) {
 
-	            if (request.timeout) {
+	            if (_request.timeout) {
 	                timeout = setTimeout(function () {
-	                    request.cancel();
-	                }, request.timeout);
+	                    _request.cancel();
+	                }, _request.timeout);
 	            }
 
-	            return request;
+	            return _request;
 	        },
 
-	        response: function (response) {
+	        response: function response(_response) {
 
 	            clearTimeout(timeout);
 
-	            return response;
+	            return _response;
 	        }
 
 	    };
 	};
-
 
 /***/ },
 /* 16 */
@@ -1315,17 +1303,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 
-	    request: function (request) {
+	    request: function request(_request) {
 
-	        if (request.method == 'JSONP') {
-	            request.client = jsonpClient;
+	        if (_request.method == 'JSONP') {
+	            _request.client = jsonpClient;
 	        }
 
-	        return request;
+	        return _request;
 	    }
 
 	};
-
 
 /***/ },
 /* 17 */
@@ -1341,11 +1328,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = function (request) {
 	    return new Promise(function (resolve) {
 
-	        var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {request: request, data: null}, handler, script;
+	        var callback = '_jsonp' + Math.random().toString(36).substr(2),
+	            response = { request: request, data: null },
+	            handler,
+	            script;
 
 	        request.params[request.jsonp] = callback;
 	        request.cancel = function () {
-	            handler({type: 'cancel'});
+	            handler({ type: 'cancel' });
 	        };
 
 	        script = document.createElement('script');
@@ -1357,7 +1347,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            response.data = data;
 	        };
 
-	        handler = function (event) {
+	        handler = function handler(event) {
 
 	            if (event.type === 'load' && response.data !== null) {
 	                response.status = 200;
@@ -1380,7 +1370,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	};
 
-
 /***/ },
 /* 18 */
 /***/ function(module, exports) {
@@ -1391,18 +1380,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 
-	    request: function (request) {
+	    request: function request(_request) {
 
-	        if (request.emulateHTTP && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
-	            request.headers['X-HTTP-Method-Override'] = request.method;
-	            request.method = 'POST';
+	        if (_request.emulateHTTP && /^(PUT|PATCH|DELETE)$/i.test(_request.method)) {
+	            _request.headers['X-HTTP-Method-Override'] = _request.method;
+	            _request.method = 'POST';
 	        }
 
-	        return request;
+	        return _request;
 	    }
 
 	};
-
 
 /***/ },
 /* 19 */
@@ -1416,35 +1404,34 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 
-	    request: function (request) {
+	    request: function request(_request) {
 
-	        if (request.emulateJSON && _.isPlainObject(request.data)) {
-	            request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-	            request.data = _.url.params(request.data);
+	        if (_request.emulateJSON && _.isPlainObject(_request.data)) {
+	            _request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+	            _request.data = _.url.params(_request.data);
 	        }
 
-	        if (_.isObject(request.data) && /FormData/i.test(request.data.toString())) {
-	            delete request.headers['Content-Type'];
+	        if (_.isObject(_request.data) && /FormData/i.test(_request.data.toString())) {
+	            delete _request.headers['Content-Type'];
 	        }
 
-	        if (_.isPlainObject(request.data)) {
-	            request.data = JSON.stringify(request.data);
+	        if (_.isPlainObject(_request.data)) {
+	            _request.data = JSON.stringify(_request.data);
 	        }
 
-	        return request;
+	        return _request;
 	    },
 
-	    response: function (response) {
+	    response: function response(_response) {
 
 	        try {
-	            response.data = JSON.parse(response.data);
+	            _response.data = JSON.parse(_response.data);
 	        } catch (e) {}
 
-	        return response;
+	        return _response;
 	    }
 
 	};
-
 
 /***/ },
 /* 20 */
@@ -1458,25 +1445,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 
-	    request: function (request) {
+	    request: function request(_request) {
 
-	        request.method = request.method.toUpperCase();
-	        request.headers = _.extend({}, _.http.headers.common,
-	            !request.crossOrigin ? _.http.headers.custom : {},
-	            _.http.headers[request.method.toLowerCase()],
-	            request.headers
-	        );
+	        _request.method = _request.method.toUpperCase();
+	        _request.headers = _.extend({}, _.http.headers.common, !_request.crossOrigin ? _.http.headers.custom : {}, _.http.headers[_request.method.toLowerCase()], _request.headers);
 
-	        if (_.isPlainObject(request.data) && /^(GET|JSONP)$/i.test(request.method)) {
-	            _.extend(request.params, request.data);
-	            delete request.data;
+	        if (_.isPlainObject(_request.data) && /^(GET|JSONP)$/i.test(_request.method)) {
+	            _.extend(_request.params, _request.data);
+	            delete _request.data;
 	        }
 
-	        return request;
+	        return _request;
 	    }
 
 	};
-
 
 /***/ },
 /* 21 */
@@ -1493,22 +1475,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 
-	    request: function (request) {
+	    request: function request(_request) {
 
-	        if (request.crossOrigin === null) {
-	            request.crossOrigin = crossOrigin(request);
+	        if (_request.crossOrigin === null) {
+	            _request.crossOrigin = crossOrigin(_request);
 	        }
 
-	        if (request.crossOrigin) {
+	        if (_request.crossOrigin) {
 
 	            if (!xhrCors) {
-	                request.client = xdrClient;
+	                _request.client = xdrClient;
 	            }
 
-	            request.emulateHTTP = false;
+	            _request.emulateHTTP = false;
 	        }
 
-	        return request;
+	        return _request;
 	    }
 
 	};
@@ -1517,9 +1499,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var requestUrl = _.url.parse(_.url(request));
 
-	    return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
+	    return requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host;
 	}
-
 
 /***/ },
 /* 22 */
@@ -1535,7 +1516,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = function (request) {
 	    return new Promise(function (resolve) {
 
-	        var xdr = new XDomainRequest(), response = {request: request}, handler;
+	        var xdr = new XDomainRequest(),
+	            response = { request: request },
+	            handler;
 
 	        request.cancel = function () {
 	            xdr.abort();
@@ -1543,7 +1526,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        xdr.open(request.method, _.url(request), true);
 
-	        handler = function (event) {
+	        handler = function handler(event) {
 
 	            response.data = xdr.responseText;
 	            response.status = xdr.status;
@@ -1563,7 +1546,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	};
 
-
 /***/ },
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
@@ -1576,16 +1558,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function Resource(url, params, actions, options) {
 
-	    var self = this, resource = {};
+	    var self = this,
+	        resource = {};
 
-	    actions = _.extend({},
-	        Resource.actions,
-	        actions
-	    );
+	    actions = _.extend({}, Resource.actions, actions);
 
 	    _.each(actions, function (action, name) {
 
-	        action = _.merge({url: url, params: params || {}}, options, action);
+	        action = _.merge({ url: url, params: params || {} }, options, action);
 
 	        resource[name] = function () {
 	            return (self.$http || _.http)(opts(action, arguments));
@@ -1597,7 +1577,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function opts(action, args) {
 
-	    var options = _.extend({}, action), params = {}, data, success, error;
+	    var options = _.extend({}, action),
+	        params = {},
+	        data,
+	        success,
+	        error;
 
 	    switch (args.length) {
 
@@ -1621,7 +1605,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                success = args[1];
 	                error = args[2];
-
 	            } else {
 
 	                params = args[0];
@@ -1668,17 +1651,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	Resource.actions = {
 
-	    get: {method: 'GET'},
-	    save: {method: 'POST'},
-	    query: {method: 'GET'},
-	    update: {method: 'PUT'},
-	    remove: {method: 'DELETE'},
-	    delete: {method: 'DELETE'}
+	    get: { method: 'GET' },
+	    save: { method: 'POST' },
+	    query: { method: 'GET' },
+	    update: { method: 'PUT' },
+	    remove: { method: 'DELETE' },
+	    delete: { method: 'DELETE' }
 
 	};
 
 	module.exports = _.resource = Resource;
-
 
 /***/ }
 /******/ ])

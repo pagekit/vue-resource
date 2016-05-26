@@ -16,6 +16,13 @@ describe('Vue.url', function () {
 
     });
 
+    it('data{/array}', function () {
+
+        expect(Vue.url('data{?array}')).toBe('data');
+        expect(Vue.url('data{?array}', {array: [1,2,3]})).toBe('data?array=1,2,3');
+
+    });
+
     it('{+path}data', function () {
 
         expect(Vue.url('{+path}data')).toBe('data');

@@ -2,7 +2,11 @@
  * Install plugin.
  */
 
-function install(Vue) {
+function plugin(Vue) {
+
+    if (plugin.installed) {
+        return;
+    }
 
     var _ = require('./util');
 
@@ -18,36 +22,34 @@ function install(Vue) {
     Object.defineProperties(Vue.prototype, {
 
         $url: {
-            get: function () {
+            get() {
                 return _.options(Vue.url, this, this.$options.url);
             }
         },
 
         $http: {
-            get: function () {
+            get() {
                 return _.options(Vue.http, this, this.$options.http);
             }
         },
 
         $resource: {
-            get: function () {
+            get() {
                 return Vue.resource.bind(this);
             }
         },
 
         $promise: {
-            get: function () {
-                return function (executor) {
-                    return new Vue.Promise(executor, this);
-                }.bind(this);
+            get() {
+                return (executor) => new Vue.Promise(executor, this);
             }
         }
 
     });
 }
 
-if (window.Vue) {
-    Vue.use(install);
+if (typeof window !== 'undefined' && window.Vue) {
+    window.Vue.use(plugin);
 }
 
-module.exports = install;
+module.exports = plugin;

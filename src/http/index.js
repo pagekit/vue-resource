@@ -12,17 +12,17 @@ function Http(url, options) {
 
     var client = Client, request, promise;
 
-    Http.interceptors.forEach(function (handler) {
+    Http.interceptors.forEach((handler) => {
         client = interceptor(handler, this.$vm)(client);
-    }, this);
+    });
 
     options = _.isObject(url) ? url : _.extend({url: url}, options);
     request = _.merge({}, Http.options, this.$options, options);
-    promise = client(request).bind(this.$vm).then(function (response) {
+    promise = client(request).bind(this.$vm).then((response) => {
 
         return response.ok ? response : Promise.reject(response);
 
-    }, function (response) {
+    }, (response) => {
 
         if (response instanceof Error) {
             _.error(response);
