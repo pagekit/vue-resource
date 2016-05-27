@@ -51,6 +51,7 @@ Http.options = {
     upload: null,
     jsonp: 'callback',
     beforeSend: null,
+    onComplete: null,
     crossOrigin: null,
     emulateHTTP: false,
     emulateJSON: false,
@@ -59,6 +60,7 @@ Http.options = {
 
 Http.interceptors = [
     require('./before'),
+    require('./complete'),
     require('./timeout'),
     require('./jsonp'),
     require('./method'),
