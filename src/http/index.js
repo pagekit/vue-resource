@@ -10,15 +10,15 @@ var jsonType = {'Content-Type': 'application/json'};
 
 function Http(url, options) {
 
-    var client = Client, request, promise;
+    var self = this || {}, client = Client, request, promise;
 
     Http.interceptors.forEach((handler) => {
-        client = interceptor(handler, this.$vm)(client);
+        client = interceptor(handler, self.$vm)(client);
     });
 
     options = _.isObject(url) ? url : _.extend({url: url}, options);
-    request = _.merge({}, Http.options, this.$options, options);
-    promise = client(request).bind(this.$vm).then((response) => {
+    request = _.merge({}, Http.options, self.$options, options);
+    promise = client(request).bind(self.$vm).then((response) => {
 
         return response.ok ? response : Promise.reject(response);
 
