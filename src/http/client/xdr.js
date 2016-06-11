@@ -20,7 +20,7 @@ module.exports = function (request) {
 
             response.data = xdr.responseText;
             response.status = xdr.status;
-            response.statusText = xdr.statusText;
+            response.statusText = xdr.statusText || '';
 
             resolve(response);
         };

@@ -18,9 +18,9 @@ module.exports = function (request) {
 
         handler = function (event) {
 
-            response.data = xhr.responseText;
-            response.status = xhr.status;
-            response.statusText = xhr.statusText;
+            response.data = ('response' in xhr) ? xhr.response : xhr.responseText;
+            response.status = xhr.status === 1223 ? 204 : xhr.status; // IE9 status bug
+            response.statusText = xhr.statusText || '';
             response.headers = xhr.getAllResponseHeaders();
 
             resolve(response);
