@@ -1,6 +1,6 @@
 {
   "name": "vue-resource",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "A web request service for Vue.js",
   "main": "dist/vue-resource.common.js",
   "scripts": {

@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.7.2
+ * vue-resource v0.7.3
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -50,6 +50,8 @@ module.exports =
 /******/ ([
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/**
 	 * Install plugin.
@@ -114,6 +116,8 @@ module.exports =
 /***/ },
 /* 1 */
 /***/ function(module, exports) {
+
+	'use strict';
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
@@ -245,6 +249,8 @@ module.exports =
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/**
 	 * Service for URL templating.
@@ -380,6 +386,8 @@ module.exports =
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/**
 	 * URL Template (RFC 6570) Transform.
 	 */
@@ -401,6 +409,8 @@ module.exports =
 /***/ },
 /* 4 */
 /***/ function(module, exports) {
+
+	'use strict';
 
 	/**
 	 * URL Template v2.0.6 (https://github.com/bramstein/url-template)
@@ -560,6 +570,8 @@ module.exports =
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/**
 	 * Legacy Transform.
 	 */
@@ -604,6 +616,8 @@ module.exports =
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/**
 	 * Query Parameter Transform.
 	 */
@@ -635,6 +649,8 @@ module.exports =
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/**
 	 * Root Prefix Transform.
 	 */
@@ -656,6 +672,8 @@ module.exports =
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/**
 	 * Service for sending network requests.
 	 */
@@ -667,19 +685,19 @@ module.exports =
 	var jsonType = { 'Content-Type': 'application/json' };
 
 	function Http(url, options) {
-	    var _this = this;
 
-	    var client = Client,
+	    var self = this || {},
+	        client = Client,
 	        request,
 	        promise;
 
 	    Http.interceptors.forEach(function (handler) {
-	        client = interceptor(handler, _this.$vm)(client);
+	        client = interceptor(handler, self.$vm)(client);
 	    });
 
 	    options = _.isObject(url) ? url : _.extend({ url: url }, options);
-	    request = _.merge({}, Http.options, this.$options, options);
-	    promise = client(request).bind(this.$vm).then(function (response) {
+	    request = _.merge({}, Http.options, self.$options, options);
+	    promise = client(request).bind(self.$vm).then(function (response) {
 
 	        return response.ok ? response : Promise.reject(response);
 	    }, function (response) {
@@ -753,6 +771,8 @@ module.exports =
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/**
 	 * Base client.
 	 */
@@ -821,6 +841,8 @@ module.exports =
 /***/ },
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/**
 	 * Promise adapter.
@@ -934,6 +956,8 @@ module.exports =
 /***/ },
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
@@ -1121,6 +1145,8 @@ module.exports =
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/**
 	 * XMLHttp client.
 	 */
@@ -1178,6 +1204,8 @@ module.exports =
 /* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/**
 	 * Interceptor factory.
 	 */
@@ -1228,6 +1256,8 @@ module.exports =
 /* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/**
 	 * Before Interceptor.
 	 */
@@ -1250,6 +1280,8 @@ module.exports =
 /***/ },
 /* 15 */
 /***/ function(module, exports) {
+
+	"use strict";
 
 	/**
 	 * Timeout Interceptor.
@@ -1286,6 +1318,8 @@ module.exports =
 /* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/**
 	 * JSONP Interceptor.
 	 */
@@ -1308,6 +1342,8 @@ module.exports =
 /***/ },
 /* 17 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/**
 	 * JSONP client.
@@ -1365,6 +1401,8 @@ module.exports =
 /* 18 */
 /***/ function(module, exports) {
 
+	'use strict';
+
 	/**
 	 * HTTP method override Interceptor.
 	 */
@@ -1386,6 +1424,8 @@ module.exports =
 /***/ },
 /* 19 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/**
 	 * Mime Interceptor.
@@ -1428,6 +1468,8 @@ module.exports =
 /* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/**
 	 * Header Interceptor.
 	 */
@@ -1454,6 +1496,8 @@ module.exports =
 /***/ },
 /* 21 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/**
 	 * CORS Interceptor.
@@ -1496,6 +1540,8 @@ module.exports =
 /***/ },
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/**
 	 * XDomain client (Internet Explorer).
@@ -1540,6 +1586,8 @@ module.exports =
 /***/ },
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	/**
 	 * Service for interacting with RESTful services.
