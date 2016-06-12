@@ -2,10 +2,10 @@
  * XDomain client (Internet Explorer).
  */
 
-var _ = require('../../util');
-var Promise = require('../../promise');
+import Url from '../../url/index';
+import Promise from '../../promise';
 
-module.exports = function (request) {
+export default function (request) {
     return new Promise(function (resolve) {
 
         var xdr = new XDomainRequest(), response = {request: request}, handler;
@@ -14,7 +14,7 @@ module.exports = function (request) {
             xdr.abort();
         };
 
-        xdr.open(request.method, _.url(request), true);
+        xdr.open(request.method, Url(request), true);
 
         handler = function (event) {
 
@@ -34,4 +34,4 @@ module.exports = function (request) {
 
         xdr.send(request.data);
     });
-};
+}

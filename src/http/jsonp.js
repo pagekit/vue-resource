@@ -2,9 +2,9 @@
  * JSONP Interceptor.
  */
 
-var jsonpClient = require('./client/jsonp');
+import jsonpClient from './client/jsonp';
 
-module.exports = {
+const exports = {
 
     request: function (request) {
 
@@ -16,3 +16,5 @@ module.exports = {
     }
 
 };
+
+export default exports;

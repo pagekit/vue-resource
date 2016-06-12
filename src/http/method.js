@@ -2,7 +2,7 @@
  * HTTP method override Interceptor.
  */
 
-module.exports = {
+const exports = {
 
     request: function (request) {
 
@@ -15,3 +15,5 @@ module.exports = {
     }
 
 };
+
+export default exports;

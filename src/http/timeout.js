@@ -2,7 +2,7 @@
  * Timeout Interceptor.
  */
 
-module.exports = function () {
+const exports = function () {
 
     var timeout;
 
@@ -28,3 +28,5 @@ module.exports = function () {
 
     };
 };
+
+export default exports;

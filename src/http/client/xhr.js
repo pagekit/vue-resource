@@ -2,10 +2,11 @@
  * XMLHttp client.
  */
 
-var _ = require('../../util');
-var Promise = require('../../promise');
+import Url from '../../url/index';
+import Promise from '../../promise';
+import { each, extend, isPlainObject } from '../../util';
 
-module.exports = function (request) {
+export default function (request) {
     return new Promise(function (resolve) {
 
         var xhr = new XMLHttpRequest(), response = {request: request}, handler;
@@ -14,7 +15,7 @@ module.exports = function (request) {
             xhr.abort();
         };
 
-        xhr.open(request.method, _.url(request), true);
+        xhr.open(request.method, Url(request), true);
 
         handler = function (event) {
 
@@ -33,18 +34,18 @@ module.exports = function (request) {
         xhr.ontimeout = function () {};
         xhr.onprogress = function () {};
 
-        if (_.isPlainObject(request.xhr)) {
-            _.extend(xhr, request.xhr);
+        if (isPlainObject(request.xhr)) {
+            extend(xhr, request.xhr);
         }
 
-        if (_.isPlainObject(request.upload)) {
-            _.extend(xhr.upload, request.upload);
+        if (isPlainObject(request.upload)) {
+            extend(xhr.upload, request.upload);
         }
 
-        _.each(request.headers || {}, function (value, header) {
+        each(request.headers || {}, function (value, header) {
             xhr.setRequestHeader(header, value);
         });
 
         xhr.send(request.data);
     });
-};
+}

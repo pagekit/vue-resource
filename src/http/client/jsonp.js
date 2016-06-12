@@ -2,10 +2,10 @@
  * JSONP client.
  */
 
-var _ = require('../../util');
-var Promise = require('../../promise');
+import Url from '../../url/index';
+import Promise from '../../promise';
 
-module.exports = function (request) {
+export default function (request) {
     return new Promise(function (resolve) {
 
         var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {request: request, data: null}, handler, script;
@@ -16,7 +16,7 @@ module.exports = function (request) {
         };
 
         script = document.createElement('script');
-        script.src = _.url(request);
+        script.src = Url(request);
         script.type = 'text/javascript';
         script.async = true;
 
@@ -45,4 +45,4 @@ module.exports = function (request) {
 
         document.body.appendChild(script);
     });
-};
+}

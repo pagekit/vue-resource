@@ -2,22 +2,23 @@
  * Mime Interceptor.
  */
 
-var _ = require('../util');
+import Url from '../url/index';
+import { isObject, isPlainObject } from '../util';
 
-module.exports = {
+const exports = {
 
     request: function (request) {
 
-        if (request.emulateJSON && _.isPlainObject(request.data)) {
+        if (request.emulateJSON && isPlainObject(request.data)) {
             request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-            request.data = _.url.params(request.data);
+            request.data = Url.params(request.data);
         }
 
-        if (_.isObject(request.data) && /FormData/i.test(request.data.toString())) {
+        if (isObject(request.data) && /FormData/i.test(request.data.toString())) {
             delete request.headers['Content-Type'];
         }
 
-        if (_.isPlainObject(request.data)) {
+        if (isPlainObject(request.data)) {
             request.data = JSON.stringify(request.data);
         }
 
@@ -34,3 +35,5 @@ module.exports = {
     }
 
 };
+
+export default exports;

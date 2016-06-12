@@ -2,34 +2,36 @@
  * Install plugin.
  */
 
+import Url from './url/index';
+import Http from './http/index';
+import Promise from './promise';
+import Resource from './resource';
+import Util, { options } from './util';
+
 function plugin(Vue) {
 
     if (plugin.installed) {
         return;
     }
 
-    var _ = require('./util');
+    Util(Vue);
 
-    _.config = Vue.config;
-    _.warning = Vue.util.warn;
-    _.nextTick = Vue.util.nextTick;
-
-    Vue.url = require('./url');
-    Vue.http = require('./http');
-    Vue.resource = require('./resource');
-    Vue.Promise = require('./promise');
+    Vue.url = Url;
+    Vue.http = Http;
+    Vue.resource = Resource;
+    Vue.Promise = Promise;
 
     Object.defineProperties(Vue.prototype, {
 
         $url: {
             get() {
-                return _.options(Vue.url, this, this.$options.url);
+                return options(Vue.url, this, this.$options.url);
             }
         },
 
         $http: {
             get() {
-                return _.options(Vue.http, this, this.$options.http);
+                return options(Vue.http, this, this.$options.http);
             }
         },
 
@@ -52,4 +54,4 @@ if (typeof window !== 'undefined' && window.Vue) {
     window.Vue.use(plugin);
 }
 
-module.exports = plugin;
+export default plugin;

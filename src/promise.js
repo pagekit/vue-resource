@@ -2,10 +2,12 @@
  * Promise adapter.
  */
 
-var _ = require('./util');
-var PromiseObj = window.Promise || require('./lib/promise');
+import { warn } from './util';
+import PromiseLib from './lib/promise';
 
-function Promise(executor, context) {
+var PromiseObj = window.Promise || PromiseLib;
+
+export default function Promise(executor, context) {
 
     if (executor instanceof PromiseObj) {
         this.promise = executor;
@@ -79,7 +81,7 @@ p.finally = function (callback) {
 
 p.success = function (callback) {
 
-    _.warn('The `success` method has been deprecated. Use the `then` method instead.');
+    warn('The `success` method has been deprecated. Use the `then` method instead.');
 
     return this.then(function (response) {
         return callback.call(this, response.data, response.status, response) || response;
@@ -88,7 +90,7 @@ p.success = function (callback) {
 
 p.error = function (callback) {
 
-    _.warn('The `error` method has been deprecated. Use the `catch` method instead.');
+    warn('The `error` method has been deprecated. Use the `catch` method instead.');
 
     return this.catch(function (response) {
         return callback.call(this, response.data, response.status, response) || response;
@@ -97,7 +99,7 @@ p.error = function (callback) {
 
 p.always = function (callback) {
 
-    _.warn('The `always` method has been deprecated. Use the `finally` method instead.');
+    warn('The `always` method has been deprecated. Use the `finally` method instead.');
 
     var cb = function (response) {
         return callback.call(this, response.data, response.status, response) || response;
@@ -105,5 +107,3 @@ p.always = function (callback) {
 
     return this.then(cb, cb);
 };
-
-module.exports = Promise;

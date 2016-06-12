@@ -2,13 +2,13 @@
  * Promises/A+ polyfill v1.1.4 (https://github.com/bramstein/promis)
  */
 
-var _ = require('../util');
+const RESOLVED = 0;
+const REJECTED = 1;
+const PENDING  = 2;
 
-var RESOLVED = 0;
-var REJECTED = 1;
-var PENDING  = 2;
+import { nextTick } from '../util';
 
-function Promise(executor) {
+export default function Promise(executor) {
 
     this.state = PENDING;
     this.value = undefined;
@@ -132,7 +132,7 @@ p.reject = function reject(reason) {
 p.notify = function notify() {
     var promise = this;
 
-    _.nextTick(function () {
+    nextTick(function () {
         if (promise.state !== PENDING) {
             while (promise.deferred.length) {
                 var deferred = promise.deferred.shift(),
@@ -175,5 +175,3 @@ p.then = function then(onResolved, onRejected) {
 p.catch = function (onRejected) {
     return this.then(undefined, onRejected);
 };
-
-module.exports = Promise;
