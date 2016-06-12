@@ -4,7 +4,7 @@
 
 import Url from '../../url/index';
 import Promise from '../../promise';
-import { each, extend, isPlainObject } from '../../util';
+import { each, extend, trim, isPlainObject } from '../../util';
 
 export default function (request) {
     return new Promise(function (resolve) {
@@ -21,7 +21,7 @@ export default function (request) {
 
             response.data = ('response' in xhr) ? xhr.response : xhr.responseText;
             response.status = xhr.status === 1223 ? 204 : xhr.status; // IE9 status bug
-            response.statusText = xhr.statusText || '';
+            response.statusText = trim(xhr.statusText || '');
             response.headers = xhr.getAllResponseHeaders();
 
             resolve(response);
