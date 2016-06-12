@@ -6,7 +6,7 @@ import { isFunction } from '../util';
 
 const exports = {
 
-    request: function (request) {
+    request(request) {
 
         if (isFunction(request.beforeSend)) {
             request.beforeSend.call(this, request);

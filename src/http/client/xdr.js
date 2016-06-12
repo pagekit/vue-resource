@@ -6,17 +6,17 @@ import Url from '../../url/index';
 import Promise from '../../promise';
 
 export default function (request) {
-    return new Promise(function (resolve) {
+    return new Promise((resolve) => {
 
         var xdr = new XDomainRequest(), response = {request: request}, handler;
 
-        request.cancel = function () {
+        request.cancel = () => {
             xdr.abort();
         };
 
         xdr.open(request.method, Url(request), true);
 
-        handler = function (event) {
+        handler = (event) => {
 
             response.data = xdr.responseText;
             response.status = xdr.status;
@@ -29,8 +29,8 @@ export default function (request) {
         xdr.onload = handler;
         xdr.onabort = handler;
         xdr.onerror = handler;
-        xdr.ontimeout = function () {};
-        xdr.onprogress = function () {};
+        xdr.ontimeout = () => {};
+        xdr.onprogress = () => {};
 
         xdr.send(request.data);
     });

@@ -7,7 +7,7 @@ import { isObject, isPlainObject } from '../util';
 
 const exports = {
 
-    request: function (request) {
+    request(request) {
 
         if (request.emulateJSON && isPlainObject(request.data)) {
             request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -25,7 +25,7 @@ const exports = {
         return request;
     },
 
-    response: function (response) {
+    response(response) {
 
         try {
             response.data = JSON.parse(response.data);

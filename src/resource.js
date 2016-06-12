@@ -14,7 +14,7 @@ export default function Resource(url, params, actions, options) {
         actions
     );
 
-    each(actions, function (action, name) {
+    each(actions, (action, name) => {
 
         action = merge({url: url, params: params || {}}, options, action);
 

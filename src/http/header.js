@@ -7,7 +7,7 @@ import { extend, isPlainObject } from '../util';
 
 const exports = {
 
-    request: function (request) {
+    request(request) {
 
         request.method = request.method.toUpperCase();
         request.headers = extend({}, Http.headers.common,

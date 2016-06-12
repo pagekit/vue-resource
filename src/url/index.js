@@ -100,7 +100,7 @@ Url.parse = function (url) {
 };
 
 function factory(handler, next, vm) {
-    return function (options) {
+    return (options) => {
         return handler.call(vm, options, next);
     };
 }
@@ -109,7 +109,7 @@ function serialize(params, obj, scope) {
 
     var array = isArray(obj), plain = isPlainObject(obj), hash;
 
-    each(obj, function (value, key) {
+    each(obj, (value, key) => {
 
         hash = isObject(value) || isArray(value);
 

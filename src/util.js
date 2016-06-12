@@ -96,7 +96,7 @@ export function extend(target) {
 
     var args = array.slice.call(arguments, 1);
 
-    args.forEach(function (arg) {
+    args.forEach((arg) => {
         _merge(target, arg);
     });
 
@@ -107,7 +107,7 @@ export function merge(target) {
 
     var args = array.slice.call(arguments, 1);
 
-    args.forEach(function (arg) {
+    args.forEach((arg) => {
         _merge(target, arg, true);
     });
 

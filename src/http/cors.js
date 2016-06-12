@@ -10,7 +10,7 @@ const supportCors = 'withCredentials' in new XMLHttpRequest();
 
 const exports = {
 
-    request: function (request) {
+    request(request) {
 
         if (request.crossOrigin === null) {
             request.crossOrigin = crossOrigin(request);

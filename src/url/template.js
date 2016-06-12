@@ -8,7 +8,7 @@ export default function (options) {
 
     var variables = [], url = expand(options.url, options.params, variables);
 
-    variables.forEach(function (key) {
+    variables.forEach((key) => {
         delete options.params[key];
     });
 

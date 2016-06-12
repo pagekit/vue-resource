@@ -6,7 +6,7 @@ import jsonpClient from './client/jsonp';
 
 const exports = {
 
-    request: function (request) {
+    request(request) {
 
         if (request.method == 'JSONP') {
             request.client = jsonpClient;

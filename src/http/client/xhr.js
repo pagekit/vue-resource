@@ -7,17 +7,17 @@ import Promise from '../../promise';
 import { each, extend, trim, isPlainObject } from '../../util';
 
 export default function (request) {
-    return new Promise(function (resolve) {
+    return new Promise((resolve) => {
 
         var xhr = new XMLHttpRequest(), response = {request: request}, handler;
 
-        request.cancel = function () {
+        request.cancel = () => {
             xhr.abort();
         };
 
         xhr.open(request.method, Url(request), true);
 
-        handler = function (event) {
+        handler = (event) => {
 
             response.data = ('response' in xhr) ? xhr.response : xhr.responseText;
             response.status = xhr.status === 1223 ? 204 : xhr.status; // IE9 status bug
@@ -31,8 +31,8 @@ export default function (request) {
         xhr.onload = handler;
         xhr.onabort = handler;
         xhr.onerror = handler;
-        xhr.ontimeout = function () {};
-        xhr.onprogress = function () {};
+        xhr.ontimeout = () => {};
+        xhr.onprogress = () => {};
 
         if (isPlainObject(request.xhr)) {
             extend(xhr, request.xhr);
@@ -42,7 +42,7 @@ export default function (request) {
             extend(xhr.upload, request.upload);
         }
 
-        each(request.headers || {}, function (value, header) {
+        each(request.headers || {}, (value, header) => {
             xhr.setRequestHeader(header, value);
         });
 

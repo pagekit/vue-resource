@@ -8,10 +8,10 @@ const exports = function () {
 
     return {
 
-        request: function (request) {
+        request(request) {
 
             if (request.timeout) {
-                timeout = setTimeout(function () {
+                timeout = setTimeout(() => {
                     request.cancel();
                 }, request.timeout);
             }
@@ -19,7 +19,7 @@ const exports = function () {
             return request;
         },
 
-        response: function (response) {
+        response(response) {
 
             clearTimeout(timeout);
 

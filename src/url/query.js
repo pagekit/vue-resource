@@ -9,7 +9,7 @@ export default function (options, next) {
 
     var urlParams = Object.keys(Url.options.params), query = {}, url = next(options);
 
-    each(options.params, function (value, key) {
+    each(options.params, (value, key) => {
         if (urlParams.indexOf(key) === -1) {
             query[key] = value;
         }

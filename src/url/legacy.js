@@ -8,7 +8,7 @@ export default function (options, next) {
 
     var variables = [], url = next(options);
 
-    url = url.replace(/(\/?):([a-z]\w*)/gi, function (match, slash, name) {
+    url = url.replace(/(\/?):([a-z]\w*)/gi, (match, slash, name) => {
 
         warn('The `:' + name + '` parameter syntax has been deprecated. Use the `{' + name + '}` syntax instead.');
 
@@ -20,7 +20,7 @@ export default function (options, next) {
         return '';
     });
 
-    variables.forEach(function (key) {
+    variables.forEach((key) => {
         delete options.params[key];
     });
 
