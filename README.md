@@ -12,8 +12,9 @@ Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then ad
 
 ```js
 var Vue = require('vue');
+var VueResource = require('vue-resource');
 
-Vue.use(require('vue-resource'));
+Vue.use(VueResource);
 ```
 
 ## Documentation
