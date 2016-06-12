@@ -2,26 +2,31 @@
  * Service for URL templating.
  */
 
-var _ = require('../util');
-var ie = document.documentMode;
-var el = document.createElement('a');
+const ie = document.documentMode;
+const el = document.createElement('a');
 
-function Url(url, params) {
+import root from './root';
+import query from './query';
+import legacy from './legacy';
+import template from './template';
+import { each, merge, isArray, isFunction, isObject, isPlainObject, isString } from '../util';
 
-    var options = url, transform;
+export default function Url(url, params) {
 
-    if (_.isString(url)) {
+    var self = this || {}, options = url, transform;
+
+    if (isString(url)) {
         options = {url: url, params: params};
     }
 
-    options = _.merge({}, Url.options, this.$options, options);
+    options = merge({}, Url.options, self.$options, options);
 
-    Url.transforms.forEach(function (handler) {
-        transform = factory(handler, transform, this.$vm);
-    }, this);
+    Url.transforms.forEach((handler) => {
+        transform = factory(handler, transform, self.$vm);
+    });
 
     return transform(options);
-};
+}
 
 /**
  * Url options.
@@ -37,12 +42,7 @@ Url.options = {
  * Url transforms.
  */
 
-Url.transforms = [
-    require('./template'),
-    require('./legacy'),
-    require('./query'),
-    require('./root')
-];
+Url.transforms = [template, legacy, query, root];
 
 /**
  * Encodes a Url parameter string.
@@ -56,7 +56,7 @@ Url.params = function (obj) {
 
     params.add = function (key, value) {
 
-        if (_.isFunction(value)) {
+        if (isFunction(value)) {
             value = value();
         }
 
@@ -100,18 +100,18 @@ Url.parse = function (url) {
 };
 
 function factory(handler, next, vm) {
-    return function (options) {
+    return (options) => {
         return handler.call(vm, options, next);
     };
 }
 
 function serialize(params, obj, scope) {
 
-    var array = _.isArray(obj), plain = _.isPlainObject(obj), hash;
+    var array = isArray(obj), plain = isPlainObject(obj), hash;
 
-    _.each(obj, function (value, key) {
+    each(obj, (value, key) => {
 
-        hash = _.isObject(value) || _.isArray(value);
+        hash = isObject(value) || isArray(value);
 
         if (scope) {
             key = scope + '[' + (plain || hash ? key : '') + ']';
@@ -126,5 +126,3 @@ function serialize(params, obj, scope) {
         }
     });
 }
-
-module.exports = _.url = Url;

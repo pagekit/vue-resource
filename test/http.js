@@ -1,4 +1,4 @@
-var Vue = require('vue');
+import Vue from 'vue';
 
 describe('Vue.http', function () {
 

@@ -2,23 +2,24 @@
  * Service for interacting with RESTful services.
  */
 
-var _ = require('./util');
+import Http from './http/index';
+import { each, extend, merge, isFunction } from './util';
 
-function Resource(url, params, actions, options) {
+export default function Resource(url, params, actions, options) {
 
-    var self = this, resource = {};
+    var self = this || {}, resource = {};
 
-    actions = _.extend({},
+    actions = extend({},
         Resource.actions,
         actions
     );
 
-    _.each(actions, function (action, name) {
+    each(actions, (action, name) => {
 
-        action = _.merge({url: url, params: params || {}}, options, action);
+        action = merge({url: url, params: params || {}}, options, action);
 
         resource[name] = function () {
-            return (self.$http || _.http)(opts(action, arguments));
+            return (self.$http || Http)(opts(action, arguments));
         };
     });
 
@@ -27,7 +28,7 @@ function Resource(url, params, actions, options) {
 
 function opts(action, args) {
 
-    var options = _.extend({}, action), params = {}, data, success, error;
+    var options = extend({}, action), params = {}, data, success, error;
 
     switch (args.length) {
 
@@ -39,9 +40,9 @@ function opts(action, args) {
         case 3:
         case 2:
 
-            if (_.isFunction(args[1])) {
+            if (isFunction(args[1])) {
 
-                if (_.isFunction(args[0])) {
+                if (isFunction(args[0])) {
 
                     success = args[0];
                     error = args[1];
@@ -63,7 +64,7 @@ function opts(action, args) {
 
         case 1:
 
-            if (_.isFunction(args[0])) {
+            if (isFunction(args[0])) {
                 success = args[0];
             } else if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
                 data = args[0];
@@ -83,7 +84,7 @@ function opts(action, args) {
     }
 
     options.data = data;
-    options.params = _.extend({}, options.params, params);
+    options.params = extend({}, options.params, params);
 
     if (success) {
         options.success = success;
@@ -106,5 +107,3 @@ Resource.actions = {
     delete: {method: 'DELETE'}
 
 };
-
-module.exports = _.resource = Resource;

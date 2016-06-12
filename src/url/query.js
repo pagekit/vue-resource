@@ -2,23 +2,24 @@
  * Query Parameter Transform.
  */
 
-var _ = require('../util');
+import Url from './index';
+import { each } from '../util';
 
-module.exports = function (options, next) {
+export default function (options, next) {
 
-    var urlParams = Object.keys(_.url.options.params), query = {}, url = next(options);
+    var urlParams = Object.keys(Url.options.params), query = {}, url = next(options);
 
-   _.each(options.params, function (value, key) {
+    each(options.params, (value, key) => {
         if (urlParams.indexOf(key) === -1) {
             query[key] = value;
         }
     });
 
-    query = _.url.params(query);
+    query = Url.params(query);
 
     if (query) {
         url += (url.indexOf('?') == -1 ? '?' : '&') + query;
     }
 
     return url;
-};
+}

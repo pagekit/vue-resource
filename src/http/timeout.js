@@ -2,16 +2,16 @@
  * Timeout Interceptor.
  */
 
-module.exports = function () {
+const exports = function () {
 
     var timeout;
 
     return {
 
-        request: function (request) {
+        request(request) {
 
             if (request.timeout) {
-                timeout = setTimeout(function () {
+                timeout = setTimeout(() => {
                     request.cancel();
                 }, request.timeout);
             }
@@ -19,7 +19,7 @@ module.exports = function () {
             return request;
         },
 
-        response: function (response) {
+        response(response) {
 
             clearTimeout(timeout);
 
@@ -28,3 +28,5 @@ module.exports = function () {
 
     };
 };
+
+export default exports;

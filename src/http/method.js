@@ -2,9 +2,9 @@
  * HTTP method override Interceptor.
  */
 
-module.exports = {
+const exports = {
 
-    request: function (request) {
+    request(request) {
 
         if (request.emulateHTTP && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
             request.headers['X-HTTP-Method-Override'] = request.method;
@@ -15,3 +15,5 @@ module.exports = {
     }
 
 };
+
+export default exports;

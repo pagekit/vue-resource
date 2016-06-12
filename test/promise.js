@@ -1,7 +1,6 @@
-var Promise = require('../src/promise');
-var isNative = window.Promise !== undefined;
+import Promise from '../src/promise';
 
-describe('Vue.promise ' + (isNative ? '(native)' : '(polyfill)'), function () {
+describe('Vue.promise ' + (window.Promise !== undefined ? '(native)' : '(polyfill)'), function () {
 
     it('then fulfill', function (done) {
 

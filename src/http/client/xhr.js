@@ -2,25 +2,26 @@
  * XMLHttp client.
  */
 
-var _ = require('../../util');
-var Promise = require('../../promise');
+import Url from '../../url/index';
+import Promise from '../../promise';
+import { each, extend, trim, isPlainObject } from '../../util';
 
-module.exports = function (request) {
-    return new Promise(function (resolve) {
+export default function (request) {
+    return new Promise((resolve) => {
 
         var xhr = new XMLHttpRequest(), response = {request: request}, handler;
 
-        request.cancel = function () {
+        request.cancel = () => {
             xhr.abort();
         };
 
-        xhr.open(request.method, _.url(request), true);
+        xhr.open(request.method, Url(request), true);
 
-        handler = function (event) {
+        handler = (event) => {
 
-            response.data = xhr.responseText;
-            response.status = xhr.status;
-            response.statusText = xhr.statusText;
+            response.data = ('response' in xhr) ? xhr.response : xhr.responseText;
+            response.status = xhr.status === 1223 ? 204 : xhr.status; // IE9 status bug
+            response.statusText = trim(xhr.statusText || '');
             response.headers = xhr.getAllResponseHeaders();
 
             resolve(response);
@@ -30,21 +31,21 @@ module.exports = function (request) {
         xhr.onload = handler;
         xhr.onabort = handler;
         xhr.onerror = handler;
-        xhr.ontimeout = function () {};
-        xhr.onprogress = function () {};
+        xhr.ontimeout = () => {};
+        xhr.onprogress = () => {};
 
-        if (_.isPlainObject(request.xhr)) {
-            _.extend(xhr, request.xhr);
+        if (isPlainObject(request.xhr)) {
+            extend(xhr, request.xhr);
         }
 
-        if (_.isPlainObject(request.upload)) {
-            _.extend(xhr.upload, request.upload);
+        if (isPlainObject(request.upload)) {
+            extend(xhr.upload, request.upload);
         }
 
-        _.each(request.headers || {}, function (value, header) {
+        each(request.headers || {}, (value, header) => {
             xhr.setRequestHeader(header, value);
         });
 
         xhr.send(request.data);
     });
-};
+}

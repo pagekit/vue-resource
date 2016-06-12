@@ -2,27 +2,27 @@
  * Interceptor factory.
  */
 
-var _ = require('../util');
-var Promise = require('../promise');
+import Promise from '../promise';
+import { isFunction } from '../util';
 
-module.exports = function (handler, vm) {
+export default function (handler, vm) {
 
     return function (client) {
 
-        if (_.isFunction(handler)) {
+        if (isFunction(handler)) {
             handler = handler.call(vm, Promise);
         }
 
         return function (request) {
 
-            if (_.isFunction(handler.request)) {
+            if (isFunction(handler.request)) {
                 request = handler.request.call(vm, request);
             }
 
             return when(request, function (request) {
                 return when(client(request), function (response) {
 
-                    if (_.isFunction(handler.response)) {
+                    if (isFunction(handler.response)) {
                         response = handler.response.call(vm, response);
                     }
 
@@ -31,7 +31,7 @@ module.exports = function (handler, vm) {
             });
         };
     };
-};
+}
 
 function when(value, fulfilled, rejected) {
 

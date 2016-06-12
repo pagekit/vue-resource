@@ -2,14 +2,15 @@
  * CORS Interceptor.
  */
 
-var _ = require('../util');
-var xdrClient = require('./client/xdr');
-var xhrCors = 'withCredentials' in new XMLHttpRequest();
-var originUrl = _.url.parse(location.href);
+import Url from '../url/index';
+import xdrClient from './client/xdr';
 
-module.exports = {
+const originUrl = Url.parse(location.href);
+const supportCors = 'withCredentials' in new XMLHttpRequest();
 
-    request: function (request) {
+const exports = {
+
+    request(request) {
 
         if (request.crossOrigin === null) {
             request.crossOrigin = crossOrigin(request);
@@ -17,7 +18,7 @@ module.exports = {
 
         if (request.crossOrigin) {
 
-            if (!xhrCors) {
+            if (!supportCors) {
                 request.client = xdrClient;
             }
 
@@ -31,7 +32,9 @@ module.exports = {
 
 function crossOrigin(request) {
 
-    var requestUrl = _.url.parse(_.url(request));
+    var requestUrl = Url.parse(Url(request));
 
     return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
 }
+
+export default exports;

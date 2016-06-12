@@ -2,15 +2,15 @@
  * Legacy Transform.
  */
 
-var _ = require('../util');
+import { warn } from '../util';
 
-module.exports = function (options, next) {
+export default function (options, next) {
 
     var variables = [], url = next(options);
 
-    url = url.replace(/(\/?):([a-z]\w*)/gi, function (match, slash, name) {
+    url = url.replace(/(\/?):([a-z]\w*)/gi, (match, slash, name) => {
 
-        _.warn('The `:' + name + '` parameter syntax has been deprecated. Use the `{' + name + '}` syntax instead.');
+        warn('The `:' + name + '` parameter syntax has been deprecated. Use the `{' + name + '}` syntax instead.');
 
         if (options.params[name]) {
             variables.push(name);
@@ -20,12 +20,12 @@ module.exports = function (options, next) {
         return '';
     });
 
-    variables.forEach(function (key) {
+    variables.forEach((key) => {
         delete options.params[key];
     });
 
     return url;
-};
+}
 
 function encodeUriSegment(value) {
 

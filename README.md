@@ -12,8 +12,9 @@ Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then ad
 
 ```js
 var Vue = require('vue');
+var VueResource = require('vue-resource');
 
-Vue.use(require('vue-resource'));
+Vue.use(VueResource);
 ```
 
 ## Documentation
@@ -29,3 +30,7 @@ Details changes for each release are documented in the [release notes](https://g
 ## Contribution
 
 If you find a bug or want to contribute to the code or documentation, you can help by submitting an [issue](https://github.com/vuejs/vue-resource/issues) or a pull request.
+
+## License
+
+[MIT](http://opensource.org/licenses/MIT)

@@ -2,13 +2,21 @@
  * Service for sending network requests.
  */
 
-var _ = require('../util');
-var Client = require('./client');
-var Promise = require('../promise');
-var interceptor = require('./interceptor');
-var jsonType = {'Content-Type': 'application/json'};
+const jsonType = {'Content-Type': 'application/json'};
 
-function Http(url, options) {
+import cors from './cors';
+import mime from './mime';
+import jsonp from './jsonp';
+import before from './before';
+import method from './method';
+import header from './header';
+import timeout from './timeout';
+import interceptor from './interceptor';
+import Client from './client/index';
+import Promise from '../promise';
+import { error, extend, merge, isFunction, isObject } from '../util';
+
+export default function Http(url, options) {
 
     var self = this || {}, client = Client, request, promise;
 
@@ -16,8 +24,8 @@ function Http(url, options) {
         client = interceptor(handler, self.$vm)(client);
     });
 
-    options = _.isObject(url) ? url : _.extend({url: url}, options);
-    request = _.merge({}, Http.options, self.$options, options);
+    options = isObject(url) ? url : extend({url: url}, options);
+    request = merge({}, Http.options, self.$options, options);
     promise = client(request).bind(self.$vm).then((response) => {
 
         return response.ok ? response : Promise.reject(response);
@@ -25,7 +33,7 @@ function Http(url, options) {
     }, (response) => {
 
         if (response instanceof Error) {
-            _.error(response);
+            error(response);
         }
 
         return Promise.reject(response);
@@ -57,16 +65,6 @@ Http.options = {
     timeout: 0
 };
 
-Http.interceptors = [
-    require('./before'),
-    require('./timeout'),
-    require('./jsonp'),
-    require('./method'),
-    require('./mime'),
-    require('./header'),
-    require('./cors')
-];
-
 Http.headers = {
     put: jsonType,
     post: jsonType,
@@ -76,23 +74,23 @@ Http.headers = {
     custom: {'X-Requested-With': 'XMLHttpRequest'}
 };
 
+Http.interceptors = [before, timeout, jsonp, method, mime, header, cors];
+
 ['get', 'put', 'post', 'patch', 'delete', 'jsonp'].forEach(function (method) {
 
     Http[method] = function (url, data, success, options) {
 
-        if (_.isFunction(data)) {
+        if (isFunction(data)) {
             options = success;
             success = data;
             data = undefined;
         }
 
-        if (_.isObject(success)) {
+        if (isObject(success)) {
             options = success;
             success = undefined;
         }
 
-        return this(url, _.extend({method: method, data: data, success: success}, options));
+        return this(url, extend({method: method, data: data, success: success}, options));
     };
 });
-
-module.exports = _.http = Http;

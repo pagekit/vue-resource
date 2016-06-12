@@ -2,13 +2,13 @@
  * Before Interceptor.
  */
 
-var _ = require('../util');
+import { isFunction } from '../util';
 
-module.exports = {
+const exports = {
 
-    request: function (request) {
+    request(request) {
 
-        if (_.isFunction(request.beforeSend)) {
+        if (isFunction(request.beforeSend)) {
             request.beforeSend.call(this, request);
         }
 
@@ -16,3 +16,5 @@ module.exports = {
     }
 
 };
+
+export default exports;

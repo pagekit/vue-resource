@@ -2,21 +2,22 @@
  * Header Interceptor.
  */
 
-var _ = require('../util');
+import Http from './index';
+import { extend, isPlainObject } from '../util';
 
-module.exports = {
+const exports = {
 
-    request: function (request) {
+    request(request) {
 
         request.method = request.method.toUpperCase();
-        request.headers = _.extend({}, _.http.headers.common,
-            !request.crossOrigin ? _.http.headers.custom : {},
-            _.http.headers[request.method.toLowerCase()],
+        request.headers = extend({}, Http.headers.common,
+            !request.crossOrigin ? Http.headers.custom : {},
+            Http.headers[request.method.toLowerCase()],
             request.headers
         );
 
-        if (_.isPlainObject(request.data) && /^(GET|JSONP)$/i.test(request.method)) {
-            _.extend(request.params, request.data);
+        if (isPlainObject(request.data) && /^(GET|JSONP)$/i.test(request.method)) {
+            extend(request.params, request.data);
             delete request.data;
         }
 
@@ -24,3 +25,5 @@ module.exports = {
     }
 
 };
+
+export default exports;
