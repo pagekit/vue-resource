@@ -76,7 +76,7 @@ Http.headers = {
 
 Http.interceptors = [before, timeout, jsonp, method, mime, header, cors];
 
-['get', 'put', 'post', 'patch', 'delete', 'jsonp'].forEach(function (method) {
+['get', 'put', 'post', 'patch', 'delete', 'jsonp'].forEach((method) => {
 
     Http[method] = function (url, data, success, options) {
 
