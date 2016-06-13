@@ -2,7 +2,7 @@
  * Utility functions.
  */
 
-var debug = false, util = {}, array = [], console = window.console;
+var debug = false, util = {}, array = [];
 
 export default function (Vue) {
     util = Vue.util;
@@ -12,13 +12,13 @@ export default function (Vue) {
 export const isArray = Array.isArray;
 
 export function warn(msg) {
-    if (console && debug) {
+    if (typeof console !== 'undefined' && debug) {
         console.warn('[VueResource warn]: ' + msg);
     }
 }
 
 export function error(msg) {
-    if (console) {
+    if (typeof console !== 'undefined') {
         console.error(msg);
     }
 }
