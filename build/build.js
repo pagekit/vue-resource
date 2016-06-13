@@ -16,7 +16,7 @@ rollup.rollup({
   entry: 'src/index.js',
   plugins: [
     babel({
-      presets: ['es2015-rollup']
+      presets: ['es2015-loose-rollup']
     })
   ]
 })
