@@ -2,17 +2,17 @@
  * Utility functions.
  */
 
-var util = {}, config = {}, array = [], console = window.console;
+var debug = false, util = {}, array = [], console = window.console;
 
 export default function (Vue) {
     util = Vue.util;
-    config = Vue.config;
+    debug = Vue.config.debug || !Vue.config.silent;
 }
 
 export const isArray = Array.isArray;
 
 export function warn(msg) {
-    if (console && util.warn && (!config.silent || config.debug)) {
+    if (console && debug) {
         console.warn('[VueResource warn]: ' + msg);
     }
 }
