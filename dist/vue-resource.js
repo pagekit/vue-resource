@@ -1,5 +1,5 @@
 /*!
- * vue-resource v0.7.4
+ * vue-resource v0.8.0
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -17,28 +17,301 @@
   };
 
   /**
-   * Utility functions.
+   * Promises/A+ polyfill v1.1.4 (https://github.com/bramstein/promis)
    */
 
+  var RESOLVED = 0;
+  var REJECTED = 1;
+  var PENDING = 2;
+
+  function Promise$2(executor) {
+
+      this.state = PENDING;
+      this.value = undefined;
+      this.deferred = [];
+
+      var promise = this;
+
+      try {
+          executor(function (x) {
+              promise.resolve(x);
+          }, function (r) {
+              promise.reject(r);
+          });
+      } catch (e) {
+          promise.reject(e);
+      }
+  }
+
+  Promise$2.reject = function (r) {
+      return new Promise$2(function (resolve, reject) {
+          reject(r);
+      });
+  };
+
+  Promise$2.resolve = function (x) {
+      return new Promise$2(function (resolve, reject) {
+          resolve(x);
+      });
+  };
+
+  Promise$2.all = function all(iterable) {
+      return new Promise$2(function (resolve, reject) {
+          var count = 0,
+              result = [];
+
+          if (iterable.length === 0) {
+              resolve(result);
+          }
+
+          function resolver(i) {
+              return function (x) {
+                  result[i] = x;
+                  count += 1;
+
+                  if (count === iterable.length) {
+                      resolve(result);
+                  }
+              };
+          }
+
+          for (var i = 0; i < iterable.length; i += 1) {
+              Promise$2.resolve(iterable[i]).then(resolver(i), reject);
+          }
+      });
+  };
+
+  Promise$2.race = function race(iterable) {
+      return new Promise$2(function (resolve, reject) {
+          for (var i = 0; i < iterable.length; i += 1) {
+              Promise$2.resolve(iterable[i]).then(resolve, reject);
+          }
+      });
+  };
+
+  var p$1 = Promise$2.prototype;
+
+  p$1.resolve = function resolve(x) {
+      var promise = this;
+
+      if (promise.state === PENDING) {
+          if (x === promise) {
+              throw new TypeError('Promise settled with itself.');
+          }
+
+          var called = false;
+
+          try {
+              var then = x && x['then'];
+
+              if (x !== null && (typeof x === 'undefined' ? 'undefined' : _typeof(x)) === 'object' && typeof then === 'function') {
+                  then.call(x, function (x) {
+                      if (!called) {
+                          promise.resolve(x);
+                      }
+                      called = true;
+                  }, function (r) {
+                      if (!called) {
+                          promise.reject(r);
+                      }
+                      called = true;
+                  });
+                  return;
+              }
+          } catch (e) {
+              if (!called) {
+                  promise.reject(e);
+              }
+              return;
+          }
+
+          promise.state = RESOLVED;
+          promise.value = x;
+          promise.notify();
+      }
+  };
+
+  p$1.reject = function reject(reason) {
+      var promise = this;
+
+      if (promise.state === PENDING) {
+          if (reason === promise) {
+              throw new TypeError('Promise settled with itself.');
+          }
+
+          promise.state = REJECTED;
+          promise.value = reason;
+          promise.notify();
+      }
+  };
+
+  p$1.notify = function notify() {
+      var promise = this;
+
+      nextTick(function () {
+          if (promise.state !== PENDING) {
+              while (promise.deferred.length) {
+                  var deferred = promise.deferred.shift(),
+                      onResolved = deferred[0],
+                      onRejected = deferred[1],
+                      resolve = deferred[2],
+                      reject = deferred[3];
+
+                  try {
+                      if (promise.state === RESOLVED) {
+                          if (typeof onResolved === 'function') {
+                              resolve(onResolved.call(undefined, promise.value));
+                          } else {
+                              resolve(promise.value);
+                          }
+                      } else if (promise.state === REJECTED) {
+                          if (typeof onRejected === 'function') {
+                              resolve(onRejected.call(undefined, promise.value));
+                          } else {
+                              reject(promise.value);
+                          }
+                      }
+                  } catch (e) {
+                      reject(e);
+                  }
+              }
+          }
+      });
+  };
+
+  p$1.then = function then(onResolved, onRejected) {
+      var promise = this;
+
+      return new Promise$2(function (resolve, reject) {
+          promise.deferred.push([onResolved, onRejected, resolve, reject]);
+          promise.notify();
+      });
+  };
+
+  p$1.catch = function (onRejected) {
+      return this.then(undefined, onRejected);
+  };
+
+  var PromiseObj = window.Promise || Promise$2;
+
+  function Promise$1(executor, context) {
+
+      if (executor instanceof PromiseObj) {
+          this.promise = executor;
+      } else {
+          this.promise = new PromiseObj(executor.bind(context));
+      }
+
+      this.context = context;
+  }
+
+  Promise$1.all = function (iterable, context) {
+      return new Promise$1(PromiseObj.all(iterable), context);
+  };
+
+  Promise$1.resolve = function (value, context) {
+      return new Promise$1(PromiseObj.resolve(value), context);
+  };
+
+  Promise$1.reject = function (reason, context) {
+      return new Promise$1(PromiseObj.reject(reason), context);
+  };
+
+  Promise$1.race = function (iterable, context) {
+      return new Promise$1(PromiseObj.race(iterable), context);
+  };
+
+  var p = Promise$1.prototype;
+
+  p.bind = function (context) {
+      this.context = context;
+      return this;
+  };
+
+  p.then = function (fulfilled, rejected) {
+
+      if (fulfilled && fulfilled.bind && this.context) {
+          fulfilled = fulfilled.bind(this.context);
+      }
+
+      if (rejected && rejected.bind && this.context) {
+          rejected = rejected.bind(this.context);
+      }
+
+      this.promise = this.promise.then(fulfilled, rejected);
+
+      return this;
+  };
+
+  p.catch = function (rejected) {
+
+      if (rejected && rejected.bind && this.context) {
+          rejected = rejected.bind(this.context);
+      }
+
+      this.promise = this.promise.catch(rejected);
+
+      return this;
+  };
+
+  p.finally = function (callback) {
+
+      return this.then(function (value) {
+          callback.call(this);
+          return value;
+      }, function (reason) {
+          callback.call(this);
+          return PromiseObj.reject(reason);
+      });
+  };
+
+  p.success = function (callback) {
+
+      warn('The `success` method has been deprecated. Use the `then` method instead.');
+
+      return this.then(function (response) {
+          return callback.call(this, response.data, response.status, response) || response;
+      });
+  };
+
+  p.error = function (callback) {
+
+      warn('The `error` method has been deprecated. Use the `catch` method instead.');
+
+      return this.catch(function (response) {
+          return callback.call(this, response.data, response.status, response) || response;
+      });
+  };
+
+  p.always = function (callback) {
+
+      warn('The `always` method has been deprecated. Use the `finally` method instead.');
+
+      var cb = function cb(response) {
+          return callback.call(this, response.data, response.status, response) || response;
+      };
+
+      return this.then(cb, cb);
+  };
+
+  var debug = false;
   var util = {};
-  var config = {};
   var array = [];
-  var console = window.console;
   function Util (Vue) {
       util = Vue.util;
-      config = Vue.config;
+      debug = Vue.config.debug || !Vue.config.silent;
   }
 
   var isArray = Array.isArray;
 
   function warn(msg) {
-      if (console && util.warn && (!config.silent || config.debug)) {
+      if (typeof console !== 'undefined' && debug) {
           console.warn('[VueResource warn]: ' + msg);
       }
   }
 
   function error(msg) {
-      if (console) {
+      if (typeof console !== 'undefined') {
           console.error(msg);
       }
   }
@@ -69,6 +342,17 @@
 
   function isPlainObject(obj) {
       return isObject(obj) && Object.getPrototypeOf(obj) == Object.prototype;
+  }
+
+  function when(value, fulfilled, rejected) {
+
+      var promise = Promise$1.resolve(value);
+
+      if (arguments.length < 2) {
+          return promise;
+      }
+
+      return promise.then(fulfilled, rejected);
   }
 
   function options(fn, obj, opts) {
@@ -499,284 +783,6 @@
       });
   }
 
-  /**
-   * Promises/A+ polyfill v1.1.4 (https://github.com/bramstein/promis)
-   */
-
-  var RESOLVED = 0;
-  var REJECTED = 1;
-  var PENDING = 2;
-
-  function Promise$2(executor) {
-
-      this.state = PENDING;
-      this.value = undefined;
-      this.deferred = [];
-
-      var promise = this;
-
-      try {
-          executor(function (x) {
-              promise.resolve(x);
-          }, function (r) {
-              promise.reject(r);
-          });
-      } catch (e) {
-          promise.reject(e);
-      }
-  }
-
-  Promise$2.reject = function (r) {
-      return new Promise$2(function (resolve, reject) {
-          reject(r);
-      });
-  };
-
-  Promise$2.resolve = function (x) {
-      return new Promise$2(function (resolve, reject) {
-          resolve(x);
-      });
-  };
-
-  Promise$2.all = function all(iterable) {
-      return new Promise$2(function (resolve, reject) {
-          var count = 0,
-              result = [];
-
-          if (iterable.length === 0) {
-              resolve(result);
-          }
-
-          function resolver(i) {
-              return function (x) {
-                  result[i] = x;
-                  count += 1;
-
-                  if (count === iterable.length) {
-                      resolve(result);
-                  }
-              };
-          }
-
-          for (var i = 0; i < iterable.length; i += 1) {
-              Promise$2.resolve(iterable[i]).then(resolver(i), reject);
-          }
-      });
-  };
-
-  Promise$2.race = function race(iterable) {
-      return new Promise$2(function (resolve, reject) {
-          for (var i = 0; i < iterable.length; i += 1) {
-              Promise$2.resolve(iterable[i]).then(resolve, reject);
-          }
-      });
-  };
-
-  var p$1 = Promise$2.prototype;
-
-  p$1.resolve = function resolve(x) {
-      var promise = this;
-
-      if (promise.state === PENDING) {
-          if (x === promise) {
-              throw new TypeError('Promise settled with itself.');
-          }
-
-          var called = false;
-
-          try {
-              var then = x && x['then'];
-
-              if (x !== null && (typeof x === 'undefined' ? 'undefined' : _typeof(x)) === 'object' && typeof then === 'function') {
-                  then.call(x, function (x) {
-                      if (!called) {
-                          promise.resolve(x);
-                      }
-                      called = true;
-                  }, function (r) {
-                      if (!called) {
-                          promise.reject(r);
-                      }
-                      called = true;
-                  });
-                  return;
-              }
-          } catch (e) {
-              if (!called) {
-                  promise.reject(e);
-              }
-              return;
-          }
-
-          promise.state = RESOLVED;
-          promise.value = x;
-          promise.notify();
-      }
-  };
-
-  p$1.reject = function reject(reason) {
-      var promise = this;
-
-      if (promise.state === PENDING) {
-          if (reason === promise) {
-              throw new TypeError('Promise settled with itself.');
-          }
-
-          promise.state = REJECTED;
-          promise.value = reason;
-          promise.notify();
-      }
-  };
-
-  p$1.notify = function notify() {
-      var promise = this;
-
-      nextTick(function () {
-          if (promise.state !== PENDING) {
-              while (promise.deferred.length) {
-                  var deferred = promise.deferred.shift(),
-                      onResolved = deferred[0],
-                      onRejected = deferred[1],
-                      resolve = deferred[2],
-                      reject = deferred[3];
-
-                  try {
-                      if (promise.state === RESOLVED) {
-                          if (typeof onResolved === 'function') {
-                              resolve(onResolved.call(undefined, promise.value));
-                          } else {
-                              resolve(promise.value);
-                          }
-                      } else if (promise.state === REJECTED) {
-                          if (typeof onRejected === 'function') {
-                              resolve(onRejected.call(undefined, promise.value));
-                          } else {
-                              reject(promise.value);
-                          }
-                      }
-                  } catch (e) {
-                      reject(e);
-                  }
-              }
-          }
-      });
-  };
-
-  p$1.then = function then(onResolved, onRejected) {
-      var promise = this;
-
-      return new Promise$2(function (resolve, reject) {
-          promise.deferred.push([onResolved, onRejected, resolve, reject]);
-          promise.notify();
-      });
-  };
-
-  p$1.catch = function (onRejected) {
-      return this.then(undefined, onRejected);
-  };
-
-  var PromiseObj = window.Promise || Promise$2;
-
-  function Promise$1(executor, context) {
-
-      if (executor instanceof PromiseObj) {
-          this.promise = executor;
-      } else {
-          this.promise = new PromiseObj(executor.bind(context));
-      }
-
-      this.context = context;
-  }
-
-  Promise$1.all = function (iterable, context) {
-      return new Promise$1(PromiseObj.all(iterable), context);
-  };
-
-  Promise$1.resolve = function (value, context) {
-      return new Promise$1(PromiseObj.resolve(value), context);
-  };
-
-  Promise$1.reject = function (reason, context) {
-      return new Promise$1(PromiseObj.reject(reason), context);
-  };
-
-  Promise$1.race = function (iterable, context) {
-      return new Promise$1(PromiseObj.race(iterable), context);
-  };
-
-  var p = Promise$1.prototype;
-
-  p.bind = function (context) {
-      this.context = context;
-      return this;
-  };
-
-  p.then = function (fulfilled, rejected) {
-
-      if (fulfilled && fulfilled.bind && this.context) {
-          fulfilled = fulfilled.bind(this.context);
-      }
-
-      if (rejected && rejected.bind && this.context) {
-          rejected = rejected.bind(this.context);
-      }
-
-      this.promise = this.promise.then(fulfilled, rejected);
-
-      return this;
-  };
-
-  p.catch = function (rejected) {
-
-      if (rejected && rejected.bind && this.context) {
-          rejected = rejected.bind(this.context);
-      }
-
-      this.promise = this.promise.catch(rejected);
-
-      return this;
-  };
-
-  p.finally = function (callback) {
-
-      return this.then(function (value) {
-          callback.call(this);
-          return value;
-      }, function (reason) {
-          callback.call(this);
-          return PromiseObj.reject(reason);
-      });
-  };
-
-  p.success = function (callback) {
-
-      warn('The `success` method has been deprecated. Use the `then` method instead.');
-
-      return this.then(function (response) {
-          return callback.call(this, response.data, response.status, response) || response;
-      });
-  };
-
-  p.error = function (callback) {
-
-      warn('The `error` method has been deprecated. Use the `catch` method instead.');
-
-      return this.catch(function (response) {
-          return callback.call(this, response.data, response.status, response) || response;
-      });
-  };
-
-  p.always = function (callback) {
-
-      warn('The `always` method has been deprecated. Use the `finally` method instead.');
-
-      var cb = function cb(response) {
-          return callback.call(this, response.data, response.status, response) || response;
-      };
-
-      return this.then(cb, cb);
-  };
-
   function xdrClient (request) {
       return new Promise$1(function (resolve) {
 
@@ -813,25 +819,23 @@
   var originUrl = Url.parse(location.href);
   var supportCors = 'withCredentials' in new XMLHttpRequest();
 
-  var exports$1 = {
-      request: function request(_request) {
+  function cors (request, next) {
 
-          if (_request.crossOrigin === null) {
-              _request.crossOrigin = crossOrigin(_request);
-          }
-
-          if (_request.crossOrigin) {
-
-              if (!supportCors) {
-                  _request.client = xdrClient;
-              }
-
-              _request.emulateHTTP = false;
-          }
-
-          return _request;
+      if (request.crossOrigin === null) {
+          request.crossOrigin = crossOrigin(request);
       }
-  };
+
+      if (request.crossOrigin) {
+
+          if (!supportCors) {
+              request.client = xdrClient;
+          }
+
+          request.emulateHTTP = false;
+      }
+
+      next();
+  }
 
   function crossOrigin(request) {
 
@@ -840,33 +844,28 @@
       return requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host;
   }
 
-  var exports$2 = {
-      request: function request(_request) {
+  function mime (request, next) {
 
-          if (_request.emulateJSON && isPlainObject(_request.data)) {
-              _request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-              _request.data = Url.params(_request.data);
-          }
+      if (request.emulateJSON && isPlainObject(request.data)) {
+          request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+          request.data = Url.params(request.data);
+      }
 
-          if (isObject(_request.data) && /FormData/i.test(_request.data.toString())) {
-              delete _request.headers['Content-Type'];
-          }
+      if (isObject(request.data) && /FormData/i.test(request.data.toString())) {
+          delete request.headers['Content-Type'];
+      }
 
-          if (isPlainObject(_request.data)) {
-              _request.data = JSON.stringify(_request.data);
-          }
+      if (isPlainObject(request.data)) {
+          request.data = JSON.stringify(request.data);
+      }
 
-          return _request;
-      },
-      response: function response(_response) {
+      next(function (response) {
 
           try {
-              _response.data = JSON.parse(_response.data);
+              response.data = JSON.parse(response.data);
           } catch (e) {}
-
-          return _response;
-      }
-  };
+      });
+  }
 
   function jsonpClient (request) {
       return new Promise$1(function (resolve) {
@@ -913,124 +912,69 @@
       });
   }
 
-  var exports$3 = {
-      request: function request(_request) {
+  function jsonp (request, next) {
 
-          if (_request.method == 'JSONP') {
-              _request.client = jsonpClient;
-          }
-
-          return _request;
+      if (request.method == 'JSONP') {
+          request.client = jsonpClient;
       }
-  };
 
-  var exports$4 = {
-      request: function request(_request) {
+      next();
+  }
 
-          if (isFunction(_request.beforeSend)) {
-              _request.beforeSend.call(this, _request);
-          }
+  function before (request, next) {
 
-          return _request;
+      if (isFunction(request.beforeSend)) {
+          request.beforeSend.call(this, request);
       }
-  };
+
+      next();
+  }
 
   /**
    * HTTP method override Interceptor.
    */
 
-  var exports$5 = {
-      request: function request(_request) {
+  function method (request, next) {
 
-          if (_request.emulateHTTP && /^(PUT|PATCH|DELETE)$/i.test(_request.method)) {
-              _request.headers['X-HTTP-Method-Override'] = _request.method;
-              _request.method = 'POST';
-          }
-
-          return _request;
+      if (request.emulateHTTP && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
+          request.headers['X-HTTP-Method-Override'] = request.method;
+          request.method = 'POST';
       }
-  };
 
-  var exports$6 = {
-      request: function request(_request) {
+      next();
+  }
 
-          _request.method = _request.method.toUpperCase();
-          _request.headers = extend({}, Http.headers.common, !_request.crossOrigin ? Http.headers.custom : {}, Http.headers[_request.method.toLowerCase()], _request.headers);
+  function header (request, next) {
 
-          if (isPlainObject(_request.data) && /^(GET|JSONP)$/i.test(_request.method)) {
-              extend(_request.params, _request.data);
-              delete _request.data;
-          }
+      request.method = request.method.toUpperCase();
+      request.headers = extend({}, Http.headers.common, !request.crossOrigin ? Http.headers.custom : {}, Http.headers[request.method.toLowerCase()], request.headers);
 
-          return _request;
+      if (isPlainObject(request.data) && /^(GET|JSONP)$/i.test(request.method)) {
+          extend(request.params, request.data);
+          delete request.data;
       }
-  };
+
+      next();
+  }
 
   /**
    * Timeout Interceptor.
    */
 
-  var exports$7 = function exports() {
+  function timeout (request, next) {
 
       var timeout;
 
-      return {
-          request: function request(_request) {
-
-              if (_request.timeout) {
-                  timeout = setTimeout(function () {
-                      _request.cancel();
-                  }, _request.timeout);
-              }
-
-              return _request;
-          },
-          response: function response(_response) {
-
-              clearTimeout(timeout);
-
-              return _response;
-          }
-      };
-  };
-
-  function interceptor (handler, vm) {
-
-      return function (client) {
-
-          if (isFunction(handler)) {
-              handler = handler.call(vm, Promise$1);
-          }
-
-          return function (request) {
-
-              if (isFunction(handler.request)) {
-                  request = handler.request.call(vm, request);
-              }
-
-              return when(request, function (request) {
-                  return when(client(request), function (response) {
-
-                      if (isFunction(handler.response)) {
-                          response = handler.response.call(vm, response);
-                      }
-
-                      return response;
-                  });
-              });
-          };
-      };
-  }
-
-  function when(value, fulfilled, rejected) {
-
-      var promise = Promise$1.resolve(value);
-
-      if (arguments.length < 2) {
-          return promise;
+      if (request.timeout) {
+          timeout = setTimeout(function () {
+              request.cancel();
+          }, request.timeout);
       }
 
-      return promise.then(fulfilled, rejected);
+      next(function (response) {
+
+          clearTimeout(timeout);
+      });
   }
 
   function xhrClient (request) {
@@ -1051,7 +995,7 @@
               response.data = 'response' in xhr ? xhr.response : xhr.responseText;
               response.status = xhr.status === 1223 ? 204 : xhr.status; // IE9 status bug
               response.statusText = trim(xhr.statusText || '');
-              response.headers = xhr.getAllResponseHeaders();
+              response.allHeaders = xhr.getAllResponseHeaders();
 
               resolve(response);
           };
@@ -1079,30 +1023,80 @@
       });
   }
 
-  function Client (request) {
+  function Client (context) {
 
-      var response = (request.client || xhrClient)(request);
+      var reqHandlers = [sendRequest],
+          resHandlers = [];
 
-      return Promise$1.resolve(response).then(function (response) {
+      if (!isObject(context)) {
+          context = null;
+      }
 
-          if (response.headers) {
+      function Client(request) {
+          return new Promise$1(function (resolve) {
 
-              var headers = parseHeaders(response.headers);
+              function exec() {
+                  reqHandlers.pop().call(context, request, next);
+              }
 
-              response.headers = function (name) {
+              function next(response) {
+                  when(response, function (response) {
 
-                  if (name) {
-                      return headers[toLower(name)];
-                  }
+                      if (isFunction(response)) {
 
-                  return headers;
-              };
-          }
+                          resHandlers.unshift(response);
+                      } else if (isObject(response)) {
 
-          response.ok = response.status >= 200 && response.status < 300;
+                          processResponse(response);
 
-          return response;
-      });
+                          resHandlers.forEach(function (handler) {
+                              handler.call(context, response);
+                          });
+
+                          resolve(response);
+
+                          return;
+                      }
+
+                      exec();
+                  });
+              }
+
+              exec();
+          }, context);
+      }
+
+      Client.use = function (handler) {
+          reqHandlers.push(handler);
+      };
+
+      return Client;
+  }
+
+  function sendRequest(request, resolve) {
+
+      var client = request.client || xhrClient;
+
+      resolve(client(request));
+  }
+
+  function processResponse(response) {
+
+      var headers = response.headers || response.allHeaders;
+
+      if (isString(headers)) {
+          headers = parseHeaders(headers);
+      }
+
+      if (isObject(headers)) {
+          response.headers = function (name) {
+              return name ? headers[toLower(name)] : headers;
+          };
+      }
+
+      response.ok = response.status >= 200 && response.status < 300;
+
+      return response;
   }
 
   function parseHeaders(str) {
@@ -1112,26 +1106,24 @@
           name,
           i;
 
-      if (isString(str)) {
-          each(str.split('\n'), function (row) {
+      each(str.split('\n'), function (row) {
 
-              i = row.indexOf(':');
-              name = trim(toLower(row.slice(0, i)));
-              value = trim(row.slice(i + 1));
+          i = row.indexOf(':');
+          name = trim(toLower(row.slice(0, i)));
+          value = trim(row.slice(i + 1));
 
-              if (headers[name]) {
+          if (headers[name]) {
 
-                  if (isArray(headers[name])) {
-                      headers[name].push(value);
-                  } else {
-                      headers[name] = [headers[name], value];
-                  }
+              if (isArray(headers[name])) {
+                  headers[name].push(value);
               } else {
-
-                  headers[name] = value;
+                  headers[name] = [headers[name], value];
               }
-          });
-      }
+          } else {
+
+              headers[name] = value;
+          }
+      });
 
       return headers;
   }
@@ -1145,17 +1137,17 @@
   function Http(url, options) {
 
       var self = this || {},
-          client = Client,
+          client = Client(self.$vm),
           request,
           promise;
 
       Http.interceptors.forEach(function (handler) {
-          client = interceptor(handler, self.$vm)(client);
+          client.use(handler);
       });
 
       options = isObject(url) ? url : extend({ url: url }, options);
       request = merge({}, Http.options, self.$options, options);
-      promise = client(request).bind(self.$vm).then(function (response) {
+      promise = client(request).then(function (response) {
 
           return response.ok ? response : Promise$1.reject(response);
       }, function (response) {
@@ -1202,7 +1194,7 @@
       custom: { 'X-Requested-With': 'XMLHttpRequest' }
   };
 
-  Http.interceptors = [exports$4, exports$7, exports$3, exports$5, exports$2, exports$6, exports$1];
+  Http.interceptors = [before, timeout, jsonp, method, mime, header, cors];
 
   ['get', 'put', 'post', 'patch', 'delete', 'jsonp'].forEach(function (method) {
 
