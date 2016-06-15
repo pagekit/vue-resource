@@ -30,6 +30,8 @@ export default function (context) {
 
                     } else if (isObject(response)) {
 
+                        processResponse(response);
+
                         resHandlers.forEach((handler) => {
                             handler.call(context, response);
                         });
@@ -59,55 +61,50 @@ function sendRequest(request, resolve) {
 
     var client = request.client || xhrClient;
 
-    resolve(client(request).then((response) => {
+    resolve(client(request));
+}
 
-        if (response.headers) {
+function processResponse(response) {
 
-            var headers = parseHeaders(response.headers);
+    var headers = response.headers || response.allHeaders;
 
-            response.headers = (name) => {
+    if (isString(headers)) {
+        headers = parseHeaders(headers);
+    }
 
-                if (name) {
-                    return headers[toLower(name)];
-                }
+    if (isObject(headers)) {
+        response.headers = (name) => name ? headers[toLower(name)] : headers;
+    }
 
-                return headers;
-            };
+    response.ok = response.status >= 200 && response.status < 300;
 
-        }
-
-        response.ok = response.status >= 200 && response.status < 300;
-
-        return response;
-    }));
+    return response;
 }
 
 function parseHeaders(str) {
 
     var headers = {}, value, name, i;
 
-    if (isString(str)) {
-        each(str.split('\n'), (row) => {
+    each(str.split('\n'), (row) => {
 
-            i = row.indexOf(':');
-            name = trim(toLower(row.slice(0, i)));
-            value = trim(row.slice(i + 1));
+        i = row.indexOf(':');
+        name = trim(toLower(row.slice(0, i)));
+        value = trim(row.slice(i + 1));
 
-            if (headers[name]) {
+        if (headers[name]) {
 
-                if (isArray(headers[name])) {
-                    headers[name].push(value);
-                } else {
-                    headers[name] = [headers[name], value];
-                }
-
+            if (isArray(headers[name])) {
+                headers[name].push(value);
             } else {
-
-                headers[name] = value;
+                headers[name] = [headers[name], value];
             }
 
-        });
-    }
+        } else {
+
+            headers[name] = value;
+        }
+
+    });
 
     return headers;
 }

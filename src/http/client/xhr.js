@@ -22,7 +22,7 @@ export default function (request) {
             response.data = ('response' in xhr) ? xhr.response : xhr.responseText;
             response.status = xhr.status === 1223 ? 204 : xhr.status; // IE9 status bug
             response.statusText = trim(xhr.statusText || '');
-            response.headers = xhr.getAllResponseHeaders();
+            response.allHeaders = xhr.getAllResponseHeaders();
 
             resolve(response);
         };
