@@ -19,8 +19,8 @@ export function parse(template) {
 
     return {
         vars: variables,
-        expand: function (context) {
-            return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function (_, expression, literal) {
+        expand(context) {
+            return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, (_, expression, literal) => {
                 if (expression) {
 
                     var operator = null, values = [];
@@ -30,7 +30,7 @@ export function parse(template) {
                         expression = expression.substr(1);
                     }
 
-                    expression.split(/,/g).forEach(function (variable) {
+                    expression.split(/,/g).forEach((variable) => {
                         var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
                         values.push.apply(values, getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
                         variables.push(tmp[1]);
@@ -75,11 +75,11 @@ function getValues(context, operator, key, modifier) {
         } else {
             if (modifier === '*') {
                 if (Array.isArray(value)) {
-                    value.filter(isDefined).forEach(function (value) {
+                    value.filter(isDefined).forEach((value) => {
                         result.push(encodeValue(operator, value, isKeyOperator(operator) ? key : null));
                     });
                 } else {
-                    Object.keys(value).forEach(function (k) {
+                    Object.keys(value).forEach((k) => {
                         if (isDefined(value[k])) {
                             result.push(encodeValue(operator, value[k], k));
                         }
@@ -89,11 +89,11 @@ function getValues(context, operator, key, modifier) {
                 var tmp = [];
 
                 if (Array.isArray(value)) {
-                    value.filter(isDefined).forEach(function (value) {
+                    value.filter(isDefined).forEach((value) => {
                         tmp.push(encodeValue(operator, value));
                     });
                 } else {
-                    Object.keys(value).forEach(function (k) {
+                    Object.keys(value).forEach((k) => {
                         if (isDefined(value[k])) {
                             tmp.push(encodeURIComponent(k));
                             tmp.push(encodeValue(operator, value[k].toString()));
@@ -141,7 +141,7 @@ function encodeValue(operator, value, key) {
 }
 
 function encodeReserved(str) {
-    return str.split(/(%[0-9A-Fa-f]{2})/g).map(function (part) {
+    return str.split(/(%[0-9A-Fa-f]{2})/g).map((part) => {
         if (!/%[0-9A-Fa-f]/.test(part)) {
             part = encodeURI(part);
         }

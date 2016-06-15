@@ -2,31 +2,19 @@
  * Timeout Interceptor.
  */
 
-const exports = function () {
+export default function (request, next) {
 
     var timeout;
 
-    return {
+    if (request.timeout) {
+        timeout = setTimeout(() => {
+            request.cancel();
+        }, request.timeout);
+    }
 
-        request(request) {
+    next((response) => {
 
-            if (request.timeout) {
-                timeout = setTimeout(() => {
-                    request.cancel();
-                }, request.timeout);
-            }
+        clearTimeout(timeout);
 
-            return request;
-        },
-
-        response(response) {
-
-            clearTimeout(timeout);
-
-            return response;
-        }
-
-    };
-};
-
-export default exports;
+    });
+}

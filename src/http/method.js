@@ -2,18 +2,12 @@
  * HTTP method override Interceptor.
  */
 
-const exports = {
+export default function (request, next) {
 
-    request(request) {
-
-        if (request.emulateHTTP && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
-            request.headers['X-HTTP-Method-Override'] = request.method;
-            request.method = 'POST';
-        }
-
-        return request;
+    if (request.emulateHTTP && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
+        request.headers['X-HTTP-Method-Override'] = request.method;
+        request.method = 'POST';
     }
 
-};
-
-export default exports;
+    next();
+}

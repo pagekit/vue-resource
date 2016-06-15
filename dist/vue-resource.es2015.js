@@ -4,8 +4,6 @@
  * Released under the MIT License.
  */
 
-'use strict';
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
 } : function (obj) {
@@ -1365,4 +1363,5 @@ if (typeof window !== 'undefined' && window.Vue) {
     window.Vue.use(plugin);
 }
 
-module.exports = plugin;
+export default plugin;
+export { Url, Http, Resource };

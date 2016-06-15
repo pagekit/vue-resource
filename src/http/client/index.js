@@ -4,62 +4,107 @@
 
 import Promise from '../../promise';
 import xhrClient from './xhr';
-import { each, trim, isArray, isString, toLower } from '../../util';
+import { each, trim, when, isArray, isObject, isPlainObject, isString, isFunction, toLower } from '../../util';
 
-export default function (request) {
+export default function (context) {
 
-    var response = (request.client || xhrClient)(request);
+    var reqHandlers = [sendRequest], resHandlers = [];
 
-    return Promise.resolve(response).then((response) => {
+    if (!isObject(context)) {
+        context = null;
+    }
 
-        if (response.headers) {
+    function Client(request) {
+        return new Promise((resolve) => {
 
-            var headers = parseHeaders(response.headers);
+            function exec() {
+                reqHandlers.pop().call(context, request, next);
+            }
 
-            response.headers = (name) => {
+            function next(response) {
+                when(response, (response) => {
 
-                if (name) {
-                    return headers[toLower(name)];
-                }
+                    if (isFunction(response)) {
 
-                return headers;
-            };
+                        resHandlers.unshift(response);
 
-        }
+                    } else if (isObject(response)) {
 
-        response.ok = response.status >= 200 && response.status < 300;
+                        processResponse(response);
 
-        return response;
-    });
+                        resHandlers.forEach((handler) => {
+                            handler.call(context, response);
+                        });
 
+                        resolve(response);
+
+                        return;
+                    }
+
+                    exec();
+                });
+            }
+
+            exec();
+
+        }, context);
+    }
+
+    Client.use = (handler) => {
+        reqHandlers.push(handler);
+    };
+
+    return Client;
+}
+
+function sendRequest(request, resolve) {
+
+    var client = request.client || xhrClient;
+
+    resolve(client(request));
+}
+
+function processResponse(response) {
+
+    var headers = response.headers || response.allHeaders;
+
+    if (isString(headers)) {
+        headers = parseHeaders(headers);
+    }
+
+    if (isObject(headers)) {
+        response.headers = (name) => name ? headers[toLower(name)] : headers;
+    }
+
+    response.ok = response.status >= 200 && response.status < 300;
+
+    return response;
 }
 
 function parseHeaders(str) {
 
     var headers = {}, value, name, i;
 
-    if (isString(str)) {
-        each(str.split('\n'), (row) => {
+    each(str.split('\n'), (row) => {
 
-            i = row.indexOf(':');
-            name = trim(toLower(row.slice(0, i)));
-            value = trim(row.slice(i + 1));
+        i = row.indexOf(':');
+        name = trim(toLower(row.slice(0, i)));
+        value = trim(row.slice(i + 1));
 
-            if (headers[name]) {
+        if (headers[name]) {
 
-                if (isArray(headers[name])) {
-                    headers[name].push(value);
-                } else {
-                    headers[name] = [headers[name], value];
-                }
-
+            if (isArray(headers[name])) {
+                headers[name].push(value);
             } else {
-
-                headers[name] = value;
+                headers[name] = [headers[name], value];
             }
 
-        });
-    }
+        } else {
+
+            headers[name] = value;
+        }
+
+    });
 
     return headers;
 }

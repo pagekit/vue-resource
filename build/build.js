@@ -11,7 +11,6 @@ var banner =
     " * Released under the MIT License.\n" +
     " */\n";
 
-// Standalone
 rollup.rollup({
   entry: 'src/index.js',
   plugins: [
@@ -25,50 +24,45 @@ rollup.rollup({
     format: 'umd',
     banner: banner,
     moduleName: 'VueResource'
-  }).code);
+  }).code, bundle);
 })
-.then(function () {
-  return write(
-    'dist/vue-resource.min.js',
-    banner + '\n' + uglify.minify('dist/vue-resource.js').code
-  );
+.then(function (bundle) {
+  return write('dist/vue-resource.min.js',
+    banner + '\n' + uglify.minify('dist/vue-resource.js').code,
+  bundle);
 })
-.catch(logError);
-
-// CommonJS
-rollup.rollup({
-  entry: 'src/index.js',
-  plugins: [
-    babel({
-      presets: ['es2015-rollup']
-    })
-  ]
+.then(function (bundle) {
+  return write('dist/vue-resource.es2015.js', bundle.generate({
+    banner: banner,
+    footer: 'export { Url, Http, Resource };'
+  }).code, bundle);
 })
 .then(function (bundle) {
   return write('dist/vue-resource.common.js', bundle.generate({
     format: 'cjs',
     banner: banner
-  }).code);
-});
+  }).code, bundle);
+})
+.catch(logError);
 
-function write (dest, code) {
+function write(dest, code, bundle) {
   return new Promise(function (resolve, reject) {
     fs.writeFile(dest, code, function (err) {
       if (err) return reject(err);
       console.log(blue(dest) + ' ' + getSize(code));
-      resolve();
+      resolve(bundle);
     });
   });
 }
 
-function getSize (code) {
+function getSize(code) {
   return (code.length / 1024).toFixed(2) + 'kb';
 }
 
-function logError (e) {
+function logError(e) {
   console.log(e);
 }
 
-function blue (str) {
+function blue(str) {
   return '\x1b[1m\x1b[34m' + str + '\x1b[39m\x1b[22m';
 }

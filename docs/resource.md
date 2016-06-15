@@ -22,26 +22,26 @@ delete: {method: 'DELETE'}
 ```js
 new Vue({
 
-    ready: function() {
+    ready() {
 
       var resource = this.$resource('someItem{/id}');
 
       // get item
-      resource.get({id: 1}).then(function (response) {
+      resource.get({id: 1}).then((response) => {
           this.$set('item', response.item)
       });
 
       // save item
-      resource.save({id: 1}, {item: this.item}).then(function (response) {
+      resource.save({id: 1}, {item: this.item}).then((response) => {
           // success callback
-      }, function (response) {
+      }, (response) => {
           // error callback
       });
 
       // delete item
-      resource.delete({id: 1}).then(function (response) {
+      resource.delete({id: 1}).then((response) => {
           // success callback
-      }, function (response) {
+      }, (response) => {
           // error callback
       });
 
