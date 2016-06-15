@@ -8,27 +8,23 @@ import xdrClient from './client/xdr';
 const originUrl = Url.parse(location.href);
 const supportCors = 'withCredentials' in new XMLHttpRequest();
 
-const exports = {
+export default function (request, next) {
 
-    request(request) {
-
-        if (request.crossOrigin === null) {
-            request.crossOrigin = crossOrigin(request);
-        }
-
-        if (request.crossOrigin) {
-
-            if (!supportCors) {
-                request.client = xdrClient;
-            }
-
-            request.emulateHTTP = false;
-        }
-
-        return request;
+    if (request.crossOrigin === null) {
+        request.crossOrigin = crossOrigin(request);
     }
 
-};
+    if (request.crossOrigin) {
+
+        if (!supportCors) {
+            request.client = xdrClient;
+        }
+
+        request.emulateHTTP = false;
+    }
+
+    next();
+}
 
 function crossOrigin(request) {
 
@@ -36,5 +32,3 @@ function crossOrigin(request) {
 
     return (requestUrl.protocol !== originUrl.protocol || requestUrl.host !== originUrl.host);
 }
-
-export default exports;

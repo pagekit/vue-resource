@@ -4,13 +4,63 @@
 
 import Promise from '../../promise';
 import xhrClient from './xhr';
-import { each, trim, isArray, isString, toLower } from '../../util';
+import { each, trim, isArray, isObject, isPlainObject, isString, isFunction, toLower } from '../../util';
 
-export default function (request) {
+export default function (context) {
 
-    var response = (request.client || xhrClient)(request);
+    var reqHandlers = [sendRequest], resHandlers = [];
 
-    return Promise.resolve(response).then((response) => {
+    if (!isObject(context)) {
+        context = null;
+    }
+
+    function Client(request) {
+        return new Promise((resolve) => {
+
+            function exec() {
+                reqHandlers.pop().call(context, request, next);
+            }
+
+            function next(response) {
+
+                if (isFunction(response)) {
+
+                    resHandlers.unshift(response);
+
+                } else if (isObject(response)) {
+
+                    when(response, (response) => {
+
+                        resHandlers.forEach((handler) => {
+                            handler.call(context, response);
+                        });
+
+                        resolve(response);
+                    });
+
+                    return;
+                }
+
+                exec();
+            }
+
+            exec();
+
+        }, context);
+    }
+
+    Client.use = (handler) => {
+        reqHandlers.push(handler);
+    };
+
+    return Client;
+}
+
+function sendRequest(request, resolve) {
+
+    var client = request.client || xhrClient;
+
+    resolve(client(request).then((response) => {
 
         if (response.headers) {
 
@@ -30,8 +80,7 @@ export default function (request) {
         response.ok = response.status >= 200 && response.status < 300;
 
         return response;
-    });
-
+    }));
 }
 
 function parseHeaders(str) {
@@ -62,4 +111,15 @@ function parseHeaders(str) {
     }
 
     return headers;
+}
+
+function when(value, fulfilled, rejected) {
+
+    var promise = Promise.resolve(value);
+
+    if (arguments.length < 2) {
+        return promise;
+    }
+
+    return promise.then(fulfilled, rejected);
 }

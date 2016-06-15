@@ -11,22 +11,21 @@ import before from './before';
 import method from './method';
 import header from './header';
 import timeout from './timeout';
-import interceptor from './interceptor';
 import Client from './client/index';
 import Promise from '../promise';
 import { error, extend, merge, isFunction, isObject } from '../util';
 
 export default function Http(url, options) {
 
-    var self = this || {}, client = Client, request, promise;
+    var self = this || {}, client = Client(self.$vm), request, promise;
 
     Http.interceptors.forEach((handler) => {
-        client = interceptor(handler, self.$vm)(client);
+        client.use(handler);
     });
 
     options = isObject(url) ? url : extend({url: url}, options);
     request = merge({}, Http.options, self.$options, options);
-    promise = client(request).bind(self.$vm).then((response) => {
+    promise = client(request).then((response) => {
 
         return response.ok ? response : Promise.reject(response);
 
