@@ -2,6 +2,8 @@
  * Utility functions.
  */
 
+import Promise from './promise';
+
 var debug = false, util = {}, array = [];
 
 export default function (Vue) {
@@ -49,6 +51,17 @@ export function isObject(obj) {
 
 export function isPlainObject(obj) {
     return isObject(obj) && Object.getPrototypeOf(obj) == Object.prototype;
+}
+
+export function when(value, fulfilled, rejected) {
+
+    var promise = Promise.resolve(value);
+
+    if (arguments.length < 2) {
+        return promise;
+    }
+
+    return promise.then(fulfilled, rejected);
 }
 
 export function options(fn, obj, opts) {

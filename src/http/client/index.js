@@ -4,7 +4,7 @@
 
 import Promise from '../../promise';
 import xhrClient from './xhr';
-import { each, trim, isArray, isObject, isPlainObject, isString, isFunction, toLower } from '../../util';
+import { each, trim, when, isArray, isObject, isPlainObject, isString, isFunction, toLower } from '../../util';
 
 export default function (context) {
 
@@ -22,26 +22,25 @@ export default function (context) {
             }
 
             function next(response) {
+                when(response, (response) => {
 
-                if (isFunction(response)) {
+                    if (isFunction(response)) {
 
-                    resHandlers.unshift(response);
+                        resHandlers.unshift(response);
 
-                } else if (isObject(response)) {
-
-                    when(response, (response) => {
+                    } else if (isObject(response)) {
 
                         resHandlers.forEach((handler) => {
                             handler.call(context, response);
                         });
 
                         resolve(response);
-                    });
 
-                    return;
-                }
+                        return;
+                    }
 
-                exec();
+                    exec();
+                });
             }
 
             exec();
@@ -111,15 +110,4 @@ function parseHeaders(str) {
     }
 
     return headers;
-}
-
-function when(value, fulfilled, rejected) {
-
-    var promise = Promise.resolve(value);
-
-    if (arguments.length < 2) {
-        return promise;
-    }
-
-    return promise.then(fulfilled, rejected);
 }
