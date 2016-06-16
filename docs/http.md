@@ -114,7 +114,7 @@ Interceptors can be defined globally and are used for pre- and postprocessing of
 Vue.http.interceptors.push((request, next) => {
 
     // modify request
-    resquest.method = 'POST';
+    request.method = 'POST';
 
     // continue to next interceptor
     next();
@@ -126,7 +126,7 @@ Vue.http.interceptors.push((request, next) => {
 Vue.http.interceptors.push((request, next)  => {
 
     // modify request
-    resquest.method = 'POST';
+    request.method = 'POST';
 
     // continue to next interceptor
     next((response) => {
