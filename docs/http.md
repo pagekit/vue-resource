@@ -11,7 +11,7 @@ new Vue({
 
     ready() {
 
-      // GET request
+      // GET /someUrl
       this.$http.get('/someUrl').then((response) => {
           // success callback
       }, (response) => {
@@ -80,7 +80,7 @@ new Vue({
 
     ready() {
 
-      // POST request
+      // POST /someUrl
       this.$http.post('/someUrl', {foo: 'bar'}).then((response) => {
 
           // get status
@@ -144,7 +144,7 @@ Vue.http.interceptors.push((request, next) => {
 
     // modify request ...
 
-    // stop and return response object
+    // stop and return response
     next({
          data: '...',
          status: 404,
