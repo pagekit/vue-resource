@@ -58,8 +58,8 @@ new Vue({
     ready() {
 
       var customActions = {
-        foo: {method: 'GET', url: 'someItem/foo{/id}'},
-        bar: {method: 'POST', url: 'someItem/bar{/id}'}
+          foo: {method: 'GET', url: 'someItem/foo{/id}'},
+          bar: {method: 'POST', url: 'someItem/bar{/id}'}
       }
 
       var resource = this.$resource('someItem{/id}', {}, customActions);

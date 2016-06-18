@@ -96,7 +96,6 @@ new Vue({
           this.$set('someData', response.data)
 
       }, (response) => {
-
           // error callback
       });
 
