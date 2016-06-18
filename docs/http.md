@@ -12,7 +12,7 @@ new Vue({
     ready() {
 
       // GET request
-      this.$http({url: '/someUrl', method: 'GET'}).then((response) => {
+      this.$http.get('/someUrl').then((response) => {
           // success callback
       }, (response) => {
           // error callback
@@ -80,8 +80,8 @@ new Vue({
 
     ready() {
 
-      // GET request
-      this.$http.get('/someUrl').then((response) => {
+      // POST request
+      this.$http.post('/someUrl', {foo: 'bar'}).then((response) => {
 
           // get status
           response.status;
