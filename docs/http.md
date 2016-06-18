@@ -4,7 +4,7 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 
 ## Usage
 
-A Vue instance provides the `this.$http(options)` function which takes an options object for generating an HTTP request and returns a promise. Also the Vue instance will be automatically bound to `this` in all function callbacks.
+A Vue instance provides the `this.$http` service which can send HTTP requests. A request method call returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that resolves to the response. Also the Vue instance will be automatically bound to `this` in all function callbacks.
 
 ```js
 new Vue({
