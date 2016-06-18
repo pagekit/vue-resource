@@ -4,15 +4,15 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 
 ## Usage
 
-A Vue instance provides the `this.$http(options)` function which takes an options object for generating an HTTP request and returns a promise. Also the Vue instance will be automatically bound to `this` in all function callbacks.
+A Vue instance provides the `this.$http` service which can send HTTP requests. A request method call returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that resolves to the response. Also the Vue instance will be automatically bound to `this` in all function callbacks.
 
 ```js
 new Vue({
 
     ready() {
 
-      // GET request
-      this.$http({url: '/someUrl', method: 'GET'}).then((response) => {
+      // GET /someUrl
+      this.$http.get('/someUrl').then((response) => {
           // success callback
       }, (response) => {
           // error callback
@@ -80,8 +80,8 @@ new Vue({
 
     ready() {
 
-      // GET request
-      this.$http.get('/someUrl').then((response) => {
+      // POST /someUrl
+      this.$http.post('/someUrl', {foo: 'bar'}).then((response) => {
 
           // get status
           response.status;
@@ -96,7 +96,35 @@ new Vue({
           this.$set('someData', response.data)
 
       }, (response) => {
+          // error callback
+      });
 
+    }
+
+})
+```
+
+## Forms
+
+Sending forms using [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData).
+
+```js
+new Vue({
+
+    ready() {
+
+      var formData = new FormData();
+
+      // append string
+      formData.append('foo', 'bar');
+
+      // append Blob/File object
+      formData.append('pic', fileInput, 'mypic.jpg');
+
+      // POST /someUrl
+      this.$http.post('/someUrl', formData).then((response) => {
+          // success callback
+      }, (response) => {
           // error callback
       });
 
@@ -114,7 +142,7 @@ Interceptors can be defined globally and are used for pre- and postprocessing of
 Vue.http.interceptors.push((request, next) => {
 
     // modify request
-    resquest.method = 'POST';
+    request.method = 'POST';
 
     // continue to next interceptor
     next();
@@ -126,7 +154,7 @@ Vue.http.interceptors.push((request, next) => {
 Vue.http.interceptors.push((request, next)  => {
 
     // modify request
-    resquest.method = 'POST';
+    request.method = 'POST';
 
     // continue to next interceptor
     next((response) => {
@@ -144,7 +172,7 @@ Vue.http.interceptors.push((request, next) => {
 
     // modify request ...
 
-    // stop and return response object
+    // stop and return response
     next({
          data: '...',
          status: 404,

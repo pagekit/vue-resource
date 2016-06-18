@@ -26,20 +26,51 @@ new Vue({
 
       var resource = this.$resource('someItem{/id}');
 
-      // get item
+      // GET someItem/1
       resource.get({id: 1}).then((response) => {
           this.$set('item', response.item)
       });
 
-      // save item
+      // POST someItem/1
       resource.save({id: 1}, {item: this.item}).then((response) => {
           // success callback
       }, (response) => {
           // error callback
       });
 
-      // delete item
+      // DELETE someItem/1
       resource.delete({id: 1}).then((response) => {
+          // success callback
+      }, (response) => {
+          // error callback
+      });
+
+    }
+
+})
+```
+
+## Custom Actions
+
+```js
+new Vue({
+
+    ready() {
+
+      var customActions = {
+          foo: {method: 'GET', url: 'someItem/foo{/id}'},
+          bar: {method: 'POST', url: 'someItem/bar{/id}'}
+      }
+
+      var resource = this.$resource('someItem{/id}', {}, customActions);
+
+      // GET someItem/foo/1
+      resource.foo({id: 1}).then((response) => {
+          this.$set('item', response.item)
+      });
+
+      // POST someItem/bar/1
+      resource.bar({id: 1}, {item: this.item}).then((response) => {
           // success callback
       }, (response) => {
           // error callback
