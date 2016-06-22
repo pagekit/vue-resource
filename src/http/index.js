@@ -15,9 +15,9 @@ import header from './header';
 import timeout from './timeout';
 import Client from './client/index';
 import Promise from '../promise';
-import { assign, error, merge, isFunction, isObject } from '../util';
+import { assign, defaults, error } from '../util';
 
-export default function Http(url, options) {
+export default function Http(options) {
 
     var self = this || {}, client = Client(self.$vm), request, promise;
 
@@ -25,8 +25,7 @@ export default function Http(url, options) {
         client.use(handler);
     });
 
-    options = isObject(url) ? url : assign({url: url}, options);
-    request = merge({}, Http.options, self.$options, options);
+    request = defaults(options || {}, self.$options, Http.options);
     promise = client(request).then((response) => {
 
         return response.ok ? response : Promise.reject(response);
@@ -68,21 +67,18 @@ Http.headers = {
 
 Http.interceptors = [before, timeout, jsonp, method, mime, header, cors];
 
-['get', 'put', 'post', 'patch', 'delete', 'jsonp'].forEach((method) => {
+['get', 'delete', 'head', 'jsonp'].forEach((method) => {
 
-    Http[method] = function (url, data, success, options) {
-
-        if (isFunction(data)) {
-            options = success;
-            success = data;
-            data = undefined;
-        }
-
-        if (isObject(success)) {
-            options = success;
-            success = undefined;
-        }
-
-        return this(url, assign({method: method, data: data, success: success}, options));
+    Http[method] = function (url, options) {
+        return this(assign(options || {}, {url, method}));
     };
+
+});
+
+['post', 'put', 'patch'].forEach((method) => {
+
+    Http[method] = function (url, data, options) {
+        return this(assign(options || {}, {url, method, data}));
+    };
+
 });

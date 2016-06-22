@@ -11,9 +11,7 @@ export default function (request) {
         var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), response = {request: request, data: null}, handler, script;
 
         request.params[name] = callback;
-        request.cancel = () => {
-            handler({type: 'cancel'});
-        };
+        request.abort = () => handler({type: 'abort'});
 
         script = document.createElement('script');
         script.src = Url(request);

@@ -106,36 +106,42 @@ export function each(obj, iterator) {
     return obj;
 }
 
-export function defaults(target, source) {
-
-    for (var key in source) {
-        if (target[key] === undefined) {
-            target[key] = source[key];
-        }
-    }
-
-    return target;
-}
+export const assign = Object.assign || _assign;
 
 export function merge(target) {
 
     var args = array.slice.call(arguments, 1);
 
-    args.forEach((arg) => {
-        _merge(target, arg, true);
+    args.forEach((source) => {
+        _merge(target, source, true);
     });
 
     return target;
 }
 
-export const assign = Object.assign || _assign;
+export function defaults(target) {
+
+    var args = array.slice.call(arguments, 1);
+
+    args.forEach((source) => {
+
+        for (var key in source) {
+            if (target[key] === undefined) {
+                target[key] = source[key];
+            }
+        }
+
+    });
+
+    return target;
+}
 
 function _assign(target) {
 
     var args = array.slice.call(arguments, 1);
 
-    args.forEach((arg) => {
-        _merge(target, arg);
+    args.forEach((source) => {
+        _merge(target, source);
     });
 
     return target;

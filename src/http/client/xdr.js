@@ -10,9 +10,7 @@ export default function (request) {
 
         var xdr = new XDomainRequest(), response = {request: request}, handler;
 
-        request.cancel = () => {
-            xdr.abort();
-        };
+        request.abort = () => xdr.abort();
 
         xdr.open(request.method, Url(request), true);
 
@@ -27,7 +25,6 @@ export default function (request) {
 
         xdr.timeout = 0;
         xdr.onload = handler;
-        xdr.onabort = handler;
         xdr.onerror = handler;
         xdr.ontimeout = () => {};
         xdr.onprogress = () => {};

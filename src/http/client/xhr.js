@@ -4,16 +4,14 @@
 
 import Url from '../../url/index';
 import Promise from '../../promise';
-import { assign, each, trim, isArray } from '../../util';
+import { each, trim, isArray } from '../../util';
 
 export default function (request) {
     return new Promise((resolve) => {
 
         var xhr = new XMLHttpRequest(), response = {request: request}, handler;
 
-        request.cancel = () => {
-            xhr.abort();
-        };
+        request.abort = () => xhr.abort();
 
         xhr.open(request.method, Url(request), true);
 
@@ -29,7 +27,6 @@ export default function (request) {
 
         xhr.timeout = 0;
         xhr.onload = handler;
-        xhr.onabort = handler;
         xhr.onerror = handler;
 
         if (request.progress) {
@@ -50,7 +47,7 @@ export default function (request) {
             }
         }
 
-        if (request.withCredentials) {
+        if (request.credentials === true) {
             xhr.withCredentials = true;
         }
 

@@ -40,21 +40,22 @@ Shortcut methods are available for all request types. These methods work globall
 
 ```js
 // global Vue object
-Vue.http.get('/someUrl', [data], [options]).then(successCallback, errorCallback);
+Vue.http.get('/someUrl', [options]).then(successCallback, errorCallback);
 Vue.http.post('/someUrl', [data], [options]).then(successCallback, errorCallback);
 
 // in a Vue instance
-this.$http.get('/someUrl', [data], [options]).then(successCallback, errorCallback);
+this.$http.get('/someUrl', [options]).then(successCallback, errorCallback);
 this.$http.post('/someUrl', [data], [options]).then(successCallback, errorCallback);
 ```
 List of shortcut methods:
 
-* `get(url, [data], [options])`
+* `get(url, [options])`
+* `head(url, [options])`
+* `delete(url, [options])`
+* `jsonp(url, [options])`
 * `post(url, [data], [options])`
 * `put(url, [data], [options])`
 * `patch(url, [data], [options])`
-* `delete(url, [data], [options])`
-* `jsonp(url, [data], [options])`
 
 ## Options
 
@@ -69,7 +70,7 @@ timeout | `number` | Request timeout in milliseconds (`0` means no timeout)
 before | `function(request)` | Callback function to modify the request options before it is sent
 progress | `function(event)` | Callback function to handle the [ProgressEvent](https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent) of uploads
 responseType | `string` | Indicates the [response type](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType) `text`, `json`, `blob`, `document`, `arraybuffer`
-withCredentials | `boolean` | Indicates whether or not cross-site Access-Control requests should be made using credentials
+credentials | `boolean` | Indicates whether or not cross-site Access-Control requests should be made using credentials
 emulateHTTP | `boolean` | Send PUT, PATCH and DELETE requests with a HTTP POST and set the `X-HTTP-Method-Override` header
 emulateJSON | `boolean` | Send request data as `application/x-www-form-urlencoded` content type
 
