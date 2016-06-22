@@ -4,7 +4,7 @@
 
 import Url from '../../url/index';
 import Promise from '../../promise';
-import { assign, each, trim } from '../../util';
+import { assign, each, trim, isArray } from '../../util';
 
 export default function (request) {
     return new Promise((resolve) => {
@@ -22,7 +22,7 @@ export default function (request) {
             response.data = 'response' in xhr ? xhr.response : xhr.responseText;
             response.status = xhr.status === 1223 ? 204 : xhr.status; // IE9 status bug
             response.statusText = xhr.status === 1223 ? 'No Content' : trim(xhr.statusText);
-            response.allHeaders = xhr.getAllResponseHeaders();
+            response.headers = parseHeaders(xhr.getAllResponseHeaders());
 
             resolve(response);
         };
@@ -60,4 +60,32 @@ export default function (request) {
 
         xhr.send(request.data);
     });
+}
+
+function parseHeaders(str) {
+
+    var headers = {}, value, name, i;
+
+    each(trim(str).split('\n'), (row) => {
+
+        i = row.indexOf(':');
+        name = trim(row.slice(0, i));
+        value = trim(row.slice(i + 1));
+
+        if (headers[name]) {
+
+            if (isArray(headers[name])) {
+                headers[name].push(value);
+            } else {
+                headers[name] = [headers[name], value];
+            }
+
+        } else {
+
+            headers[name] = value;
+        }
+
+    });
+
+    return headers;
 }

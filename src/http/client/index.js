@@ -4,7 +4,7 @@
 
 import Promise from '../../promise';
 import xhrClient from './xhr';
-import { each, trim, when, isArray, isObject, isPlainObject, isString, isFunction, toLower } from '../../util';
+import { when, isObject, isFunction } from '../../util';
 
 export default function (context) {
 
@@ -66,45 +66,8 @@ function sendRequest(request, resolve) {
 
 function processResponse(response) {
 
-    var headers = response.headers || response.allHeaders;
-
-    if (isString(headers)) {
-        headers = parseHeaders(headers);
-    }
-
-    if (isObject(headers)) {
-        response.headers = (name) => name ? headers[toLower(name)] : headers;
-    }
-
     response.ok = response.status >= 200 && response.status < 300;
+    response.headers = response.headers || {};
 
     return response;
-}
-
-function parseHeaders(str) {
-
-    var headers = {}, value, name, i;
-
-    each(str.split('\n'), (row) => {
-
-        i = row.indexOf(':');
-        name = trim(toLower(row.slice(0, i)));
-        value = trim(row.slice(i + 1));
-
-        if (headers[name]) {
-
-            if (isArray(headers[name])) {
-                headers[name].push(value);
-            } else {
-                headers[name] = [headers[name], value];
-            }
-
-        } else {
-
-            headers[name] = value;
-        }
-
-    });
-
-    return headers;
 }

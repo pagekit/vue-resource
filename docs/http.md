@@ -31,7 +31,7 @@ data | `Object`, `string` | Response body data
 ok | `boolean` | HTTP status code between 200 and 299
 status | `number` | HTTP status code of the response
 statusText | `string` | HTTP status text of the response
-headers | `function([name])` | HTTP header getter function
+headers | `Object` | HTTP headers of the response
 request | `Object` | Request options object
 
 ## Methods
@@ -86,11 +86,14 @@ new Vue({
           // get status
           response.status;
 
-          // get all headers
-          response.headers();
+          // get status text
+          response.statusText;
 
-          // get 'expires' header
-          response.headers('expires');
+          // get all headers
+          response.headers;
+
+          // get 'Expires' header
+          response.headers['Expires'];
 
           // set data on vm
           this.$set('someData', response.data)

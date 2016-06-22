@@ -31,10 +31,6 @@ export function trim(str) {
     return str.replace(/^\s*|\s*$/g, '');
 }
 
-export function toLower(str) {
-    return str ? str.toLowerCase() : '';
-}
-
 export const isArray = Array.isArray;
 
 export function isString(val) {

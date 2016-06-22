@@ -24,9 +24,9 @@ export default function (request, next) {
 
         if (!request.responseType && isString(response.data)) {
 
-            var type = response.headers('Content-Type');
+            var contentType = response.headers['Content-Type'];
 
-            if (type && type.indexOf('application/json') === 0) {
+            if (isString(contentType) && contentType.indexOf('application/json') === 0) {
                 response.data = parseJSON(response.data);
             }
         }

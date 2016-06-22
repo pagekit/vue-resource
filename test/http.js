@@ -9,6 +9,8 @@ describe('Vue.http', function () {
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
             expect(res.data).toBe('text');
+            expect(res.headers['Content-Type']).toBe('text/plain');
+            expect(res.headers['Content-Length']).toBe('4');
 
             done();
         });
@@ -61,7 +63,7 @@ describe('Vue.http', function () {
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
             expect(res.data.shift().requestType).toBe('cors');
-            expect(res.headers('content-type')).toBe('application/json');
+            expect(res.headers['Content-Type']).toBe('application/json');
 
             done();
         });

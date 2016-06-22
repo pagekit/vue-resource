@@ -11,8 +11,8 @@ const SUPPORTS_CORS = 'withCredentials' in new XMLHttpRequest();
 
 export default function (request, next) {
 
-    if (!isBoolean(request.crossOrigin)) {
-        request.crossOrigin = crossOrigin(request);
+    if (!isBoolean(request.crossOrigin) && crossOrigin(request)) {
+        request.crossOrigin = true;
     }
 
     if (request.crossOrigin) {
@@ -21,7 +21,7 @@ export default function (request, next) {
             request.client = xdrClient;
         }
 
-        request.emulateHTTP = false;
+        delete request.emulateHTTP;
     }
 
     next();
