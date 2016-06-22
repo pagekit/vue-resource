@@ -4,7 +4,7 @@
 
 import Url from '../../url/index';
 import Promise from '../../promise';
-import { each, extend, trim, isPlainObject } from '../../util';
+import { assign, each, trim } from '../../util';
 
 export default function (request) {
     return new Promise((resolve) => {
@@ -19,9 +19,9 @@ export default function (request) {
 
         handler = (event) => {
 
-            response.data = ('response' in xhr) ? xhr.response : xhr.responseText;
+            response.data = 'response' in xhr ? xhr.response : xhr.responseText;
             response.status = xhr.status === 1223 ? 204 : xhr.status; // IE9 status bug
-            response.statusText = trim(xhr.statusText || '');
+            response.statusText = xhr.status === 1223 ? 'No Content' : trim(xhr.statusText);
             response.allHeaders = xhr.getAllResponseHeaders();
 
             resolve(response);
@@ -31,15 +31,27 @@ export default function (request) {
         xhr.onload = handler;
         xhr.onabort = handler;
         xhr.onerror = handler;
-        xhr.ontimeout = () => {};
-        xhr.onprogress = () => {};
 
-        if (isPlainObject(request.xhr)) {
-            extend(xhr, request.xhr);
+        if (request.progress) {
+            if (request.method === 'GET') {
+                xhr.addEventListener('progress', request.progress);
+            } else if (/^(POST|PUT)$/i.test(request.method)) {
+                xhr.upload.addEventListener('progress', request.progress);
+            }
         }
 
-        if (isPlainObject(request.upload)) {
-            extend(xhr.upload, request.upload);
+        if (request.responseType) {
+            try {
+              xhr.responseType = request.responseType;
+            } catch (e) {
+                if (xhr.responseType !== 'json') {
+                    throw e;
+                }
+            }
+        }
+
+        if (request.withCredentials) {
+            xhr.withCredentials = true;
         }
 
         each(request.headers || {}, (value, header) => {

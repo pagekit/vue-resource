@@ -3,13 +3,13 @@
  */
 
 import Http from './http/index';
-import { each, extend, merge, isFunction } from './util';
+import { assign, each, merge, isFunction } from './util';
 
 export default function Resource(url, params, actions, options) {
 
     var self = this || {}, resource = {};
 
-    actions = extend({},
+    actions = assign({},
         Resource.actions,
         actions
     );
@@ -28,7 +28,7 @@ export default function Resource(url, params, actions, options) {
 
 function opts(action, args) {
 
-    var options = extend({}, action), params = {}, data, success, error;
+    var options = assign({}, action), params = {}, data, success, error;
 
     switch (args.length) {
 
@@ -84,7 +84,7 @@ function opts(action, args) {
     }
 
     options.data = data;
-    options.params = extend({}, options.params, params);
+    options.params = assign({}, options.params, params);
 
     if (success) {
         options.success = success;

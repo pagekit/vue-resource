@@ -63,13 +63,13 @@ Parameter | Type | Description
 url | `string` | URL to which the request is sent
 method | `string` | HTTP method (e.g. GET, POST, ...)
 data | `Object`, `string` | Data to be sent as the request message data
-params | `Object` | Parameters object to be appended as GET parameters
+params | `Object` | Parameters object to be sent as URL parameters
 headers | `Object` | Headers object to be sent as HTTP request headers
-xhr | `Object` | Parameters object to be set on the [XHR](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) object
-upload | `Object` | Parameters object to be set on the [XHR.upload](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/upload) property
-jsonp | `string` | Callback function name in a JSONP request
 timeout | `number` | Request timeout in milliseconds (`0` means no timeout)
-beforeSend | `function(request)` | Callback function to modify the request object before it is sent
+before | `function(request)` | Callback function to modify the request options before it is sent
+progress | `function(event)` | Callback function to handle the [ProgressEvent](https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent) of uploads
+responseType | `string` | Indicates the [response type](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType) `text`, `json`, `blob`, `document`, `arraybuffer`
+withCredentials | `boolean` | Indicates whether or not cross-site Access-Control requests should be made using credentials
 emulateHTTP | `boolean` | Send PUT, PATCH and DELETE requests with a HTTP POST and set the `X-HTTP-Method-Override` header
 emulateJSON | `boolean` | Send request data as `application/x-www-form-urlencoded` content type
 

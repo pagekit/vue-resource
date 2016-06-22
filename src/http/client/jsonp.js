@@ -8,9 +8,9 @@ import Promise from '../../promise';
 export default function (request) {
     return new Promise((resolve) => {
 
-        var callback = '_jsonp' + Math.random().toString(36).substr(2), response = {request: request, data: null}, handler, script;
+        var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), response = {request: request, data: null}, handler, script;
 
-        request.params[request.jsonp] = callback;
+        request.params[name] = callback;
         request.cancel = () => {
             handler({type: 'cancel'});
         };

@@ -2,7 +2,9 @@
  * Service for sending network requests.
  */
 
-const jsonType = {'Content-Type': 'application/json'};
+const CUSTOM_HEADERS = {'X-Requested-With': 'XMLHttpRequest'};
+const COMMON_HEADERS = {'Accept': 'application/json, text/plain, */*'};
+const JSON_CONTENT_TYPE = {'Content-Type': 'application/json;charset=utf-8'};
 
 import cors from './cors';
 import mime from './mime';
@@ -13,7 +15,7 @@ import header from './header';
 import timeout from './timeout';
 import Client from './client/index';
 import Promise from '../promise';
-import { error, extend, merge, isFunction, isObject } from '../util';
+import { assign, error, merge, isFunction, isObject } from '../util';
 
 export default function Http(url, options) {
 
@@ -23,7 +25,7 @@ export default function Http(url, options) {
         client.use(handler);
     });
 
-    options = isObject(url) ? url : extend({url: url}, options);
+    options = isObject(url) ? url : assign({url: url}, options);
     request = merge({}, Http.options, self.$options, options);
     promise = client(request).then((response) => {
 
@@ -50,27 +52,18 @@ export default function Http(url, options) {
 }
 
 Http.options = {
-    method: 'get',
-    data: '',
+    method: 'GET',
     params: {},
-    headers: {},
-    xhr: null,
-    upload: null,
-    jsonp: 'callback',
-    beforeSend: null,
-    crossOrigin: null,
-    emulateHTTP: false,
-    emulateJSON: false,
-    timeout: 0
+    headers: {}
 };
 
 Http.headers = {
-    put: jsonType,
-    post: jsonType,
-    patch: jsonType,
-    delete: jsonType,
-    common: {'Accept': 'application/json, text/plain, */*'},
-    custom: {'X-Requested-With': 'XMLHttpRequest'}
+    put: JSON_CONTENT_TYPE,
+    post: JSON_CONTENT_TYPE,
+    patch: JSON_CONTENT_TYPE,
+    delete: JSON_CONTENT_TYPE,
+    custom: CUSTOM_HEADERS,
+    common: COMMON_HEADERS
 };
 
 Http.interceptors = [before, timeout, jsonp, method, mime, header, cors];
@@ -90,6 +83,6 @@ Http.interceptors = [before, timeout, jsonp, method, mime, header, cors];
             success = undefined;
         }
 
-        return this(url, extend({method: method, data: data, success: success}, options));
+        return this(url, assign({method: method, data: data, success: success}, options));
     };
 });

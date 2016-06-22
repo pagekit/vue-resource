@@ -11,8 +11,6 @@ export default function (Vue) {
     debug = Vue.config.debug || !Vue.config.silent;
 }
 
-export const isArray = Array.isArray;
-
 export function warn(msg) {
     if (typeof console !== 'undefined' && debug) {
         console.warn('[VueResource warn]: ' + msg);
@@ -37,8 +35,14 @@ export function toLower(str) {
     return str ? str.toLowerCase() : '';
 }
 
+export const isArray = Array.isArray;
+
 export function isString(val) {
     return typeof val === 'string';
+}
+
+export function isBoolean(val) {
+    return val === true || val === false;
 }
 
 export function isFunction(val) {
@@ -51,6 +55,18 @@ export function isObject(obj) {
 
 export function isPlainObject(obj) {
     return isObject(obj) && Object.getPrototypeOf(obj) == Object.prototype;
+}
+
+export function isFormData(obj) {
+    return (typeof FormData !== 'undefined') && (obj instanceof FormData);
+}
+
+export function parseJSON(data) {
+    try {
+        return JSON.parse(data);
+    } catch (e) {
+        return null;
+    }
 }
 
 export function when(value, fulfilled, rejected) {
@@ -105,23 +121,25 @@ export function defaults(target, source) {
     return target;
 }
 
-export function extend(target) {
-
-    var args = array.slice.call(arguments, 1);
-
-    args.forEach((arg) => {
-        _merge(target, arg);
-    });
-
-    return target;
-}
-
 export function merge(target) {
 
     var args = array.slice.call(arguments, 1);
 
     args.forEach((arg) => {
         _merge(target, arg, true);
+    });
+
+    return target;
+}
+
+export const assign = Object.assign || _assign;
+
+function _assign(target) {
+
+    var args = array.slice.call(arguments, 1);
+
+    args.forEach((arg) => {
+        _merge(target, arg);
     });
 
     return target;

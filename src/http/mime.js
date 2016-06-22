@@ -3,7 +3,7 @@
  */
 
 import Url from '../url/index';
-import { isObject, isPlainObject } from '../util';
+import { parseJSON, isString, isFormData, isObject, isPlainObject } from '../util';
 
 export default function (request, next) {
 
@@ -12,7 +12,7 @@ export default function (request, next) {
         request.data = Url.params(request.data);
     }
 
-    if (isObject(request.data) && /FormData/i.test(request.data.toString())) {
+    if (isFormData(request.data)) {
         delete request.headers['Content-Type'];
     }
 
@@ -22,9 +22,14 @@ export default function (request, next) {
 
     next((response) => {
 
-        try {
-            response.data = JSON.parse(response.data);
-        } catch (e) {}
+        if (!request.responseType && isString(response.data)) {
+
+            var type = response.headers('Content-Type');
+
+            if (type && type.indexOf('application/json') === 0) {
+                response.data = parseJSON(response.data);
+            }
+        }
 
     });
 }
