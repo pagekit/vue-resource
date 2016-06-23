@@ -2,7 +2,6 @@
  * XDomain client (Internet Explorer).
  */
 
-import Url from '../../url/index';
 import Promise from '../../promise';
 
 export default function (request) {
@@ -12,7 +11,7 @@ export default function (request) {
 
         request.abort = () => xdr.abort();
 
-        xdr.open(request.method, Url(request), true);
+        xdr.open(request.method, request.getUrl(), true);
 
         handler = (event) => {
 

@@ -2,7 +2,6 @@
  * JSONP client.
  */
 
-import Url from '../../url/index';
 import Promise from '../../promise';
 
 export default function (request) {
@@ -14,7 +13,7 @@ export default function (request) {
         request.abort = () => handler({type: 'abort'});
 
         script = document.createElement('script');
-        script.src = Url(request);
+        script.src = request.getUrl();
         script.type = 'text/javascript';
         script.async = true;
 

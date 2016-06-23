@@ -2,7 +2,6 @@
  * XMLHttp client.
  */
 
-import Url from '../../url/index';
 import Promise from '../../promise';
 import { each, trim, isArray } from '../../util';
 
@@ -13,7 +12,7 @@ export default function (request) {
 
         request.abort = () => xhr.abort();
 
-        xhr.open(request.method, Url(request), true);
+        xhr.open(request.method, request.getUrl(), true);
 
         handler = (event) => {
 

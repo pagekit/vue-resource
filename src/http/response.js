@@ -4,8 +4,9 @@
 
 export default class Response {
 
-    constructor(body, {headers, status, statusText}) {
+    constructor(body, {url, headers, status, statusText}) {
 
+        this.url = url;
         this.body = body;
         this.headers = headers || {};
         this.status = status || 0;

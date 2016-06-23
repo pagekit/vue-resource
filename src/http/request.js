@@ -2,6 +2,7 @@
  * HTTP Request.
  */
 
+import Url from '../url/index';
 import Response from './response';
 import { assign } from '../util';
 
@@ -17,12 +18,16 @@ export default class Request {
         assign(this, options);
     }
 
+    getUrl(){
+        return Url(this);
+    }
+
     getBody(){
         return this.body;
     }
 
     respondWith(body, options) {
-        return new Response(body, options);
+        return new Response(body, assign(options || {}, {url: this.getUrl()}));
     }
 
 }
