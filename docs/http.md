@@ -111,35 +111,6 @@ new Vue({
 })
 ```
 
-## Forms
-
-Sending forms using [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData).
-
-```js
-new Vue({
-
-    ready() {
-
-      var formData = new FormData();
-
-      // append string
-      formData.append('foo', 'bar');
-
-      // append Blob/File object
-      formData.append('pic', fileInput, 'mypic.jpg');
-
-      // POST /someUrl
-      this.$http.post('/someUrl', formData).then((response) => {
-          // success callback
-      }, (response) => {
-          // error callback
-      });
-
-    }
-
-})
-```
-
 ## Interceptors
 
 Interceptors can be defined globally and are used for pre- and postprocessing of a request.
