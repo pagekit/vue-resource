@@ -91,23 +91,23 @@ describe('this.$http', function () {
 
             created() {
 
-                var before = (req) => {
-
-                    setTimeout(() => {
-
-                        expect(typeof req.abort).toBe('function');
-
-                        req.abort();
-
-                        done();
-
-                    }, 0);
-
-                };
-
                 var random = Math.random().toString(36).substr(2);
 
-                this.$http.get('data/valid.json?' + random, {before}).then((res) => {
+                this.$http.get('data/valid.json?' + random, {
+
+                    before(req) {
+                        setTimeout(() => {
+
+                            expect(typeof req.abort).toBe('function');
+
+                            req.abort();
+
+                            done();
+
+                        }, 0);
+                    }
+
+                }).then((res) => {
                     fail('Callback has been called');
                 });
             }
