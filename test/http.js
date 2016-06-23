@@ -25,6 +25,7 @@ describe('Vue.http', function () {
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
             expect(res.data.foo).toBe('bar');
+            expect(typeof res.json()).toBe('object');
 
             done();
         });
@@ -44,7 +45,7 @@ describe('Vue.http', function () {
 
     });
 
-    it('get("server.cors-api.appspot.com")', (done) => {
+    it('get("cors-api.appspot.com")', (done) => {
 
         Vue.http.get('http://server.cors-api.appspot.com/server?id=1&enable=true').then((res) => {
 
@@ -52,6 +53,21 @@ describe('Vue.http', function () {
             expect(res.status).toBe(200);
             expect(res.data.shift().requestType).toBe('cors');
             expect(res.headers['Content-Type']).toBe('application/json');
+            expect(typeof res.json()).toBe('object');
+
+            done();
+        });
+
+    });
+
+    it('jsonp("jsfiddle.net/jsonp")', (done) => {
+
+        Vue.http.jsonp('http://jsfiddle.net/echo/jsonp/', {params: {foo: 'bar'}}).then((res) => {
+
+            expect(res.ok).toBe(true);
+            expect(res.status).toBe(200);
+            expect(res.data.foo).toBe('bar');
+            expect(typeof res.json()).toBe('object');
 
             done();
         });
@@ -74,6 +90,7 @@ describe('this.$http', function () {
                     expect(res.ok).toBe(true);
                     expect(res.status).toBe(200);
                     expect(res.data.foo).toBe('bar');
+                    expect(typeof res.json()).toBe('object');
 
                     done();
 

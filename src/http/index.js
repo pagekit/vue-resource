@@ -53,7 +53,7 @@ Http.headers = {
     common: COMMON_HEADERS
 };
 
-Http.interceptors = [before, timeout, jsonp, method, body, header, cors];
+Http.interceptors = [before, timeout, method, body, jsonp, header, cors];
 
 ['get', 'delete', 'head', 'jsonp'].forEach((method) => {
 

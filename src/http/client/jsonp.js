@@ -9,17 +9,6 @@ export default function (request) {
 
         var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script;
 
-        request.params[name] = callback;
-
-        script = document.createElement('script');
-        script.src = request.getUrl();
-        script.type = 'text/javascript';
-        script.async = true;
-
-        window[callback] = (result) => {
-            body = result;
-        };
-
         handler = (event) => {
 
             var status = 0;
@@ -36,6 +25,16 @@ export default function (request) {
             document.body.removeChild(script);
         };
 
+        request.params[name] = callback;
+
+        window[callback] = (result) => {
+            body = JSON.stringify(result);
+        };
+
+        script = document.createElement('script');
+        script.src = request.getUrl();
+        script.type = 'text/javascript';
+        script.async = true;
         script.onload = handler;
         script.onerror = handler;
 
