@@ -10,7 +10,6 @@ export default function (request) {
         var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script;
 
         request.params[name] = callback;
-        request.abort = () => handler({type: 'abort'});
 
         script = document.createElement('script');
         script.src = request.getUrl();

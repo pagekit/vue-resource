@@ -8,13 +8,7 @@ import { each, trim, isArray } from '../../util';
 export default function (request) {
     return new Promise((resolve) => {
 
-        var xhr = new XMLHttpRequest(), handler;
-
-        request.abort = () => xhr.abort();
-
-        xhr.open(request.method, request.getUrl(), true);
-
-        handler = (event) => {
+        var xhr = new XMLHttpRequest(), handler = (event) => {
 
             var response = request.respondWith(
                 'response' in xhr ? xhr.response : xhr.responseText, {
@@ -27,6 +21,9 @@ export default function (request) {
             resolve(response);
         };
 
+        request.abort = () => xhr.abort();
+
+        xhr.open(request.method, request.getUrl(), true);
         xhr.timeout = 0;
         xhr.onload = handler;
         xhr.onerror = handler;

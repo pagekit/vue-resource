@@ -7,13 +7,7 @@ import Promise from '../../promise';
 export default function (request) {
     return new Promise((resolve) => {
 
-        var xdr = new XDomainRequest(), handler;
-
-        request.abort = () => xdr.abort();
-
-        xdr.open(request.method, request.getUrl(), true);
-
-        handler = (event) => {
+        var xdr = new XDomainRequest(), handler = (event) => {
 
             var response = request.respondWith(
                 xdr.responseText, {
@@ -25,12 +19,14 @@ export default function (request) {
             resolve(response);
         };
 
+        request.abort = () => xdr.abort();
+
+        xdr.open(request.method, request.getUrl(), true);
         xdr.timeout = 0;
         xdr.onload = handler;
         xdr.onerror = handler;
         xdr.ontimeout = () => {};
         xdr.onprogress = () => {};
-
         xdr.send(request.getBody());
     });
 }
