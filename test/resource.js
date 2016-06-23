@@ -2,11 +2,11 @@ import Vue from 'vue';
 
 describe('this.$resource', function () {
 
-    it('get({file: "valid.json"})', function (done) {
+    it('get({file: "valid.json"})', (done) => {
 
         var vm = new Vue({
 
-            created: function () {
+            created() {
 
                 var resource = this.$resource('data{/file}');
 
@@ -25,11 +25,11 @@ describe('this.$resource', function () {
 
     });
 
-    it('save({file: "valid.json"}, {foo: "bar"})', function (done) {
+    it('save({file: "valid.json"}, {foo: "bar"})', (done) => {
 
         var vm = new Vue({
 
-            created: function () {
+            created() {
 
                 var resource = this.$resource('data{/file}');
 

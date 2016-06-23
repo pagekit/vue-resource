@@ -2,9 +2,9 @@ import Vue from 'vue';
 
 describe('Vue.http', function () {
 
-    it('get("data/text.txt")', function (done) {
+    it('get("data/text.txt")', (done) => {
 
-        Vue.http.get('data/text.txt').then(function (res) {
+        Vue.http.get('data/text.txt').then((res) => {
 
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
@@ -18,9 +18,9 @@ describe('Vue.http', function () {
 
     });
 
-    it('get("data/valid.json")', function (done) {
+    it('get("data/valid.json")', (done) => {
 
-        Vue.http.get('data/valid.json').then(function (res) {
+        Vue.http.get('data/valid.json').then((res) => {
 
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
@@ -31,9 +31,9 @@ describe('Vue.http', function () {
 
     });
 
-    it('get("data/invalid.json")', function (done) {
+    it('get("data/invalid.json")', (done) => {
 
-        Vue.http.get('data/invalid.json').then(function (res) {
+        Vue.http.get('data/invalid.json').then((res) => {
 
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
@@ -44,9 +44,9 @@ describe('Vue.http', function () {
 
     });
 
-    it('get("server.cors-api.appspot.com")', function (done) {
+    it('get("server.cors-api.appspot.com")', (done) => {
 
-        Vue.http.get('http://server.cors-api.appspot.com/server?id=1&enable=true').then(function (res) {
+        Vue.http.get('http://server.cors-api.appspot.com/server?id=1&enable=true').then((res) => {
 
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
@@ -62,13 +62,13 @@ describe('Vue.http', function () {
 
 describe('this.$http', function () {
 
-    it('get("data/valid.json")', function (done) {
+    it('get("data/valid.json")', (done) => {
 
         var vm = new Vue({
 
-            created: function () {
+            created() {
 
-                this.$http.get('data/valid.json').then(function (res) {
+                this.$http.get('data/valid.json').then((res) => {
 
                     expect(this).toBe(vm);
                     expect(res.ok).toBe(true);
@@ -85,13 +85,44 @@ describe('this.$http', function () {
 
     });
 
-    it('get("data/notfound.json") using catch()', function (done) {
+    it('get("data/valid.json") with abort()', (done) => {
 
         var vm = new Vue({
 
-            created: function () {
+            created() {
 
-                this.$http.get('data/notfound.json').catch(function (res) {
+                var before = (req) => {
+
+                    setTimeout(() => {
+
+                        expect(typeof req.abort).toBe('function');
+
+                        req.abort();
+
+                        done();
+
+                    }, 0);
+
+                };
+
+                var random = Math.random().toString(36).substr(2);
+
+                this.$http.get('data/valid.json?' + random, {before}).then((res) => {
+                    fail('Callback has been called');
+                });
+            }
+
+        });
+
+    });
+
+    it('get("data/notfound.json") using catch()', (done) => {
+
+        var vm = new Vue({
+
+            created() {
+
+                this.$http.get('data/notfound.json').catch((res) => {
 
                     expect(this).toBe(vm);
                     expect(res.ok).toBe(false);
