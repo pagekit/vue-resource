@@ -28,7 +28,7 @@ export default function Resource(url, params, actions, options) {
 
 function opts(action, args) {
 
-    var options = assign({}, action), params = {}, data, success, error;
+    var options = assign({}, action), params = {}, body, success, error;
 
     switch (args.length) {
 
@@ -56,7 +56,7 @@ function opts(action, args) {
             } else {
 
                 params = args[0];
-                data = args[1];
+                body = args[1];
                 success = args[2];
 
                 break;
@@ -67,7 +67,7 @@ function opts(action, args) {
             if (isFunction(args[0])) {
                 success = args[0];
             } else if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
-                data = args[0];
+                body = args[0];
             } else {
                 params = args[0];
             }
@@ -80,10 +80,10 @@ function opts(action, args) {
 
         default:
 
-            throw 'Expected up to 4 arguments [params, data, success, error], got ' + args.length + ' arguments';
+            throw 'Expected up to 4 arguments [params, body, success, error], got ' + args.length + ' arguments';
     }
 
-    options.data = data;
+    options.body = body;
     options.params = assign({}, options.params, params);
 
     if (success) {

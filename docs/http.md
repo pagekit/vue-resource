@@ -23,17 +23,6 @@ new Vue({
 })
 ```
 
-The response object properties:
-
-Property | Type | Description
--------- | ---- | -----------
-data | `Object`, `string` | Response body data
-ok | `boolean` | HTTP status code between 200 and 299
-status | `number` | HTTP status code of the response
-statusText | `string` | HTTP status text of the response
-headers | `Object` | HTTP headers of the response
-request | `Object` | Request options object
-
 ## Methods
 
 Shortcut methods are available for all request types. These methods work globally or in a Vue instance.
@@ -63,16 +52,31 @@ Parameter | Type | Description
 --------- | ---- | -----------
 url | `string` | URL to which the request is sent
 method | `string` | HTTP method (e.g. GET, POST, ...)
-data | `Object`, `string` | Data to be sent as the request message data
+body | `Object`, `FormData` `string` | Data to be sent as the request body
 params | `Object` | Parameters object to be sent as URL parameters
 headers | `Object` | Headers object to be sent as HTTP request headers
 timeout | `number` | Request timeout in milliseconds (`0` means no timeout)
 before | `function(request)` | Callback function to modify the request options before it is sent
 progress | `function(event)` | Callback function to handle the [ProgressEvent](https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent) of uploads
-responseType | `string` | Indicates the [response type](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType) `text`, `json`, `blob`, `document`, `arraybuffer`
 credentials | `boolean` | Indicates whether or not cross-site Access-Control requests should be made using credentials
 emulateHTTP | `boolean` | Send PUT, PATCH and DELETE requests with a HTTP POST and set the `X-HTTP-Method-Override` header
-emulateJSON | `boolean` | Send request data as `application/x-www-form-urlencoded` content type
+emulateJSON | `boolean` | Send request body as `application/x-www-form-urlencoded` content type
+
+## Response
+
+A request resolves to a response object with the following properties and methods:
+
+Property | Type | Description
+-------- | ---- | -----------
+data | `Object`, `string` | Response body
+ok | `boolean` | HTTP status code between 200 and 299
+status | `number` | HTTP status code of the response
+statusText | `string` | HTTP status text of the response
+headers | `Object` | HTTP headers of the response
+**Method** | **Type** | **Description**
+text() | `string` | Response body as string
+json() | `Object` | Response body as parsed JSON object
+blob() | `Blob` | Response body as Blob object
 
 ## Example
 
@@ -97,7 +101,7 @@ new Vue({
           response.headers['Expires'];
 
           // set data on vm
-          this.$set('someData', response.data)
+          this.$set('someData', response.json())
 
       }, (response) => {
           // error callback
@@ -164,7 +168,7 @@ Vue.http.interceptors.push((request, next)  => {
     next((response) => {
 
         // modify response
-        response.data = '...';
+        response.body = '...';
 
     });
 });
@@ -177,10 +181,9 @@ Vue.http.interceptors.push((request, next) => {
     // modify request ...
 
     // stop and return response
-    next({
-         data: '...',
+    next(request.respondWith(body, {
          status: 404,
          statusText: 'Not found'
-    });
+    }));
 });
 ```

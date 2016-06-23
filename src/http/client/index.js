@@ -30,8 +30,6 @@ export default function (context) {
 
                     } else if (isObject(response)) {
 
-                        processResponse(response);
-
                         resHandlers.forEach((handler) => {
                             handler.call(context, response);
                         });
@@ -62,12 +60,4 @@ function sendRequest(request, resolve) {
     var client = request.client || xhrClient;
 
     resolve(client(request));
-}
-
-function processResponse(response) {
-
-    response.ok = response.status >= 200 && response.status < 300;
-    response.headers = response.headers || {};
-
-    return response;
 }

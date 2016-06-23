@@ -9,7 +9,7 @@ import { each, trim, isArray } from '../../util';
 export default function (request) {
     return new Promise((resolve) => {
 
-        var xhr = new XMLHttpRequest(), response = {request: request}, handler;
+        var xhr = new XMLHttpRequest(), handler;
 
         request.abort = () => xhr.abort();
 
@@ -17,10 +17,13 @@ export default function (request) {
 
         handler = (event) => {
 
-            response.data = 'response' in xhr ? xhr.response : xhr.responseText;
-            response.status = xhr.status === 1223 ? 204 : xhr.status; // IE9 status bug
-            response.statusText = xhr.status === 1223 ? 'No Content' : trim(xhr.statusText);
-            response.headers = parseHeaders(xhr.getAllResponseHeaders());
+            var response = request.respondWith(
+                'response' in xhr ? xhr.response : xhr.responseText, {
+                    status: xhr.status === 1223 ? 204 : xhr.status, // IE9 status bug
+                    statusText: xhr.status === 1223 ? 'No Content' : trim(xhr.statusText),
+                    headers: parseHeaders(xhr.getAllResponseHeaders()),
+                }
+            );
 
             resolve(response);
         };
@@ -37,16 +40,6 @@ export default function (request) {
             }
         }
 
-        if (request.responseType) {
-            try {
-              xhr.responseType = request.responseType;
-            } catch (e) {
-                if (xhr.responseType !== 'json') {
-                    throw e;
-                }
-            }
-        }
-
         if (request.credentials === true) {
             xhr.withCredentials = true;
         }
@@ -55,7 +48,7 @@ export default function (request) {
             xhr.setRequestHeader(header, value);
         });
 
-        xhr.send(request.data);
+        xhr.send(request.getBody());
     });
 }
 

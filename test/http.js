@@ -9,21 +9,9 @@ describe('Vue.http', function () {
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
             expect(res.data).toBe('text');
+            expect(res.blob() instanceof Blob).toBe(true);
             expect(res.headers['Content-Type']).toBe('text/plain');
             expect(res.headers['Content-Length']).toBe('4');
-
-            done();
-        });
-
-    });
-
-    it('GET: text.txt (blob)', function (done) {
-
-        Vue.http.get('data/text.txt', {}, {responseType: 'blob'}).then(function (res) {
-
-            expect(res.ok).toBe(true);
-            expect(res.status).toBe(200);
-            expect(res.data instanceof Blob).toBe(true);
 
             done();
         });

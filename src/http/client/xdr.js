@@ -8,7 +8,7 @@ import Promise from '../../promise';
 export default function (request) {
     return new Promise((resolve) => {
 
-        var xdr = new XDomainRequest(), response = {request: request}, handler;
+        var xdr = new XDomainRequest(), handler;
 
         request.abort = () => xdr.abort();
 
@@ -16,9 +16,12 @@ export default function (request) {
 
         handler = (event) => {
 
-            response.data = xdr.responseText;
-            response.status = xdr.status;
-            response.statusText = xdr.statusText || '';
+            var response = request.respondWith(
+                xdr.responseText, {
+                    status: xhr.status,
+                    statusText: xdr.statusText
+                }
+            );
 
             resolve(response);
         };
@@ -29,6 +32,6 @@ export default function (request) {
         xdr.ontimeout = () => {};
         xdr.onprogress = () => {};
 
-        xdr.send(request.data);
+        xdr.send(request.getBody());
     });
 }

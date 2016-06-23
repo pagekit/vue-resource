@@ -2,7 +2,7 @@
  * JSONP Interceptor.
  */
 
-import jsonpClient from './client/jsonp';
+import jsonpClient from '../client/jsonp';
 
 export default function (request, next) {
 

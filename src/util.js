@@ -57,14 +57,6 @@ export function isFormData(obj) {
     return (typeof FormData !== 'undefined') && (obj instanceof FormData);
 }
 
-export function parseJSON(data) {
-    try {
-        return JSON.parse(data);
-    } catch (e) {
-        return null;
-    }
-}
-
 export function when(value, fulfilled, rejected) {
 
     var promise = Promise.resolve(value);

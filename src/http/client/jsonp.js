@@ -8,7 +8,7 @@ import Promise from '../../promise';
 export default function (request) {
     return new Promise((resolve) => {
 
-        var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), response = {request: request, data: null}, handler, script;
+        var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script;
 
         request.params[name] = callback;
         request.abort = () => handler({type: 'abort'});
@@ -18,21 +18,21 @@ export default function (request) {
         script.type = 'text/javascript';
         script.async = true;
 
-        window[callback] = (data) => {
-            response.data = data;
+        window[callback] = (result) => {
+            body = result;
         };
 
         handler = (event) => {
 
-            if (event.type === 'load' && response.data !== null) {
-                response.status = 200;
+            var status = 0;
+
+            if (event.type === 'load' && body !== null) {
+                status = 200;
             } else if (event.type === 'error') {
-                response.status = 404;
-            } else {
-                response.status = 0;
+                status = 404;
             }
 
-            resolve(response);
+            resolve(request.respondWith(body, {status}));
 
             delete window[callback];
             document.body.removeChild(script);
