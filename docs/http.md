@@ -66,17 +66,16 @@ emulateJSON | `boolean` | Send request body as `application/x-www-form-urlencode
 
 A request resolves to a response object with the following properties and methods:
 
-Property | Type | Description
+Method | Type | Description
 -------- | ---- | -----------
-data | `Object`, `string` | Response body
+text() | `string` | Response body as string
+json() | `Object` | Response body as parsed JSON object
+blob() | `Blob` | Response body as Blob object
+**Property** | **Type** | **Description**
 ok | `boolean` | HTTP status code between 200 and 299
 status | `number` | HTTP status code of the response
 statusText | `string` | HTTP status text of the response
 headers | `Object` | HTTP headers of the response
-**Method** | **Type** | **Description**
-text() | `string` | Response body as string
-json() | `Object` | Response body as parsed JSON object
-blob() | `Blob` | Response body as Blob object
 
 ## Example
 

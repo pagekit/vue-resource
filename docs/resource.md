@@ -28,7 +28,7 @@ new Vue({
 
       // GET someItem/1
       resource.get({id: 1}).then((response) => {
-          this.$set('item', response.item)
+          this.$set('item', response.json())
       });
 
       // POST someItem/1
@@ -66,7 +66,7 @@ new Vue({
 
       // GET someItem/foo/1
       resource.foo({id: 1}).then((response) => {
-          this.$set('item', response.item)
+          this.$set('item', response.json())
       });
 
       // POST someItem/bar/1
