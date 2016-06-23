@@ -3,7 +3,7 @@
  */
 
 import Http from './http/index';
-import { assign, each, merge, isFunction } from './util';
+import { assign, each, merge } from './util';
 
 export default function Resource(url, params, actions, options) {
 
@@ -28,45 +28,20 @@ export default function Resource(url, params, actions, options) {
 
 function opts(action, args) {
 
-    var options = assign({}, action), params = {}, body, success, error;
+    var options = assign({}, action), params = {}, body;
 
     switch (args.length) {
 
-        case 4:
-
-            error = args[3];
-            success = args[2];
-
-        case 3:
         case 2:
 
-            if (isFunction(args[1])) {
+            params = args[0];
+            body = args[1];
 
-                if (isFunction(args[0])) {
-
-                    success = args[0];
-                    error = args[1];
-
-                    break;
-                }
-
-                success = args[1];
-                error = args[2];
-
-            } else {
-
-                params = args[0];
-                body = args[1];
-                success = args[2];
-
-                break;
-            }
+            break;
 
         case 1:
 
-            if (isFunction(args[0])) {
-                success = args[0];
-            } else if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
+            if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
                 body = args[0];
             } else {
                 params = args[0];
@@ -80,19 +55,11 @@ function opts(action, args) {
 
         default:
 
-            throw 'Expected up to 4 arguments [params, body, success, error], got ' + args.length + ' arguments';
+            throw 'Expected up to 4 arguments [params, body], got ' + args.length + ' arguments';
     }
 
     options.body = body;
     options.params = assign({}, options.params, params);
-
-    if (success) {
-        options.success = success;
-    }
-
-    if (error) {
-        options.error = error;
-    }
 
     return options;
 }

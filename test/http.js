@@ -2,7 +2,7 @@ import Vue from 'vue';
 
 describe('Vue.http', function () {
 
-    it('GET: text.txt', function (done) {
+    it('get("data/text.txt")', function (done) {
 
         Vue.http.get('data/text.txt').then(function (res) {
 
@@ -18,7 +18,7 @@ describe('Vue.http', function () {
 
     });
 
-    it('GET: valid.json', function (done) {
+    it('get("data/valid.json")', function (done) {
 
         Vue.http.get('data/valid.json').then(function (res) {
 
@@ -31,7 +31,7 @@ describe('Vue.http', function () {
 
     });
 
-    it('GET: invalid.json', function (done) {
+    it('get("data/invalid.json")', function (done) {
 
         Vue.http.get('data/invalid.json').then(function (res) {
 
@@ -44,7 +44,7 @@ describe('Vue.http', function () {
 
     });
 
-    it('GET: cors-api.com', function (done) {
+    it('get("server.cors-api.appspot.com")', function (done) {
 
         Vue.http.get('http://server.cors-api.appspot.com/server?id=1&enable=true').then(function (res) {
 
@@ -62,7 +62,7 @@ describe('Vue.http', function () {
 
 describe('this.$http', function () {
 
-    it('GET: valid.json', function (done) {
+    it('get("data/valid.json")', function (done) {
 
         var vm = new Vue({
 
@@ -85,7 +85,7 @@ describe('this.$http', function () {
 
     });
 
-    it('GET: notfound.json using catch()', function (done) {
+    it('get("data/notfound.json") using catch()', function (done) {
 
         var vm = new Vue({
 
