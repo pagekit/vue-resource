@@ -1,6 +1,6 @@
 # Documentation
 
-- [Configuration](docs/config.md)
-- [HTTP Requests/Response](docs/http.md)
-- [Creating Resources](docs/resource.md)
-- [Recipes](docs/recipes.md)
+- [Configuration](config.md)
+- [HTTP Requests/Response](http.md)
+- [Creating Resources](resource.md)
+- [Recipes](recipes.md)
