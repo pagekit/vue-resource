@@ -20,7 +20,7 @@ $ npm install vue-resource
 
 ### Bower
 ```
-$ bower install axios
+$ bower install vue-resource
 ```
 
 ### CDN
