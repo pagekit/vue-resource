@@ -7,7 +7,6 @@ const el = document.createElement('a');
 
 import root from './root';
 import query from './query';
-import legacy from './legacy';
 import template from './template';
 import { each, merge, isArray, isFunction, isObject, isPlainObject, isString } from '../util';
 
@@ -42,7 +41,7 @@ Url.options = {
  * Url transforms.
  */
 
-Url.transforms = [template, legacy, query, root];
+Url.transforms = [template, query, root];
 
 /**
  * Encodes a Url parameter string.

@@ -1,20 +1,30 @@
 # vue-resource [![npm package](https://img.shields.io/npm/v/vue-resource.svg)](https://www.npmjs.com/package/vue-resource)
 
-Resource plugin for Vue.js.
+The plugin for [Vue.js](http://vuejs.org) provides services for making web requests and handle responses using a [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) or JSONP.
 
-The plugin provides services for making web requests and handle responses using a XMLHttpRequest or JSONP.
+## Features
 
-## Setup
+- Supports the [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) API and [URI Templates](https://medialize.github.io/URI.js/uri-template.html)
+- Supports [interceptors](docs/http.md#interceptors) for request and response
+- Supports latest Firefox, Chrome, Safari, Opera and IE9+
+- Compact size 12KB (4.5KB gzipped)
 
-### Webpack/Browserify
+## Installation
 
-Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then add these lines in your code:
+### NPM
+```
+$ npm install vue-resource
+```
 
-```js
-var Vue = require('vue');
-var VueResource = require('vue-resource');
+### Bower
+```
+$ bower install vue-resource
+```
 
-Vue.use(VueResource);
+### CDN
+Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/0.9.0/vue-resource.min.js), [cdnjs](https://cdnjs.com/libraries/vue-resource) or [npmcdn](https://npmcdn.com/vue-resource@0.9.0).
+```html
+<script src="https://cdn.jsdelivr.net/vue.resource/0.9.0/vue-resource.min.js"></script>
 ```
 
 ## Documentation
@@ -22,6 +32,7 @@ Vue.use(VueResource);
 - [Configuration](docs/config.md)
 - [HTTP Requests/Response](docs/http.md)
 - [Creating Resources](docs/resource.md)
+- [Code Recipes](docs/recipes.md)
 
 ## Changelog
 
@@ -29,7 +40,7 @@ Details changes for each release are documented in the [release notes](https://g
 
 ## Contribution
 
-If you find a bug or want to contribute to the code or documentation, you can help by submitting an [issue](https://github.com/vuejs/vue-resource/issues) or a pull request.
+If you find a bug or want to contribute to the code or documentation, you can help by submitting an [issue](https://github.com/vuejs/vue-resource/issues) or a [pull request](https://github.com/vuejs/vue-resource/pulls).
 
 ## License
 

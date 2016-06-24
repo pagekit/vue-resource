@@ -4,11 +4,11 @@
 
 import Promise from '../../promise';
 import xhrClient from './xhr';
-import { each, trim, when, isArray, isObject, isPlainObject, isString, isFunction, toLower } from '../../util';
+import { warn, when, isObject, isFunction } from '../../util';
 
 export default function (context) {
 
-    var reqHandlers = [sendRequest], resHandlers = [];
+    var reqHandlers = [sendRequest], resHandlers = [], handler;
 
     if (!isObject(context)) {
         context = null;
@@ -18,7 +18,15 @@ export default function (context) {
         return new Promise((resolve) => {
 
             function exec() {
-                reqHandlers.pop().call(context, request, next);
+
+                handler = reqHandlers.pop();
+
+                if (isFunction(handler)) {
+                    handler.call(context, request, next);
+                } else {
+                    warn(`Invalid interceptor of type ${typeof handler}, must be a function`);
+                    next();
+                }
             }
 
             function next(response) {
@@ -29,8 +37,6 @@ export default function (context) {
                         resHandlers.unshift(response);
 
                     } else if (isObject(response)) {
-
-                        processResponse(response);
 
                         resHandlers.forEach((handler) => {
                             handler.call(context, response);
@@ -62,49 +68,4 @@ function sendRequest(request, resolve) {
     var client = request.client || xhrClient;
 
     resolve(client(request));
-}
-
-function processResponse(response) {
-
-    var headers = response.headers || response.allHeaders;
-
-    if (isString(headers)) {
-        headers = parseHeaders(headers);
-    }
-
-    if (isObject(headers)) {
-        response.headers = (name) => name ? headers[toLower(name)] : headers;
-    }
-
-    response.ok = response.status >= 200 && response.status < 300;
-
-    return response;
-}
-
-function parseHeaders(str) {
-
-    var headers = {}, value, name, i;
-
-    each(str.split('\n'), (row) => {
-
-        i = row.indexOf(':');
-        name = trim(toLower(row.slice(0, i)));
-        value = trim(row.slice(i + 1));
-
-        if (headers[name]) {
-
-            if (isArray(headers[name])) {
-                headers[name].push(value);
-            } else {
-                headers[name] = [headers[name], value];
-            }
-
-        } else {
-
-            headers[name] = value;
-        }
-
-    });
-
-    return headers;
 }

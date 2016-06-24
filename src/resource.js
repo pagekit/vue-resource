@@ -3,20 +3,20 @@
  */
 
 import Http from './http/index';
-import { each, extend, merge, isFunction } from './util';
+import { assign, each, merge } from './util';
 
 export default function Resource(url, params, actions, options) {
 
     var self = this || {}, resource = {};
 
-    actions = extend({},
+    actions = assign({},
         Resource.actions,
         actions
     );
 
     each(actions, (action, name) => {
 
-        action = merge({url: url, params: params || {}}, options, action);
+        action = merge({url, params: params || {}}, options, action);
 
         resource[name] = function () {
             return (self.$http || Http)(opts(action, arguments));
@@ -28,46 +28,21 @@ export default function Resource(url, params, actions, options) {
 
 function opts(action, args) {
 
-    var options = extend({}, action), params = {}, data, success, error;
+    var options = assign({}, action), params = {}, body;
 
     switch (args.length) {
 
-        case 4:
-
-            error = args[3];
-            success = args[2];
-
-        case 3:
         case 2:
 
-            if (isFunction(args[1])) {
+            params = args[0];
+            body = args[1];
 
-                if (isFunction(args[0])) {
-
-                    success = args[0];
-                    error = args[1];
-
-                    break;
-                }
-
-                success = args[1];
-                error = args[2];
-
-            } else {
-
-                params = args[0];
-                data = args[1];
-                success = args[2];
-
-                break;
-            }
+            break;
 
         case 1:
 
-            if (isFunction(args[0])) {
-                success = args[0];
-            } else if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
-                data = args[0];
+            if (/^(POST|PUT|PATCH)$/i.test(options.method)) {
+                body = args[0];
             } else {
                 params = args[0];
             }
@@ -80,19 +55,11 @@ function opts(action, args) {
 
         default:
 
-            throw 'Expected up to 4 arguments [params, data, success, error], got ' + args.length + ' arguments';
+            throw 'Expected up to 4 arguments [params, body], got ' + args.length + ' arguments';
     }
 
-    options.data = data;
-    options.params = extend({}, options.params, params);
-
-    if (success) {
-        options.success = success;
-    }
-
-    if (error) {
-        options.error = error;
-    }
+    options.body = body;
+    options.params = assign({}, options.params, params);
 
     return options;
 }

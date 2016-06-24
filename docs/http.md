@@ -23,38 +23,28 @@ new Vue({
 })
 ```
 
-The response object properties:
-
-Property | Type | Description
--------- | ---- | -----------
-data | `Object`, `string` | Response body data
-ok | `boolean` | HTTP status code between 200 and 299
-status | `number` | HTTP status code of the response
-statusText | `string` | HTTP status text of the response
-headers | `function([name])` | HTTP header getter function
-request | `Object` | Request options object
-
 ## Methods
 
 Shortcut methods are available for all request types. These methods work globally or in a Vue instance.
 
 ```js
 // global Vue object
-Vue.http.get('/someUrl', [data], [options]).then(successCallback, errorCallback);
-Vue.http.post('/someUrl', [data], [options]).then(successCallback, errorCallback);
+Vue.http.get('/someUrl', [options]).then(successCallback, errorCallback);
+Vue.http.post('/someUrl', [body], [options]).then(successCallback, errorCallback);
 
 // in a Vue instance
-this.$http.get('/someUrl', [data], [options]).then(successCallback, errorCallback);
-this.$http.post('/someUrl', [data], [options]).then(successCallback, errorCallback);
+this.$http.get('/someUrl', [options]).then(successCallback, errorCallback);
+this.$http.post('/someUrl', [body], [options]).then(successCallback, errorCallback);
 ```
 List of shortcut methods:
 
-* `get(url, [data], [options])`
-* `post(url, [data], [options])`
-* `put(url, [data], [options])`
-* `patch(url, [data], [options])`
-* `delete(url, [data], [options])`
-* `jsonp(url, [data], [options])`
+* `get(url, [options])`
+* `head(url, [options])`
+* `delete(url, [options])`
+* `jsonp(url, [options])`
+* `post(url, [body], [options])`
+* `put(url, [body], [options])`
+* `patch(url, [body], [options])`
 
 ## Options
 
@@ -62,16 +52,30 @@ Parameter | Type | Description
 --------- | ---- | -----------
 url | `string` | URL to which the request is sent
 method | `string` | HTTP method (e.g. GET, POST, ...)
-data | `Object`, `string` | Data to be sent as the request message data
-params | `Object` | Parameters object to be appended as GET parameters
+body | `Object`, `FormData` `string` | Data to be sent as the request body
+params | `Object` | Parameters object to be sent as URL parameters
 headers | `Object` | Headers object to be sent as HTTP request headers
-xhr | `Object` | Parameters object to be set on the [XHR](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) object
-upload | `Object` | Parameters object to be set on the [XHR.upload](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/upload) property
-jsonp | `string` | Callback function name in a JSONP request
 timeout | `number` | Request timeout in milliseconds (`0` means no timeout)
-beforeSend | `function(request)` | Callback function to modify the request object before it is sent
+before | `function(request)` | Callback function to modify the request options before it is sent
+progress | `function(event)` | Callback function to handle the [ProgressEvent](https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent) of uploads
+credentials | `boolean` | Indicates whether or not cross-site Access-Control requests should be made using credentials
 emulateHTTP | `boolean` | Send PUT, PATCH and DELETE requests with a HTTP POST and set the `X-HTTP-Method-Override` header
-emulateJSON | `boolean` | Send request data as `application/x-www-form-urlencoded` content type
+emulateJSON | `boolean` | Send request body as `application/x-www-form-urlencoded` content type
+
+## Response
+
+A request resolves to a response object with the following properties and methods:
+
+Method | Type | Description
+-------- | ---- | -----------
+text() | `string` | Response body as string
+json() | `Object` | Response body as parsed JSON object
+blob() | `Blob` | Response body as Blob object
+**Property** | **Type** | **Description**
+ok | `boolean` | HTTP status code between 200 and 299
+status | `number` | HTTP status code of the response
+statusText | `string` | HTTP status text of the response
+headers | `Object` | HTTP headers of the response
 
 ## Example
 
@@ -86,44 +90,18 @@ new Vue({
           // get status
           response.status;
 
-          // get all headers
-          response.headers();
+          // get status text
+          response.statusText;
 
-          // get 'expires' header
-          response.headers('expires');
+          // get all headers
+          response.headers;
+
+          // get 'Expires' header
+          response.headers['Expires'];
 
           // set data on vm
-          this.$set('someData', response.data)
+          this.$set('someData', response.json())
 
-      }, (response) => {
-          // error callback
-      });
-
-    }
-
-})
-```
-
-## Forms
-
-Sending forms using [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData).
-
-```js
-new Vue({
-
-    ready() {
-
-      var formData = new FormData();
-
-      // append string
-      formData.append('foo', 'bar');
-
-      // append Blob/File object
-      formData.append('pic', fileInput, 'mypic.jpg');
-
-      // POST /someUrl
-      this.$http.post('/someUrl', formData).then((response) => {
-          // success callback
       }, (response) => {
           // error callback
       });
@@ -160,7 +138,7 @@ Vue.http.interceptors.push((request, next)  => {
     next((response) => {
 
         // modify response
-        response.data = '...';
+        response.body = '...';
 
     });
 });
@@ -173,10 +151,9 @@ Vue.http.interceptors.push((request, next) => {
     // modify request ...
 
     // stop and return response
-    next({
-         data: '...',
+    next(request.respondWith(body, {
          status: 404,
          statusText: 'Not found'
-    });
+    }));
 });
 ```

@@ -2,7 +2,6 @@
  * Promise adapter.
  */
 
-import { warn } from './util';
 import PromiseLib from './lib/promise';
 
 var PromiseObj = window.Promise || PromiseLib;
@@ -51,9 +50,7 @@ p.then = function (fulfilled, rejected) {
         rejected = rejected.bind(this.context);
     }
 
-    this.promise = this.promise.then(fulfilled, rejected);
-
-    return this;
+    return new Promise(this.promise.then(fulfilled, rejected), this.context);
 };
 
 p.catch = function (rejected) {
@@ -62,9 +59,7 @@ p.catch = function (rejected) {
         rejected = rejected.bind(this.context);
     }
 
-    this.promise = this.promise.catch(rejected);
-
-    return this;
+    return new Promise(this.promise.catch(rejected), this.context);
 };
 
 p.finally = function (callback) {
@@ -77,33 +72,4 @@ p.finally = function (callback) {
             return PromiseObj.reject(reason);
         }
     );
-};
-
-p.success = function (callback) {
-
-    warn('The `success` method has been deprecated. Use the `then` method instead.');
-
-    return this.then(function (response) {
-        return callback.call(this, response.data, response.status, response) || response;
-    });
-};
-
-p.error = function (callback) {
-
-    warn('The `error` method has been deprecated. Use the `catch` method instead.');
-
-    return this.catch(function (response) {
-        return callback.call(this, response.data, response.status, response) || response;
-    });
-};
-
-p.always = function (callback) {
-
-    warn('The `always` method has been deprecated. Use the `finally` method instead.');
-
-    var cb = function (response) {
-        return callback.call(this, response.data, response.status, response) || response;
-    };
-
-    return this.then(cb, cb);
 };

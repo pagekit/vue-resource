@@ -122,22 +122,4 @@ describe('Vue.promise ' + (window.Promise !== undefined ? '(native)' : '(polyfil
 
     });
 
-    it('no chain breaking', function (done) {
-
-        var promise = Promise.reject();
-
-        Promise.all([
-
-            promise.catch(function () {
-                expect(true).toBe(true);
-            }),
-
-            promise.catch(function () {
-                fail('Chain break');
-            })
-
-        ]).then(done);
-
-    });
-
 });
