@@ -2,7 +2,14 @@
 
 Resource plugin for Vue.js.
 
-The plugin provides services for making web requests and handle responses using a XMLHttpRequest or JSONP.
+The plugin provides services for making web requests and handle responses using a [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) or JSONP.
+
+## Features
+
+- Supports the [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) API and [URI Templates](https://medialize.github.io/URI.js/uri-template.html)
+- Supports interceptors for request and response
+- Supports latest Firefox, Chrome, Safari, Opera and IE9+
+- Compact size 12KB (4.5KB gzipped)
 
 ## Setup
 
