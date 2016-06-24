@@ -5,7 +5,7 @@ The plugin for [Vue.js](http://vuejs.org) provides services for making web reque
 ## Features
 
 - Supports the [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) API and [URI Templates](https://medialize.github.io/URI.js/uri-template.html)
-- Supports interceptors for request and response
+- Supports [interceptors](docs/http.md#interceptors) for request and response
 - Supports latest Firefox, Chrome, Safari, Opera and IE9+
 - Compact size 12KB (4.5KB gzipped)
 
@@ -40,7 +40,7 @@ Details changes for each release are documented in the [release notes](https://g
 
 ## Contribution
 
-If you find a bug or want to contribute to the code or documentation, you can help by submitting an [issue](https://github.com/vuejs/vue-resource/issues) or a pull request.
+If you find a bug or want to contribute to the code or documentation, you can help by submitting an [issue](https://github.com/vuejs/vue-resource/issues) or a [pull request](https://github.com/vuejs/vue-resource/pulls).
 
 ## License
 
