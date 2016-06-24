@@ -30,11 +30,11 @@ Shortcut methods are available for all request types. These methods work globall
 ```js
 // global Vue object
 Vue.http.get('/someUrl', [options]).then(successCallback, errorCallback);
-Vue.http.post('/someUrl', [data], [options]).then(successCallback, errorCallback);
+Vue.http.post('/someUrl', [body], [options]).then(successCallback, errorCallback);
 
 // in a Vue instance
 this.$http.get('/someUrl', [options]).then(successCallback, errorCallback);
-this.$http.post('/someUrl', [data], [options]).then(successCallback, errorCallback);
+this.$http.post('/someUrl', [body], [options]).then(successCallback, errorCallback);
 ```
 List of shortcut methods:
 
@@ -42,9 +42,9 @@ List of shortcut methods:
 * `head(url, [options])`
 * `delete(url, [options])`
 * `jsonp(url, [options])`
-* `post(url, [data], [options])`
-* `put(url, [data], [options])`
-* `patch(url, [data], [options])`
+* `post(url, [body], [options])`
+* `put(url, [body], [options])`
+* `patch(url, [body], [options])`
 
 ## Options
 
