@@ -54,7 +54,7 @@ export function isPlainObject(obj) {
 }
 
 export function isFormData(obj) {
-    return (typeof FormData !== 'undefined') && (obj instanceof FormData);
+    return typeof FormData !== 'undefined' && obj instanceof FormData;
 }
 
 export function when(value, fulfilled, rejected) {

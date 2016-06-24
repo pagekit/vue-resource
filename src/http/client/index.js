@@ -4,11 +4,11 @@
 
 import Promise from '../../promise';
 import xhrClient from './xhr';
-import { when, isObject, isFunction } from '../../util';
+import { warn, when, isObject, isFunction } from '../../util';
 
 export default function (context) {
 
-    var reqHandlers = [sendRequest], resHandlers = [];
+    var reqHandlers = [sendRequest], resHandlers = [], handler;
 
     if (!isObject(context)) {
         context = null;
@@ -18,7 +18,15 @@ export default function (context) {
         return new Promise((resolve) => {
 
             function exec() {
-                reqHandlers.pop().call(context, request, next);
+
+                handler = reqHandlers.pop();
+
+                if (isFunction(handler)) {
+                    handler.call(context, request, next);
+                } else {
+                    warn(`Invalid interceptor of type ${typeof handler}, must be a function`);
+                    next();
+                }
             }
 
             function next(response) {
