@@ -1,4 +1,4 @@
-# Recipes
+# Code Recipes
 
 The Recipes provide code examples to common use-cases. If you want to share your recipe feel free to send a [pull request](https://github.com/vuejs/vue-resource/pulls).
 

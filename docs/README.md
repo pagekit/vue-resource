@@ -3,4 +3,4 @@
 - [Configuration](config.md)
 - [HTTP Requests/Response](http.md)
 - [Creating Resources](resource.md)
-- [Recipes](recipes.md)
+- [Code Recipes](recipes.md)
