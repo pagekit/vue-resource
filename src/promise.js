@@ -50,9 +50,7 @@ p.then = function (fulfilled, rejected) {
         rejected = rejected.bind(this.context);
     }
 
-    this.promise = this.promise.then(fulfilled, rejected);
-
-    return this;
+    return new Promise(this.promise.then(fulfilled, rejected), this.context);
 };
 
 p.catch = function (rejected) {
@@ -61,9 +59,7 @@ p.catch = function (rejected) {
         rejected = rejected.bind(this.context);
     }
 
-    this.promise = this.promise.catch(rejected);
-
-    return this;
+    return new Promise(this.promise.catch(rejected), this.context);
 };
 
 p.finally = function (callback) {
