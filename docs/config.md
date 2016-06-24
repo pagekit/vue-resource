@@ -22,6 +22,17 @@ new Vue({
 })
 ```
 
+## Webpack/Browserify
+
+Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then add these lines in your code:
+
+```js
+var Vue = require('vue');
+var VueResource = require('vue-resource');
+
+Vue.use(VueResource);
+```
+
 ## Legacy web servers
 
 If your web server can't handle requests encoded as `application/json`, you can enable the `emulateJSON` option. This will send the request as `application/x-www-form-urlencoded` MIME type, as if from an normal HTML form.

@@ -11,17 +11,22 @@ The plugin provides services for making web requests and handle responses using 
 - Supports latest Firefox, Chrome, Safari, Opera and IE9+
 - Compact size 12KB (4.5KB gzipped)
 
-## Setup
+## Installation
 
-### Webpack/Browserify
+### NPM
+```
+$ npm install vue-resource
+```
 
-Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then add these lines in your code:
+### Bower
+```
+$ bower install axios
+```
 
-```js
-var Vue = require('vue');
-var VueResource = require('vue-resource');
-
-Vue.use(VueResource);
+### CDN
+Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/0.9.0/vue-resource.min.js), [cdnjs](https://cdnjs.com/libraries/vue-resource) or [npmcdn](https://npmcdn.com/vue-resource@0.9.0).
+```html
+<script src="https://cdn.jsdelivr.net/vue.resource/0.9.0/vue-resource.min.js"></script>
 ```
 
 ## Documentation
