@@ -1,5 +1,5 @@
 /*!
- * vue-resource v0.9.0
+ * vue-resource v0.9.1
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -733,7 +733,7 @@ function xdrClient (request) {
             handler = function (event) {
 
             var response = request.respondWith(xdr.responseText, {
-                status: xhr.status,
+                status: xdr.status,
                 statusText: xdr.statusText
             });
 
