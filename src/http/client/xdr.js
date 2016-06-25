@@ -11,7 +11,7 @@ export default function (request) {
 
             var response = request.respondWith(
                 xdr.responseText, {
-                    status: xhr.status,
+                    status: xdr.status,
                     statusText: xdr.statusText
                 }
             );
