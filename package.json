@@ -15,14 +15,14 @@
   "bugs": {
     "url": "https://github.com/vuejs/vue-resource/issues"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vuejs/vue-resource.git"
+  },
   "scripts": {
     "test": "webpack --config test/webpack.config.js",
     "build": "node build/build.js",
     "release": "node build/release.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/vuejs/vue-resource.git"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",
