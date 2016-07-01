@@ -1,12 +1,13 @@
 {
   "name": "vue-resource",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "A web request service for Vue.js",
   "main": "dist/vue-resource.common.js",
   "jsnext:main": "dist/vue-resource.es2015.js",
   "scripts": {
+    "test": "webpack --config test/webpack.config.js",
     "build": "node build/build.js",
-    "test": "webpack --config test/webpack.config.js"
+    "release": "node build/release.js"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,7 @@
     "babel-preset-es2015-loose-rollup": "^7.0.0",
     "babel-runtime": "^6.9.2",
     "jasmine-core": "^2.3.4",
+    "replace-in-file": "^1.1.1",
     "rollup": "^0.33.0",
     "rollup-plugin-babel": "^2.6.1",
     "uglify-js": "^2.6.4",
