@@ -1,5 +1,5 @@
 /*!
- * vue-resource v0.9.2
+ * vue-resource v0.9.3
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -917,7 +917,7 @@
 
       if (request.timeout) {
           timeout = setTimeout(function () {
-              request.cancel();
+              request.abort();
           }, request.timeout);
       }
 
