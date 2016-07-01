@@ -1,5 +1,5 @@
 /*!
- * vue-resource v0.9.1
+ * vue-resource v0.9.2
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -1026,24 +1026,24 @@
               }
 
               function next(response) {
-                  when(response, function (response) {
 
-                      if (isFunction(response)) {
+                  if (isFunction(response)) {
 
-                          resHandlers.unshift(response);
-                      } else if (isObject(response)) {
+                      resHandlers.unshift(response);
+                  } else if (isObject(response)) {
 
-                          resHandlers.forEach(function (handler) {
-                              handler.call(context, response);
+                      resHandlers.forEach(function (handler) {
+                          response = when(response, function (response) {
+                              return handler.call(context, response) || response;
                           });
+                      });
 
-                          resolve(response);
+                      when(response, resolve);
 
-                          return;
-                      }
+                      return;
+                  }
 
-                      exec();
-                  });
+                  exec();
               }
 
               exec();
