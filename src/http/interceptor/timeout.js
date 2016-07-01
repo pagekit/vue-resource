@@ -8,7 +8,7 @@ export default function (request, next) {
 
     if (request.timeout) {
         timeout = setTimeout(() => {
-            request.cancel();
+            request.abort();
         }, request.timeout);
     }
 
