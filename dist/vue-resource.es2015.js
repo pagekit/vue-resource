@@ -911,7 +911,7 @@ function timeout (request, next) {
 
     if (request.timeout) {
         timeout = setTimeout(function () {
-            request.cancel();
+            request.abort();
         }, request.timeout);
     }
 
