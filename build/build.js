@@ -3,10 +3,9 @@ var rollup = require('rollup');
 var uglify = require('uglify-js');
 var babel = require('rollup-plugin-babel');
 var package = require('../package.json');
-var version = process.env.VERSION || package.version;
 var banner =
     "/*!\n" +
-    " * vue-resource v" + version + "\n" +
+    " * vue-resource v" + package.version + "\n" +
     " * https://github.com/vuejs/vue-resource\n" +
     " * Released under the MIT License.\n" +
     " */\n";
