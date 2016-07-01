@@ -30,25 +30,25 @@ export default function (context) {
             }
 
             function next(response) {
-                when(response, (response) => {
 
-                    if (isFunction(response)) {
+                if (isFunction(response)) {
 
-                        resHandlers.unshift(response);
+                    resHandlers.unshift(response);
 
-                    } else if (isObject(response)) {
+                } else if (isObject(response)) {
 
-                        resHandlers.forEach((handler) => {
-                            handler.call(context, response);
+                    resHandlers.forEach((handler) => {
+                        response = when(response, (response) => {
+                            return handler.call(context, response) || response;
                         });
+                    });
 
-                        resolve(response);
+                    when(response, resolve);
 
-                        return;
-                    }
+                    return;
+                }
 
-                    exec();
-                });
+                exec();
             }
 
             exec();
