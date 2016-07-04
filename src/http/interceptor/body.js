@@ -9,11 +9,11 @@ export default function (request, next) {
 
     if (request.emulateJSON && isPlainObject(request.body)) {
         request.body = Url.params(request.body);
-        request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
     }
 
     if (isFormData(request.body)) {
-        delete request.headers['Content-Type'];
+        request.headers.delete('Content-Type');
     }
 
     if (isPlainObject(request.body)) {
@@ -22,7 +22,7 @@ export default function (request, next) {
 
     next((response) => {
 
-        var contentType = response.headers['Content-Type'];
+        var contentType = response.headers.get('Content-Type');
 
         if (isString(contentType) && contentType.indexOf('application/json') === 0) {
 

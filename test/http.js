@@ -10,8 +10,8 @@ describe('Vue.http', function () {
             expect(res.status).toBe(200);
             expect(res.data).toBe('text');
             expect(res.blob() instanceof Blob).toBe(true);
-            expect(res.headers['Content-Type']).toBe('text/plain');
-            expect(res.headers['Content-Length']).toBe('4');
+            expect(res.headers.get('Content-Type')).toBe('text/plain');
+            expect(res.headers.get('Content-Length')).toBe('4');
 
             done();
         });
@@ -52,7 +52,7 @@ describe('Vue.http', function () {
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
             expect(res.data.shift().requestType).toBe('cors');
-            expect(res.headers['Content-Type']).toBe('application/json');
+            expect(res.headers.get('Content-Type')).toBe('application/json');
             expect(typeof res.json()).toBe('object');
 
             done();

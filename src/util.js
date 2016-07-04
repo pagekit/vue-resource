@@ -31,6 +31,14 @@ export function trim(str) {
     return str.replace(/^\s*|\s*$/g, '');
 }
 
+export function toLower(str) {
+    return str ? str.toLowerCase() : '';
+}
+
+export function toUpper(str) {
+    return str ? str.toUpperCase() : '';
+}
+
 export const isArray = Array.isArray;
 
 export function isString(val) {
@@ -83,7 +91,7 @@ export function each(obj, iterator) {
 
     var i, key;
 
-    if (typeof obj.length == 'number') {
+    if (obj && typeof obj.length == 'number') {
         for (i = 0; i < obj.length; i++) {
             iterator.call(obj[i], obj[i], i);
         }

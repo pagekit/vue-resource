@@ -2,13 +2,15 @@
  * HTTP Response.
  */
 
+import Headers from './headers';
+
 export default class Response {
 
     constructor(body, {url, headers, status, statusText}) {
 
         this.url = url;
         this.body = body;
-        this.headers = headers || {};
+        this.headers = new Headers(headers);
         this.status = status || 0;
         this.statusText = statusText || '';
         this.ok = status >= 200 && status < 300;
