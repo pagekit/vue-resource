@@ -45,6 +45,20 @@ describe('Vue.http', function () {
 
     });
 
+    it('get("github.com/avatar")', (done) => {
+
+        Vue.http.get('https://avatars1.githubusercontent.com/u/6128107').then((res) => {
+
+            expect(res.ok).toBe(true);
+            expect(res.status).toBe(200);
+            expect(res.text()).toBe('');
+            expect(res.blob() instanceof Blob).toBe(true);
+
+            done();
+        });
+
+    });
+
     it('get("cors-api.appspot.com")', (done) => {
 
         Vue.http.get('http://server.cors-api.appspot.com/server?id=1&enable=true').then((res) => {

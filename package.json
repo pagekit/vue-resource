@@ -31,6 +31,7 @@
     "babel-preset-es2015-loose": "^7.0.0",
     "babel-preset-es2015-loose-rollup": "^7.0.0",
     "babel-runtime": "^6.9.2",
+    "generate-release": "^0.10.1",
     "jasmine-core": "^2.3.4",
     "replace-in-file": "^1.1.1",
     "rollup": "^0.33.0",

@@ -5,6 +5,7 @@
 import Url from './url/index';
 import Http from './http/index';
 import Promise from './promise';
+import PromiseLib from './lib/promise';
 import Resource from './resource';
 import Util, { options } from './util';
 
@@ -50,8 +51,16 @@ function plugin(Vue) {
     });
 }
 
-if (typeof window !== 'undefined' && window.Vue) {
-    window.Vue.use(plugin);
+if (typeof window !== 'undefined') {
+
+    if (!window.Promise) {
+        window.Promise = PromiseLib;
+    }
+
+    if (window.Vue) {
+        window.Vue.use(plugin);
+    }
+
 }
 
 export default plugin;
