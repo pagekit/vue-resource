@@ -162,20 +162,15 @@ Vue.http.interceptors.push((request, next) => {
 ```js
 Vue.http.interceptors.push({
         request: function(request){
-            // start loading 
+            // Delay start loading 
             request.loadingid = setTimeout(function () {
-                if (!_loadingDialog) {
-                    _loadingDialog = true;
-                }
+                // show loading
             }, 500);
             return request
         },
         response: function(response){
 
             // clean loading
-            if (_loadingDialog) {
-                _loadingDialog = false;
-            }
             clearTimeout(response.request.loadingid);
 			
             return response
