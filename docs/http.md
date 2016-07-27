@@ -156,6 +156,7 @@ Vue.http.interceptors.push((request, next) => {
          statusText: 'Not found'
     }));
 });
+```
 
 ### set loading
 ...js
