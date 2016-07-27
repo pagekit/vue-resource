@@ -159,7 +159,7 @@ Vue.http.interceptors.push((request, next) => {
 ```
 
 ### set loading
-...js
+```js
 Vue.http.interceptors.push({
         request: function(request){
             // start loading 
