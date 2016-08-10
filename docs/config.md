@@ -22,6 +22,15 @@ new Vue({
 })
 ```
 
+## CDN
+
+The CDN version of vue-resource doesn't automatically register itself, thus, when you include either the JS file directly or via the CDN, you need to register the
+VueResource instance with Vue yourself. To do so, add this line of code to your application:
+
+```js
+    Vue.use(VueResource);
+```
+
 ## Webpack/Browserify
 
 Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then add these lines in your code:
