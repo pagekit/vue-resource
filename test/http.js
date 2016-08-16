@@ -9,7 +9,7 @@ describe('Vue.http', function () {
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
             expect(res.data).toBe('text');
-            expect(res.blob() instanceof Blob).toBe(true);
+            expect(res.text()).toBe('text');
             expect(res.headers.get('Content-Type')).toBe('text/plain');
             expect(res.headers.get('Content-Length')).toBe('4');
 

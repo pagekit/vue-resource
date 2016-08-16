@@ -21,19 +21,7 @@ export default function (request) {
                 response.headers.append(row.slice(0, row.indexOf(':')), row.slice(row.indexOf(':') + 1));
             });
 
-            if (isBlobText(response.blob())) {
-
-                var reader = new FileReader();
-
-                reader.readAsText(response.blob());
-                reader.onload = () => {
-                    response.initBody(reader.result);
-                    resolve(response);
-                };
-
-            } else {
-                resolve(response);
-            }
+            resolve(response);
         };
 
         request.abort = () => xhr.abort();
@@ -65,8 +53,4 @@ export default function (request) {
 
         xhr.send(request.getBody());
     });
-}
-
-function isBlobText(body) {
-    return body && (body.type.indexOf('text') === 0 || body.type.indexOf('json') !== -1);
 }

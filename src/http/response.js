@@ -16,7 +16,17 @@ export default class Response {
         this.headers = new Headers(headers);
         this.bodyBlob = null;
         this.bodyText = '';
-        this.initBody(body);
+        this.init(body);
+
+    }
+
+    init(body) {
+
+        if (isBlob(body)) {
+            this.bodyBlob = body;
+        } else if (isString(body)) {
+            this.bodyText = body;
+        }
 
     }
 
@@ -30,17 +40,6 @@ export default class Response {
 
     json() {
         return JSON.parse(this.text());
-    }
-
-    initBody(body) {
-
-        if (isBlob(body)) {
-            this.bodyBlob = body;
-        }
-
-        if (isString(body)) {
-            this.bodyText = body;
-        }
     }
 
 }
