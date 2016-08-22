@@ -3,8 +3,7 @@
  */
 
 import Url from '../../url/index';
-import Promise from '../../promise';
-import { isString, isFormData, isPlainObject } from '../../util';
+import { when, isString, isFormData, isPlainObject } from '../../util';
 
 export default function (request, next) {
 
@@ -23,40 +22,37 @@ export default function (request, next) {
 
     next((response) => {
 
-        return isBlobText(response.blob()) ? new Promise((resolve) => {
+        Object.defineProperty(response, 'data', {
 
-            var reader = new FileReader();
+            get() {
+                return this.body;
+            },
 
-            reader.readAsText(response.blob());
-            reader.onload = () => {
-                response.init(reader.result);
-                resolve(initData(response));
-            };
+            set(body) {
+                this.body = body;
+            }
 
-        }) : initData(response);
+        });
+
+        return response.bodyText ? when(response.text(), text => {
+
+            var type = response.headers.get('Content-Type');
+
+            if (isString(type) && type.indexOf('application/json') === 0) {
+
+                try {
+                    response.body = JSON.parse(text);
+                } catch (e) {
+                    response.body = null;
+                }
+
+            } else {
+                response.body = text;
+            }
+
+            return response;
+
+        }) : response;
 
     });
-}
-
-function initData(response) {
-
-    var contentType = response.headers.get('Content-Type');
-
-    if (isString(contentType) && contentType.indexOf('application/json') === 0) {
-
-        try {
-            response.data = response.json();
-        } catch (e) {
-            response.data = null;
-        }
-
-    } else {
-        response.data = response.text();
-    }
-
-    return response;
-}
-
-function isBlobText(body) {
-    return body && (body.type.indexOf('text') === 0 || body.type.indexOf('json') !== -1);
 }

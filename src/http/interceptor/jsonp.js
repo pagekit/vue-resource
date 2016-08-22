@@ -3,6 +3,7 @@
  */
 
 import jsonpClient from '../client/jsonp';
+import { when } from '../../util';
 
 export default function (request, next) {
 
@@ -13,7 +14,13 @@ export default function (request, next) {
     next((response) => {
 
         if (request.method == 'JSONP') {
-            response.data = response.json();
+
+            return when(response.json(), json => {
+
+                response.body = json;
+
+                return response;
+            });
         }
 
     });

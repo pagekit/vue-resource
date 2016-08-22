@@ -8,8 +8,7 @@ describe('Vue.http', function () {
 
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
-            expect(res.data).toBe('text');
-            expect(res.text()).toBe('text');
+            expect(res.body).toBe('text');
             expect(res.headers.get('Content-Type')).toBe('text/plain');
             expect(res.headers.get('Content-Length')).toBe('4');
 
@@ -24,8 +23,8 @@ describe('Vue.http', function () {
 
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
-            expect(res.data.foo).toBe('bar');
-            expect(typeof res.json()).toBe('object');
+            expect(typeof res.body).toBe('object');
+            expect(res.body.foo).toBe('bar');
 
             done();
         });
@@ -38,7 +37,7 @@ describe('Vue.http', function () {
 
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
-            expect(res.data).toBeNull();
+            expect(res.body).toBeNull();
 
             done();
         });
@@ -51,8 +50,8 @@ describe('Vue.http', function () {
 
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
-            expect(res.text()).toBe('');
-            expect(res.blob() instanceof Blob).toBe(true);
+            expect(res.body instanceof Blob).toBe(true);
+            expect(res.body.type).toBe('image/png');
 
             done();
         });
@@ -65,9 +64,9 @@ describe('Vue.http', function () {
 
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
-            expect(res.data.shift().requestType).toBe('cors');
+            expect(typeof res.body).toBe('object');
+            expect(res.body.shift().requestType).toBe('cors');
             expect(res.headers.get('Content-Type')).toBe('application/json');
-            expect(typeof res.json()).toBe('object');
 
             done();
         });
@@ -80,8 +79,8 @@ describe('Vue.http', function () {
 
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);
-            expect(res.data.foo).toBe('bar');
-            expect(typeof res.json()).toBe('object');
+            expect(typeof res.body).toBe('object');
+            expect(res.body.foo).toBe('bar');
 
             done();
         });
@@ -103,8 +102,8 @@ describe('this.$http', function () {
                     expect(this).toBe(vm);
                     expect(res.ok).toBe(true);
                     expect(res.status).toBe(200);
-                    expect(res.data.foo).toBe('bar');
-                    expect(typeof res.json()).toBe('object');
+                    expect(typeof res.body).toBe('object');
+                    expect(res.body.foo).toBe('bar');
 
                     done();
 

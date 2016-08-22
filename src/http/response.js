@@ -3,7 +3,8 @@
  */
 
 import Headers from './headers';
-import { isBlob, isString } from '../util';
+import Promise from '../promise';
+import { when, isBlob, isString } from '../util';
 
 export default class Response {
 
@@ -14,32 +15,49 @@ export default class Response {
         this.status = status || 0;
         this.statusText = statusText || '';
         this.headers = new Headers(headers);
-        this.bodyBlob = null;
-        this.bodyText = '';
-        this.init(body);
+        this.body = body;
 
-    }
+        if (isString(body)) {
 
-    init(body) {
-
-        if (isBlob(body)) {
-            this.bodyBlob = body;
-        } else if (isString(body)) {
             this.bodyText = body;
-        }
 
+        } else if (isBlob(body)) {
+
+            this.bodyBlob = body;
+
+            if (isBlobText(body)) {
+                this.bodyText = blobText(body);
+            }
+        }
     }
 
     blob() {
-        return this.bodyBlob;
+        return when(this.bodyBlob);
     }
 
     text() {
-        return this.bodyText;
+        return when(this.bodyText);
     }
 
     json() {
-        return JSON.parse(this.text());
+        return when(this.text(), text => JSON.parse(text));
     }
 
+}
+
+function blobText(body) {
+    return new Promise((resolve) => {
+
+        var reader = new FileReader();
+
+        reader.readAsText(body);
+        reader.onload = () => {
+            resolve(reader.result);
+        };
+
+    });
+}
+
+function isBlobText(body) {
+    return body.type.indexOf('text') === 0 || body.type.indexOf('json') !== -1;
 }
