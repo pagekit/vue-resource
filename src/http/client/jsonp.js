@@ -24,7 +24,11 @@ export default function (request) {
             delete window[callback];
             document.body.removeChild(script);
         };
-
+        
+        if (request.params[request.jsonp]) {
+            callback = request.params[request.jsonp]
+        }
+          
         request.params[name] = callback;
 
         window[callback] = (result) => {
