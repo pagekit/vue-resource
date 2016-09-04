@@ -80,20 +80,20 @@ blob() | `Promise` | Resolves the body as Blob object
   // POST /someUrl
   this.$http.post('/someUrl', {foo: 'bar'}).then((response) => {
 
-      // get status
-      response.status;
+    // get status
+    response.status;
 
-      // get status text
-      response.statusText;
+    // get status text
+    response.statusText;
 
-      // get 'Expires' header
-      response.headers.get('Expires');
+    // get 'Expires' header
+    response.headers.get('Expires');
 
-      // set data on vm
-      this.$set('someData', response.body);
+    // set data on vm
+    this.$set('someData', response.body);
 
   }, (response) => {
-      // error callback
+    // error callback
   });
 }
 ```
@@ -122,11 +122,11 @@ Interceptors can be defined globally and are used for pre- and postprocessing of
 ```js
 Vue.http.interceptors.push((request, next) => {
 
-    // modify request
-    request.method = 'POST';
+  // modify request
+  request.method = 'POST';
 
-    // continue to next interceptor
-    next();
+  // continue to next interceptor
+  next();
 });
 ```
 
@@ -134,16 +134,16 @@ Vue.http.interceptors.push((request, next) => {
 ```js
 Vue.http.interceptors.push((request, next)  => {
 
-    // modify request
-    request.method = 'POST';
+  // modify request
+  request.method = 'POST';
 
-    // continue to next interceptor
-    next((response) => {
+  // continue to next interceptor
+  next((response) => {
 
-        // modify response
-        response.body = '...';
+    // modify response
+    response.body = '...';
 
-    });
+  });
 });
 ```
 
@@ -151,12 +151,12 @@ Vue.http.interceptors.push((request, next)  => {
 ```js
 Vue.http.interceptors.push((request, next) => {
 
-    // modify request ...
+  // modify request ...
 
-    // stop and return response
-    next(request.respondWith(body, {
-         status: 404,
-         statusText: 'Not found'
-    }));
+  // stop and return response
+  next(request.respondWith(body, {
+    status: 404,
+    statusText: 'Not found'
+  }));
 });
 ```
