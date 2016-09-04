@@ -45,10 +45,10 @@ List of shortcut methods:
 Parameter | Type | Description
 --------- | ---- | -----------
 url | `string` | URL to which the request is sent
-method | `string` | HTTP method (e.g. GET, POST, ...)
-body | `Object`, `FormData` `string` | Data to be sent as the request body
-params | `Object` | Parameters object to be sent as URL parameters
+body | `Object`, `FormData`, `string` | Data to be sent as the request body
 headers | `Object` | Headers object to be sent as HTTP request headers
+method | `string` | HTTP method (e.g. GET, POST, ...)
+params | `Object` | Parameters object to be sent as URL parameters
 timeout | `number` | Request timeout in milliseconds (`0` means no timeout)
 before | `function(request)` | Callback function to modify the request options before it is sent
 progress | `function(event)` | Callback function to handle the [ProgressEvent](https://developer.mozilla.org/en-US/docs/Web/API/ProgressEvent) of uploads
@@ -63,7 +63,7 @@ A request resolves to a response object with the following properties and method
 Property | Type | Description
 -------- | ---- | -----------
 url | `string` | Response URL origin
-body | `any` | Response body data
+body | `Object`, `Blob`, `string` | Response body data
 headers | `Header` | Response Headers object
 ok | `boolean` | HTTP status code between 200 and 299
 status | `number` | HTTP status code of the response
