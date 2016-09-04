@@ -98,7 +98,7 @@ blob() | `Promise` | Resolves the body as Blob object
 }
 ```
 
-Fetch an Image and use the blob() method to extract the image body content from the response.
+Fetch an image and use the blob() method to extract the image body content from the response.
 
 ```js
 {
