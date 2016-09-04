@@ -90,7 +90,7 @@ blob() | `Promise` | Resolves the body as Blob object
       response.headers.get('Expires');
 
       // set data on vm
-      this.$set('someData', response.body)
+      this.$set('someData', response.body);
 
   }, (response) => {
       // error callback
