@@ -1,42 +1,42 @@
 {
   "name": "vue-resource",
-  "version": "0.9.3",
-  "description": "A web request service for Vue.js",
+  "version": "1.0.0",
   "main": "dist/vue-resource.common.js",
   "jsnext:main": "dist/vue-resource.es2015.js",
-  "scripts": {
-    "test": "webpack --config test/webpack.config.js",
-    "build": "node build/build.js",
-    "release": "node build/release.js"
+  "description": "The HTTP client for Vue.js",
+  "homepage": "https://github.com/vuejs/vue-resource#readme",
+  "license": "MIT",
+  "keywords": [
+    "vue",
+    "xhr",
+    "http",
+    "ajax"
+  ],
+  "bugs": {
+    "url": "https://github.com/vuejs/vue-resource/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vuejs/vue-resource.git"
   },
-  "keywords": [
-    "vue",
-    "vuejs",
-    "resource",
-    "mvvm"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/vuejs/vue-resource/issues"
+  "scripts": {
+    "test": "webpack --config test/webpack.config.js",
+    "build": "node build/build.js",
+    "release": "node build/release.js"
   },
-  "homepage": "https://github.com/vuejs/vue-resource#readme",
   "devDependencies": {
-    "babel-core": "^6.10.4",
-    "babel-loader": "^6.2.4",
-    "babel-plugin-transform-runtime": "^6.9.0",
-    "babel-preset-es2015-loose": "^7.0.0",
+    "babel-core": "^6.14.0",
+    "babel-loader": "^6.2.5",
+    "babel-plugin-transform-runtime": "^6.15.0",
+    "babel-preset-es2015": "^6.14.0",
     "babel-preset-es2015-loose-rollup": "^7.0.0",
-    "babel-runtime": "^6.9.2",
-    "jasmine-core": "^2.3.4",
-    "replace-in-file": "^1.1.1",
-    "rollup": "^0.33.0",
+    "generate-release": "^0.10.1",
+    "jasmine-core": "^2.5.0",
+    "replace-in-file": "^2.0.1",
+    "rollup": "^0.34.13",
     "rollup-plugin-babel": "^2.6.1",
-    "uglify-js": "^2.6.4",
+    "uglify-js": "^2.7.3",
     "vue": "^1.0.26",
-    "webpack": "^1.13.1"
+    "webpack": "2.1.0-beta.21"
   }
 }

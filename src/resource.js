@@ -16,7 +16,7 @@ export default function Resource(url, params, actions, options) {
 
     each(actions, (action, name) => {
 
-        action = merge({url, params: params || {}}, options, action);
+        action = merge({url, params: assign({}, params)}, options, action);
 
         resource[name] = function () {
             return (self.$http || Http)(opts(action, arguments));

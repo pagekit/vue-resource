@@ -2,9 +2,7 @@
  * Promise adapter.
  */
 
-import PromiseLib from './lib/promise';
-
-var PromiseObj = window.Promise || PromiseLib;
+var PromiseObj = window.Promise;
 
 export default function Promise(executor, context) {
 

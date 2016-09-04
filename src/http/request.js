@@ -3,19 +3,21 @@
  */
 
 import Url from '../url/index';
+import Headers from './headers';
 import Response from './response';
-import { assign } from '../util';
+import { assign, toUpper } from '../util';
 
 export default class Request {
 
     constructor(options) {
 
-        this.method = 'GET';
         this.body = null;
         this.params = {};
-        this.headers = {};
 
-        assign(this, options);
+        assign(this, options, {
+            method: toUpper(options.method || 'GET'),
+            headers: new Headers(options.headers)
+        });
     }
 
     getUrl(){

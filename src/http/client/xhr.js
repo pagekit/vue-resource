@@ -3,7 +3,7 @@
  */
 
 import Promise from '../../promise';
-import { each, trim, isArray } from '../../util';
+import { each, trim } from '../../util';
 
 export default function (request) {
     return new Promise((resolve) => {
@@ -13,10 +13,13 @@ export default function (request) {
             var response = request.respondWith(
                 'response' in xhr ? xhr.response : xhr.responseText, {
                     status: xhr.status === 1223 ? 204 : xhr.status, // IE9 status bug
-                    statusText: xhr.status === 1223 ? 'No Content' : trim(xhr.statusText),
-                    headers: parseHeaders(xhr.getAllResponseHeaders()),
+                    statusText: xhr.status === 1223 ? 'No Content' : trim(xhr.statusText)
                 }
             );
+
+            each(trim(xhr.getAllResponseHeaders()).split('\n'), (row) => {
+                response.headers.append(row.slice(0, row.indexOf(':')), row.slice(row.indexOf(':') + 1));
+            });
 
             resolve(response);
         };
@@ -36,42 +39,18 @@ export default function (request) {
             }
         }
 
+        if ('responseType' in xhr) {
+            xhr.responseType = 'blob';
+        }
+
         if (request.credentials === true) {
             xhr.withCredentials = true;
         }
 
-        each(request.headers || {}, (value, header) => {
-            xhr.setRequestHeader(header, value);
+        request.headers.forEach((value, name) => {
+            xhr.setRequestHeader(name, value);
         });
 
         xhr.send(request.getBody());
     });
-}
-
-function parseHeaders(str) {
-
-    var headers = {}, value, name, i;
-
-    each(trim(str).split('\n'), (row) => {
-
-        i = row.indexOf(':');
-        name = trim(row.slice(0, i));
-        value = trim(row.slice(i + 1));
-
-        if (headers[name]) {
-
-            if (isArray(headers[name])) {
-                headers[name].push(value);
-            } else {
-                headers[name] = [headers[name], value];
-            }
-
-        } else {
-
-            headers[name] = value;
-        }
-
-    });
-
-    return headers;
 }

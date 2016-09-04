@@ -1,4 +1,4 @@
-# vue-resource [![npm package](https://img.shields.io/npm/v/vue-resource.svg)](https://www.npmjs.com/package/vue-resource)
+# vue-resource [![Downloads](https://img.shields.io/npm/dt/vue-resource.svg)](https://www.npmjs.com/package/vue-resource) [![Version](https://img.shields.io/npm/v/vue-resource.svg)](https://www.npmjs.com/package/vue-resource) [![License](https://img.shields.io/npm/l/vue-resource.svg)](https://www.npmjs.com/package/vue-resource)
 
 The plugin for [Vue.js](http://vuejs.org) provides services for making web requests and handle responses using a [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) or JSONP.
 
@@ -7,7 +7,7 @@ The plugin for [Vue.js](http://vuejs.org) provides services for making web reque
 - Supports the [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) API and [URI Templates](https://medialize.github.io/URI.js/uri-template.html)
 - Supports [interceptors](docs/http.md#interceptors) for request and response
 - Supports latest Firefox, Chrome, Safari, Opera and IE9+
-- Compact size 12KB (4.5KB gzipped)
+- Compact size 14KB (5.3KB gzipped)
 
 ## Installation
 
@@ -22,9 +22,21 @@ $ bower install vue-resource
 ```
 
 ### CDN
-Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/0.9.3/vue-resource.min.js), [cdnjs](https://cdnjs.com/libraries/vue-resource) or [npmcdn](https://npmcdn.com/vue-resource@0.9.3/dist/vue-resource.min.js).
+Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/1.0.0/vue-resource.min.js), [cdnjs](https://cdnjs.com/libraries/vue-resource) or [npmcdn](https://npmcdn.com/vue-resource@1.0.0/dist/vue-resource.min.js).
 ```html
-<script src="https://cdn.jsdelivr.net/vue.resource/0.9.3/vue-resource.min.js"></script>
+<script src="https://cdn.jsdelivr.net/vue.resource/1.0.0/vue-resource.min.js"></script>
+```
+
+## Example
+```js
+{
+  // GET /someUrl
+  this.$http.get('/someUrl').then((response) => {
+    // success callback
+  }, (response) => {
+    // error callback
+  });
+}
 ```
 
 ## Documentation
@@ -33,6 +45,7 @@ Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/0.9.3/vue-resource
 - [HTTP Requests/Response](docs/http.md)
 - [Creating Resources](docs/resource.md)
 - [Code Recipes](docs/recipes.md)
+- [API Reference](docs/api.md)
 
 ## Changelog
 

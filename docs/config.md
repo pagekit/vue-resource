@@ -12,12 +12,12 @@ Set default values inside your Vue component options.
 ```js
 new Vue({
 
-    http: {
-      root: '/root',
-      headers: {
-        Authorization: 'Basic YXBpOnBhc3N3b3Jk'
-      }
+  http: {
+    root: '/root',
+    headers: {
+      Authorization: 'Basic YXBpOnBhc3N3b3Jk'
     }
+  }
 
 })
 ```

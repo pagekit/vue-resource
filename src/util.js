@@ -4,7 +4,7 @@
 
 import Promise from './promise';
 
-var debug = false, util = {}, array = [];
+var debug = false, util = {}, { slice } = [];
 
 export default function (Vue) {
     util = Vue.util;
@@ -31,6 +31,14 @@ export function trim(str) {
     return str.replace(/^\s*|\s*$/g, '');
 }
 
+export function toLower(str) {
+    return str ? str.toLowerCase() : '';
+}
+
+export function toUpper(str) {
+    return str ? str.toUpperCase() : '';
+}
+
 export const isArray = Array.isArray;
 
 export function isString(val) {
@@ -51,6 +59,10 @@ export function isObject(obj) {
 
 export function isPlainObject(obj) {
     return isObject(obj) && Object.getPrototypeOf(obj) == Object.prototype;
+}
+
+export function isBlob(obj) {
+    return typeof Blob !== 'undefined' && obj instanceof Blob;
 }
 
 export function isFormData(obj) {
@@ -83,7 +95,7 @@ export function each(obj, iterator) {
 
     var i, key;
 
-    if (typeof obj.length == 'number') {
+    if (obj && typeof obj.length == 'number') {
         for (i = 0; i < obj.length; i++) {
             iterator.call(obj[i], obj[i], i);
         }
@@ -102,7 +114,7 @@ export const assign = Object.assign || _assign;
 
 export function merge(target) {
 
-    var args = array.slice.call(arguments, 1);
+    var args = slice.call(arguments, 1);
 
     args.forEach((source) => {
         _merge(target, source, true);
@@ -113,7 +125,7 @@ export function merge(target) {
 
 export function defaults(target) {
 
-    var args = array.slice.call(arguments, 1);
+    var args = slice.call(arguments, 1);
 
     args.forEach((source) => {
 
@@ -130,7 +142,7 @@ export function defaults(target) {
 
 function _assign(target) {
 
-    var args = array.slice.call(arguments, 1);
+    var args = slice.call(arguments, 1);
 
     args.forEach((source) => {
         _merge(target, source);
