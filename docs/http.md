@@ -7,20 +7,16 @@ The http service can be used globally `Vue.http` or in a Vue instance `this.$htt
 A Vue instance provides the `this.$http` service which can send HTTP requests. A request method call returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that resolves to the response. Also the Vue instance will be automatically bound to `this` in all function callbacks.
 
 ```js
-new Vue({
+{
 
-    ready() {
+  // GET /someUrl
+  this.$http.get('/someUrl').then((response) => {
+    // success callback
+  }, (response) => {
+    // error callback
+  });
 
-      // GET /someUrl
-      this.$http.get('/someUrl').then((response) => {
-          // success callback
-      }, (response) => {
-          // error callback
-      });
-
-    }
-
-})
+}
 ```
 
 ## Methods
@@ -80,35 +76,31 @@ headers | `Object` | HTTP headers of the response
 ## Example
 
 ```js
-new Vue({
+{
 
-    ready() {
+  // POST /someUrl
+  this.$http.post('/someUrl', {foo: 'bar'}).then((response) => {
 
-      // POST /someUrl
-      this.$http.post('/someUrl', {foo: 'bar'}).then((response) => {
+      // get status
+      response.status;
 
-          // get status
-          response.status;
+      // get status text
+      response.statusText;
 
-          // get status text
-          response.statusText;
+      // get all headers
+      response.headers;
 
-          // get all headers
-          response.headers;
+      // get 'Expires' header
+      response.headers['Expires'];
 
-          // get 'Expires' header
-          response.headers['Expires'];
+      // set data on vm
+      this.$set('someData', response.json())
 
-          // set data on vm
-          this.$set('someData', response.json())
+  }, (response) => {
+      // error callback
+  });
 
-      }, (response) => {
-          // error callback
-      });
-
-    }
-
-})
+}
 ```
 
 ## Interceptors
