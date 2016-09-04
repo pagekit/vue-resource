@@ -86,14 +86,11 @@ blob() | `Promise` | Resolves the body as Blob object
       // get status text
       response.statusText;
 
-      // get all headers
-      response.headers;
-
       // get 'Expires' header
-      response.headers['Expires'];
+      response.headers.get('Expires');
 
       // set data on vm
-      this.$set('someData', response.json())
+      this.$set('someData', response.body)
 
   }, (response) => {
       // error callback
