@@ -98,6 +98,22 @@ blob() | `Promise` | Resolves the body as Blob object
 }
 ```
 
+Fetch an Image and use the blob() method to extract the image body content from the response.
+
+```js
+{
+  // GET /image.jpg
+  this.$http.get('/image.jpg').then((response) => {
+
+    // resolve to Blob
+    return response.blob();
+
+  }).then(blob) => {
+    // use image Blob
+  });
+}
+```
+
 ## Interceptors
 
 Interceptors can be defined globally and are used for pre- and postprocessing of a request.
