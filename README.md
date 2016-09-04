@@ -27,6 +27,18 @@ Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/0.9.3/vue-resource
 <script src="https://cdn.jsdelivr.net/vue.resource/0.9.3/vue-resource.min.js"></script>
 ```
 
+## Example
+```js
+{
+  // GET /someUrl
+  this.$http.get('/someUrl').then((response) => {
+    // success callback
+  }, (response) => {
+    // error callback
+  });
+}
+```
+
 ## Documentation
 
 - [Configuration](docs/config.md)
