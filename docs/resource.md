@@ -21,7 +21,6 @@ delete: {method: 'DELETE'}
 
 ```js
 {
-
   var resource = this.$resource('someItem{/id}');
 
   // GET someItem/1
@@ -42,7 +41,6 @@ delete: {method: 'DELETE'}
   }, (response) => {
       // error callback
   });
-
 }
 ```
 
@@ -50,7 +48,6 @@ delete: {method: 'DELETE'}
 
 ```js
 {
-
   var customActions = {
       foo: {method: 'GET', url: 'someItem/foo{/id}'},
       bar: {method: 'POST', url: 'someItem/bar{/id}'}
@@ -69,6 +66,5 @@ delete: {method: 'DELETE'}
   }, (response) => {
       // error callback
   });
-
 }
 ```

@@ -8,20 +8,20 @@ Sending forms using [FormData](https://developer.mozilla.org/en-US/docs/Web/API/
 
 ```js
 {
-    var formData = new FormData();
+  var formData = new FormData();
 
-    // append string
-    formData.append('foo', 'bar');
+  // append string
+  formData.append('foo', 'bar');
 
-    // append Blob/File object
-    formData.append('pic', fileInput, 'mypic.jpg');
+  // append Blob/File object
+  formData.append('pic', fileInput, 'mypic.jpg');
 
-    // POST /someUrl
-    this.$http.post('/someUrl', formData).then((response) => {
-        // success callback
-    }, (response) => {
-        // error callback
-    });
+  // POST /someUrl
+  this.$http.post('/someUrl', formData).then((response) => {
+    // success callback
+  }, (response) => {
+    // error callback
+  });
 }
 ```
 
@@ -31,25 +31,25 @@ Abort a previous request when a new request is about to be sent. For example whe
 
 ```js
 {
-    // GET /someUrl
-    this.$http.get('/someUrl', {
+  // GET /someUrl
+  this.$http.get('/someUrl', {
 
-        // use before callback
-        before(request) {
+    // use before callback
+    before(request) {
 
-            // abort previous request, if exists
-            if (this.previousRequest) {
-                this.previousRequest.abort();
-            }
+      // abort previous request, if exists
+      if (this.previousRequest) {
+        this.previousRequest.abort();
+      }
 
-            // set previous request on Vue instance
-            this.previousRequest = request;
-        }
+      // set previous request on Vue instance
+      this.previousRequest = request;
+    }
 
-    }).then((response) => {
-        // success callback
-    }, (response) => {
-        // error callback
-    });
+  }).then((response) => {
+    // success callback
+  }, (response) => {
+    // error callback
+  });
 }
 ```

@@ -8,14 +8,12 @@ A Vue instance provides the `this.$http` service which can send HTTP requests. A
 
 ```js
 {
-
   // GET /someUrl
   this.$http.get('/someUrl').then((response) => {
     // success callback
   }, (response) => {
     // error callback
   });
-
 }
 ```
 
@@ -77,7 +75,6 @@ headers | `Object` | HTTP headers of the response
 
 ```js
 {
-
   // POST /someUrl
   this.$http.post('/someUrl', {foo: 'bar'}).then((response) => {
 
@@ -99,7 +96,6 @@ headers | `Object` | HTTP headers of the response
   }, (response) => {
       // error callback
   });
-
 }
 ```
 
