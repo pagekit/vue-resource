@@ -33,6 +33,7 @@ Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/0.9.3/vue-resource
 - [HTTP Requests/Response](docs/http.md)
 - [Creating Resources](docs/resource.md)
 - [Code Recipes](docs/recipes.md)
+- [API Reference](docs/api.md)
 
 ## Changelog
 
