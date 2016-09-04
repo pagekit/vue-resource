@@ -15,8 +15,8 @@
   params (object)
   timeout (number)
   credentials (boolean)
-  emulateHTTP (boolean)   
-  emulateJSON (boolean)    
+  emulateHTTP (boolean)
+  emulateJSON (boolean)
   before (function(Request))
   progress (function(Event))
 
@@ -48,19 +48,6 @@
   json() (Promise)
 }
 ```
-
-Property | Type | Description
--------- | ---- | -----------
-url | `string` | Response URL origin
-body | `any` | Response body data
-headers | `Header` | Response Headers object
-ok | `boolean` | HTTP status code between 200 and 299
-status | `number` | HTTP status code of the response
-statusText | `string` | HTTP status text of the response
-**Method** | **Type** | **Description**
-text() | `Promise` | Resolves the body as string
-json() | `Promise` | Resolves the body as parsed JSON object
-blob() | `Promise` | Resolves the body as Blob object
 
 ## Headers
 
