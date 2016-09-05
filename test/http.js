@@ -132,13 +132,13 @@ describe('this.$http', function () {
 
                             req.abort();
 
-                            done();
-
                         }, 0);
                     }
 
                 }).then((res) => {
                     fail('Callback has been called');
+                }, () => {
+                    done();
                 });
             }
 
