@@ -1,5 +1,5 @@
 /*!
- * vue-resource v1.0.0
+ * vue-resource v1.0.1
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -654,17 +654,17 @@ function crossOrigin(request) {
 
 function body (request, next) {
 
-    if (request.emulateJSON && isPlainObject(request.body)) {
-        request.body = Url.params(request.body);
-        request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
-    }
-
     if (isFormData(request.body)) {
-        request.headers.delete('Content-Type');
-    }
 
-    if (isPlainObject(request.body)) {
-        request.body = JSON.stringify(request.body);
+        request.headers.delete('Content-Type');
+    } else if (isObject(request.body) || isArray(request.body)) {
+
+        if (request.emulateJSON) {
+            request.body = Url.params(request.body);
+            request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
+        } else {
+            request.body = JSON.stringify(request.body);
+        }
     }
 
     next(function (response) {
@@ -858,11 +858,6 @@ function xhrClient (request) {
             return xhr.abort();
         };
 
-        xhr.open(request.method, request.getUrl(), true);
-        xhr.timeout = 0;
-        xhr.onload = handler;
-        xhr.onerror = handler;
-
         if (request.progress) {
             if (request.method === 'GET') {
                 xhr.addEventListener('progress', request.progress);
@@ -870,6 +865,8 @@ function xhrClient (request) {
                 xhr.upload.addEventListener('progress', request.progress);
             }
         }
+
+        xhr.open(request.method, request.getUrl(), true);
 
         if ('responseType' in xhr) {
             xhr.responseType = 'blob';
@@ -883,6 +880,9 @@ function xhrClient (request) {
             xhr.setRequestHeader(name, value);
         });
 
+        xhr.timeout = 0;
+        xhr.onload = handler;
+        xhr.onerror = handler;
         xhr.send(request.getBody());
     });
 }
@@ -980,37 +980,37 @@ var Headers = function () {
     }
 
     Headers.prototype.has = function has(name) {
-        return this.map.hasOwnProperty(normalizeName(name));
+        return getName(this.map, name) !== null;
     };
 
     Headers.prototype.get = function get(name) {
 
-        var list = this.map[normalizeName(name)];
+        var list = this.map[getName(this.map, name)];
 
         return list ? list[0] : null;
     };
 
     Headers.prototype.getAll = function getAll(name) {
-        return this.map[normalizeName(name)] || [];
+        return this.map[getName(this.map, name)] || [];
     };
 
     Headers.prototype.set = function set(name, value) {
-        this.map[normalizeName(name)] = [trim(value)];
+        this.map[normalizeName(getName(this.map, name) || name)] = [trim(value)];
     };
 
     Headers.prototype.append = function append(name, value) {
 
-        var list = this.map[normalizeName(name)];
+        var list = this.getAll(name);
 
-        if (!list) {
-            list = this.map[normalizeName(name)] = [];
+        if (list.length) {
+            list.push(trim(value));
+        } else {
+            this.set(name, value);
         }
-
-        list.push(trim(value));
     };
 
     Headers.prototype.delete = function _delete(name) {
-        delete this.map[normalizeName(name)];
+        delete this.map[getName(name)];
     };
 
     Headers.prototype.forEach = function forEach(callback, thisArg) {
@@ -1026,13 +1026,19 @@ var Headers = function () {
     return Headers;
 }();
 
+function getName(map, name) {
+    return Object.keys(map).reduce(function (prev, curr) {
+        return toLower(name) === toLower(curr) ? curr : prev;
+    }, null);
+}
+
 function normalizeName(name) {
 
     if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
         throw new TypeError('Invalid character in header field name');
     }
 
-    return toLower(trim(name));
+    return trim(name);
 }
 
 /**
