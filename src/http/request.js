@@ -14,9 +14,11 @@ export default class Request {
         this.body = null;
         this.params = {};
 
+        const headers = options.headers instanceof Headers ? options.headers : new Headers(options.headers);
+
         assign(this, options, {
             method: toUpper(options.method || 'GET'),
-            headers: new Headers(options.headers)
+            headers
         });
     }
 
