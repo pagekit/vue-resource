@@ -15,12 +15,12 @@ export default function Url(url, params) {
     var self = this || {}, options = url, transform;
 
     if (isString(url)) {
-        options = {url: url, params: params};
+        options = {url, params};
     }
 
     options = merge({}, Url.options, self.$options, options);
 
-    Url.transforms.forEach((handler) => {
+    Url.transforms.forEach(handler => {
         transform = factory(handler, transform, self.$vm);
     });
 

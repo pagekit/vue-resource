@@ -14,37 +14,37 @@ export default class Headers {
     }
 
     has(name) {
-        return this.map.hasOwnProperty(normalizeName(name));
+        return getName(this.map, name) !== null;
     }
 
     get(name) {
 
-        var list = this.map[normalizeName(name)];
+        var list = this.map[getName(this.map, name)];
 
         return list ? list[0] : null;
     }
 
     getAll(name) {
-        return this.map[normalizeName(name)] || [];
+        return this.map[getName(this.map, name)] || [];
     }
 
     set(name, value) {
-        this.map[normalizeName(name)] = [trim(value)];
+        this.map[normalizeName(getName(this.map, name) || name)] = [trim(value)];
     }
 
     append(name, value){
 
-        var list = this.map[normalizeName(name)];
+        var list = this.getAll(name);
 
-        if (!list) {
-            list = this.map[normalizeName(name)] = [];
+        if (list.length) {
+            list.push(trim(value));
+        } else {
+            this.set(name, value);
         }
-
-        list.push(trim(value));
     }
 
     delete(name){
-        delete this.map[normalizeName(name)];
+        delete this.map[getName(name)];
     }
 
     forEach(callback, thisArg) {
@@ -55,11 +55,17 @@ export default class Headers {
 
 }
 
+function getName(map, name) {
+    return Object.keys(map).reduce((prev, curr) => {
+        return toLower(name) === toLower(curr) ? curr : prev;
+    }, null);
+}
+
 function normalizeName(name) {
 
     if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
         throw new TypeError('Invalid character in header field name');
     }
 
-    return toLower(trim(name));
+    return trim(name);
 }

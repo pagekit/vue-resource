@@ -26,11 +26,6 @@ export default function (request) {
 
         request.abort = () => xhr.abort();
 
-        xhr.open(request.method, request.getUrl(), true);
-        xhr.timeout = 0;
-        xhr.onload = handler;
-        xhr.onerror = handler;
-
         if (request.progress) {
             if (request.method === 'GET') {
                 xhr.addEventListener('progress', request.progress);
@@ -38,6 +33,8 @@ export default function (request) {
                 xhr.upload.addEventListener('progress', request.progress);
             }
         }
+
+        xhr.open(request.method, request.getUrl(), true);
 
         if ('responseType' in xhr) {
             xhr.responseType = 'blob';
@@ -51,6 +48,9 @@ export default function (request) {
             xhr.setRequestHeader(name, value);
         });
 
+        xhr.timeout = 0;
+        xhr.onload = handler;
+        xhr.onerror = handler;
         xhr.send(request.getBody());
     });
 }

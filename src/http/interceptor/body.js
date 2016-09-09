@@ -3,21 +3,22 @@
  */
 
 import Url from '../../url/index';
-import { when, isString, isFormData, isPlainObject } from '../../util';
+import { when, isString, isArray, isObject, isFormData } from '../../util';
 
 export default function (request, next) {
 
-    if (request.emulateJSON && isPlainObject(request.body)) {
-        request.body = Url.params(request.body);
-        request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
-    }
-
     if (isFormData(request.body)) {
-        request.headers.delete('Content-Type');
-    }
 
-    if (isPlainObject(request.body)) {
-        request.body = JSON.stringify(request.body);
+        request.headers.delete('Content-Type');
+
+    } else if (isObject(request.body) || isArray(request.body)) {
+
+        if (request.emulateJSON) {
+            request.body = Url.params(request.body);
+            request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
+        } else {
+            request.body = JSON.stringify(request.body);
+        }
     }
 
     next((response) => {

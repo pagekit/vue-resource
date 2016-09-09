@@ -1,4 +1,4 @@
-# vue-resource [![Downloads](https://img.shields.io/npm/dt/vue-resource.svg)](https://www.npmjs.com/package/vue-resource) [![Version](https://img.shields.io/npm/v/vue-resource.svg)](https://www.npmjs.com/package/vue-resource) [![License](https://img.shields.io/npm/l/vue-resource.svg)](https://www.npmjs.com/package/vue-resource)
+# vue-resource [![Version](https://img.shields.io/npm/v/vue-resource.svg)](https://www.npmjs.com/package/vue-resource) [![License](https://img.shields.io/npm/l/vue-resource.svg)](https://www.npmjs.com/package/vue-resource) [![Downloads](https://img.shields.io/npm/dt/vue-resource.svg)](https://www.npmjs.com/package/vue-resource)
 
 The plugin for [Vue.js](http://vuejs.org) provides services for making web requests and handle responses using a [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) or JSONP.
 
@@ -22,9 +22,9 @@ $ bower install vue-resource
 ```
 
 ### CDN
-Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/1.0.0/vue-resource.min.js), [cdnjs](https://cdnjs.com/libraries/vue-resource) or [npmcdn](https://npmcdn.com/vue-resource@1.0.0/dist/vue-resource.min.js).
+Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/1.0.1/vue-resource.min.js), [cdnjs](https://cdnjs.com/libraries/vue-resource) or [npmcdn](https://npmcdn.com/vue-resource@1.0.1/dist/vue-resource.min.js).
 ```html
-<script src="https://cdn.jsdelivr.net/vue.resource/1.0.0/vue-resource.min.js"></script>
+<script src="https://cdn.jsdelivr.net/vue.resource/1.0.1/vue-resource.min.js"></script>
 ```
 
 ## Example
