@@ -14,18 +14,27 @@ export default class Headers {
     }
 
     has(name) {
-        return this.map.hasOwnProperty(normalizeName(name));
+        return this.get(name) !== null;
     }
 
     get(name) {
 
-        var list = this.map[normalizeName(name)];
+        var list = this.getAll(name);
 
-        return list ? list[0] : null;
+        return list.length ? list[0] : null;
     }
 
     getAll(name) {
-        return this.map[normalizeName(name)] || [];
+
+        var list;
+
+        each(this.map, (l, n) => {
+            if (toLower(name) === toLower(n)) {
+                list = l;
+            }
+        });
+
+        return list || [];
     }
 
     set(name, value) {
@@ -61,5 +70,5 @@ function normalizeName(name) {
         throw new TypeError('Invalid character in header field name');
     }
 
-    return toLower(trim(name));
+    return trim(name);
 }

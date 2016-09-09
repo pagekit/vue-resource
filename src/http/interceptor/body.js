@@ -3,7 +3,7 @@
  */
 
 import Url from '../../url/index';
-import { when, isString, isObject, isFormData, isArray } from '../../util';
+import { when, isString, isArray, isObject, isFormData } from '../../util';
 
 export default function (request, next) {
 
