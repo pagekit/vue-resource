@@ -45,7 +45,9 @@ export default function (request) {
         }
 
         request.headers.forEach((value, name) => {
-            xhr.setRequestHeader(name, value);
+            if(!(name == 'Content-Type' && value == '')) {
+                xhr.setRequestHeader(name, value);
+            }
         });
 
         xhr.timeout = 0;
