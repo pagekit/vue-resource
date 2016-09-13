@@ -15,9 +15,12 @@ export default class Request {
         this.params = {};
 
         assign(this, options, {
-            method: toUpper(options.method || 'GET'),
-            headers: new Headers(options.headers)
+            method: toUpper(options.method || 'GET')
         });
+
+        if (!(this.headers instanceof Headers)) {
+            this.headers = new Headers(this.headers);
+        }
     }
 
     getUrl(){
