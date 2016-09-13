@@ -22,9 +22,9 @@ $ bower install vue-resource
 ```
 
 ### CDN
-Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/1.0.1/vue-resource.min.js), [cdnjs](https://cdnjs.com/libraries/vue-resource) or [npmcdn](https://npmcdn.com/vue-resource@1.0.1/dist/vue-resource.min.js).
+Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/1.0.2/vue-resource.min.js), [cdnjs](https://cdnjs.com/libraries/vue-resource) or [npmcdn](https://npmcdn.com/vue-resource@1.0.2/dist/vue-resource.min.js).
 ```html
-<script src="https://cdn.jsdelivr.net/vue.resource/1.0.1/vue-resource.min.js"></script>
+<script src="https://cdn.jsdelivr.net/vue.resource/1.0.2/vue-resource.min.js"></script>
 ```
 
 ## Example
