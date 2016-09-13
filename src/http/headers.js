@@ -44,7 +44,7 @@ export default class Headers {
     }
 
     delete(name){
-        delete this.map[getName(name)];
+        delete this.map[getName(this.map, name)];
     }
 
     forEach(callback, thisArg) {

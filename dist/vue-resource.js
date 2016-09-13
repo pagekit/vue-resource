@@ -1,5 +1,5 @@
 /*!
- * vue-resource v1.0.1
+ * vue-resource v1.0.2
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -11,39 +11,217 @@
 }(this, (function () { 'use strict';
 
 /**
+ * Promises/A+ polyfill v1.1.4 (https://github.com/bramstein/promis)
+ */
+
+var RESOLVED = 0;
+var REJECTED = 1;
+var PENDING = 2;
+
+function Promise$1(executor) {
+
+    this.state = PENDING;
+    this.value = undefined;
+    this.deferred = [];
+
+    var promise = this;
+
+    try {
+        executor(function (x) {
+            promise.resolve(x);
+        }, function (r) {
+            promise.reject(r);
+        });
+    } catch (e) {
+        promise.reject(e);
+    }
+}
+
+Promise$1.reject = function (r) {
+    return new Promise$1(function (resolve, reject) {
+        reject(r);
+    });
+};
+
+Promise$1.resolve = function (x) {
+    return new Promise$1(function (resolve, reject) {
+        resolve(x);
+    });
+};
+
+Promise$1.all = function all(iterable) {
+    return new Promise$1(function (resolve, reject) {
+        var count = 0,
+            result = [];
+
+        if (iterable.length === 0) {
+            resolve(result);
+        }
+
+        function resolver(i) {
+            return function (x) {
+                result[i] = x;
+                count += 1;
+
+                if (count === iterable.length) {
+                    resolve(result);
+                }
+            };
+        }
+
+        for (var i = 0; i < iterable.length; i += 1) {
+            Promise$1.resolve(iterable[i]).then(resolver(i), reject);
+        }
+    });
+};
+
+Promise$1.race = function race(iterable) {
+    return new Promise$1(function (resolve, reject) {
+        for (var i = 0; i < iterable.length; i += 1) {
+            Promise$1.resolve(iterable[i]).then(resolve, reject);
+        }
+    });
+};
+
+var p$1 = Promise$1.prototype;
+
+p$1.resolve = function resolve(x) {
+    var promise = this;
+
+    if (promise.state === PENDING) {
+        if (x === promise) {
+            throw new TypeError('Promise settled with itself.');
+        }
+
+        var called = false;
+
+        try {
+            var then = x && x['then'];
+
+            if (x !== null && typeof x === 'object' && typeof then === 'function') {
+                then.call(x, function (x) {
+                    if (!called) {
+                        promise.resolve(x);
+                    }
+                    called = true;
+                }, function (r) {
+                    if (!called) {
+                        promise.reject(r);
+                    }
+                    called = true;
+                });
+                return;
+            }
+        } catch (e) {
+            if (!called) {
+                promise.reject(e);
+            }
+            return;
+        }
+
+        promise.state = RESOLVED;
+        promise.value = x;
+        promise.notify();
+    }
+};
+
+p$1.reject = function reject(reason) {
+    var promise = this;
+
+    if (promise.state === PENDING) {
+        if (reason === promise) {
+            throw new TypeError('Promise settled with itself.');
+        }
+
+        promise.state = REJECTED;
+        promise.value = reason;
+        promise.notify();
+    }
+};
+
+p$1.notify = function notify() {
+    var promise = this;
+
+    nextTick(function () {
+        if (promise.state !== PENDING) {
+            while (promise.deferred.length) {
+                var deferred = promise.deferred.shift(),
+                    onResolved = deferred[0],
+                    onRejected = deferred[1],
+                    resolve = deferred[2],
+                    reject = deferred[3];
+
+                try {
+                    if (promise.state === RESOLVED) {
+                        if (typeof onResolved === 'function') {
+                            resolve(onResolved.call(undefined, promise.value));
+                        } else {
+                            resolve(promise.value);
+                        }
+                    } else if (promise.state === REJECTED) {
+                        if (typeof onRejected === 'function') {
+                            resolve(onRejected.call(undefined, promise.value));
+                        } else {
+                            reject(promise.value);
+                        }
+                    }
+                } catch (e) {
+                    reject(e);
+                }
+            }
+        }
+    });
+};
+
+p$1.then = function then(onResolved, onRejected) {
+    var promise = this;
+
+    return new Promise$1(function (resolve, reject) {
+        promise.deferred.push([onResolved, onRejected, resolve, reject]);
+        promise.notify();
+    });
+};
+
+p$1.catch = function (onRejected) {
+    return this.then(undefined, onRejected);
+};
+
+/**
  * Promise adapter.
  */
 
-var PromiseObj = window.Promise;
+if (typeof Promise === 'undefined') {
+    window.Promise = Promise$1;
+}
 
-function Promise$1(executor, context) {
+function PromiseObj(executor, context) {
 
-    if (executor instanceof PromiseObj) {
+    if (executor instanceof Promise) {
         this.promise = executor;
     } else {
-        this.promise = new PromiseObj(executor.bind(context));
+        this.promise = new Promise(executor.bind(context));
     }
 
     this.context = context;
 }
 
-Promise$1.all = function (iterable, context) {
-    return new Promise$1(PromiseObj.all(iterable), context);
+PromiseObj.all = function (iterable, context) {
+    return new PromiseObj(Promise.all(iterable), context);
 };
 
-Promise$1.resolve = function (value, context) {
-    return new Promise$1(PromiseObj.resolve(value), context);
+PromiseObj.resolve = function (value, context) {
+    return new PromiseObj(Promise.resolve(value), context);
 };
 
-Promise$1.reject = function (reason, context) {
-    return new Promise$1(PromiseObj.reject(reason), context);
+PromiseObj.reject = function (reason, context) {
+    return new PromiseObj(Promise.reject(reason), context);
 };
 
-Promise$1.race = function (iterable, context) {
-    return new Promise$1(PromiseObj.race(iterable), context);
+PromiseObj.race = function (iterable, context) {
+    return new PromiseObj(Promise.race(iterable), context);
 };
 
-var p = Promise$1.prototype;
+var p = PromiseObj.prototype;
 
 p.bind = function (context) {
     this.context = context;
@@ -60,7 +238,7 @@ p.then = function (fulfilled, rejected) {
         rejected = rejected.bind(this.context);
     }
 
-    return new Promise$1(this.promise.then(fulfilled, rejected), this.context);
+    return new PromiseObj(this.promise.then(fulfilled, rejected), this.context);
 };
 
 p.catch = function (rejected) {
@@ -69,7 +247,7 @@ p.catch = function (rejected) {
         rejected = rejected.bind(this.context);
     }
 
-    return new Promise$1(this.promise.catch(rejected), this.context);
+    return new PromiseObj(this.promise.catch(rejected), this.context);
 };
 
 p.finally = function (callback) {
@@ -79,7 +257,7 @@ p.finally = function (callback) {
         return value;
     }, function (reason) {
         callback.call(this);
-        return PromiseObj.reject(reason);
+        return Promise.reject(reason);
     });
 };
 
@@ -155,7 +333,7 @@ function isFormData(obj) {
 
 function when(value, fulfilled, rejected) {
 
-    var promise = Promise$1.resolve(value);
+    var promise = PromiseObj.resolve(value);
 
     if (arguments.length < 2) {
         return promise;
@@ -593,7 +771,7 @@ function serialize(params, obj, scope) {
  */
 
 function xdrClient (request) {
-    return new Promise$1(function (resolve) {
+    return new PromiseObj(function (resolve) {
 
         var xdr = new XDomainRequest(),
             handler = function (event) {
@@ -707,7 +885,7 @@ function body (request, next) {
  */
 
 function jsonpClient (request) {
-    return new Promise$1(function (resolve) {
+    return new PromiseObj(function (resolve) {
 
         var name = request.jsonp || 'callback',
             callback = '_jsonp' + Math.random().toString(36).substr(2),
@@ -841,7 +1019,7 @@ function timeout (request, next) {
  */
 
 function xhrClient (request) {
-    return new Promise$1(function (resolve) {
+    return new PromiseObj(function (resolve) {
 
         var xhr = new XMLHttpRequest(),
             handler = function (event) {
@@ -906,7 +1084,7 @@ function Client (context) {
     }
 
     function Client(request) {
-        return new Promise$1(function (resolve) {
+        return new PromiseObj(function (resolve) {
 
             function exec() {
 
@@ -1014,7 +1192,7 @@ var Headers = function () {
     };
 
     Headers.prototype.delete = function _delete(name) {
-        delete this.map[getName(name)];
+        delete this.map[getName(this.map, name)];
     };
 
     Headers.prototype.forEach = function forEach(callback, thisArg) {
@@ -1096,7 +1274,7 @@ var Response = function () {
 }();
 
 function blobText(body) {
-    return new Promise$1(function (resolve) {
+    return new PromiseObj(function (resolve) {
 
         var reader = new FileReader();
 
@@ -1124,9 +1302,12 @@ var Request = function () {
         this.params = {};
 
         assign(this, options, {
-            method: toUpper(options.method || 'GET'),
-            headers: new Headers(options.headers)
+            method: toUpper(options.method || 'GET')
         });
+
+        if (!(this.headers instanceof Headers)) {
+            this.headers = new Headers(this.headers);
+        }
     }
 
     Request.prototype.getUrl = function getUrl() {
@@ -1165,14 +1346,14 @@ function Http(options) {
 
     return client(new Request(options)).then(function (response) {
 
-        return response.ok ? response : Promise$1.reject(response);
+        return response.ok ? response : PromiseObj.reject(response);
     }, function (response) {
 
         if (response instanceof Error) {
             error(response);
         }
 
-        return Promise$1.reject(response);
+        return PromiseObj.reject(response);
     });
 }
 
@@ -1202,182 +1383,6 @@ Http.interceptors = [before, timeout, method, body, jsonp, header, cors];
         return this(assign(options || {}, { url: url, method: method, body: body }));
     };
 });
-
-/**
- * Promises/A+ polyfill v1.1.4 (https://github.com/bramstein/promis)
- */
-
-var RESOLVED = 0;
-var REJECTED = 1;
-var PENDING = 2;
-
-function Promise$2(executor) {
-
-    this.state = PENDING;
-    this.value = undefined;
-    this.deferred = [];
-
-    var promise = this;
-
-    try {
-        executor(function (x) {
-            promise.resolve(x);
-        }, function (r) {
-            promise.reject(r);
-        });
-    } catch (e) {
-        promise.reject(e);
-    }
-}
-
-Promise$2.reject = function (r) {
-    return new Promise$2(function (resolve, reject) {
-        reject(r);
-    });
-};
-
-Promise$2.resolve = function (x) {
-    return new Promise$2(function (resolve, reject) {
-        resolve(x);
-    });
-};
-
-Promise$2.all = function all(iterable) {
-    return new Promise$2(function (resolve, reject) {
-        var count = 0,
-            result = [];
-
-        if (iterable.length === 0) {
-            resolve(result);
-        }
-
-        function resolver(i) {
-            return function (x) {
-                result[i] = x;
-                count += 1;
-
-                if (count === iterable.length) {
-                    resolve(result);
-                }
-            };
-        }
-
-        for (var i = 0; i < iterable.length; i += 1) {
-            Promise$2.resolve(iterable[i]).then(resolver(i), reject);
-        }
-    });
-};
-
-Promise$2.race = function race(iterable) {
-    return new Promise$2(function (resolve, reject) {
-        for (var i = 0; i < iterable.length; i += 1) {
-            Promise$2.resolve(iterable[i]).then(resolve, reject);
-        }
-    });
-};
-
-var p$1 = Promise$2.prototype;
-
-p$1.resolve = function resolve(x) {
-    var promise = this;
-
-    if (promise.state === PENDING) {
-        if (x === promise) {
-            throw new TypeError('Promise settled with itself.');
-        }
-
-        var called = false;
-
-        try {
-            var then = x && x['then'];
-
-            if (x !== null && typeof x === 'object' && typeof then === 'function') {
-                then.call(x, function (x) {
-                    if (!called) {
-                        promise.resolve(x);
-                    }
-                    called = true;
-                }, function (r) {
-                    if (!called) {
-                        promise.reject(r);
-                    }
-                    called = true;
-                });
-                return;
-            }
-        } catch (e) {
-            if (!called) {
-                promise.reject(e);
-            }
-            return;
-        }
-
-        promise.state = RESOLVED;
-        promise.value = x;
-        promise.notify();
-    }
-};
-
-p$1.reject = function reject(reason) {
-    var promise = this;
-
-    if (promise.state === PENDING) {
-        if (reason === promise) {
-            throw new TypeError('Promise settled with itself.');
-        }
-
-        promise.state = REJECTED;
-        promise.value = reason;
-        promise.notify();
-    }
-};
-
-p$1.notify = function notify() {
-    var promise = this;
-
-    nextTick(function () {
-        if (promise.state !== PENDING) {
-            while (promise.deferred.length) {
-                var deferred = promise.deferred.shift(),
-                    onResolved = deferred[0],
-                    onRejected = deferred[1],
-                    resolve = deferred[2],
-                    reject = deferred[3];
-
-                try {
-                    if (promise.state === RESOLVED) {
-                        if (typeof onResolved === 'function') {
-                            resolve(onResolved.call(undefined, promise.value));
-                        } else {
-                            resolve(promise.value);
-                        }
-                    } else if (promise.state === REJECTED) {
-                        if (typeof onRejected === 'function') {
-                            resolve(onRejected.call(undefined, promise.value));
-                        } else {
-                            reject(promise.value);
-                        }
-                    }
-                } catch (e) {
-                    reject(e);
-                }
-            }
-        }
-    });
-};
-
-p$1.then = function then(onResolved, onRejected) {
-    var promise = this;
-
-    return new Promise$2(function (resolve, reject) {
-        promise.deferred.push([onResolved, onRejected, resolve, reject]);
-        promise.notify();
-    });
-};
-
-p$1.catch = function (onRejected) {
-    return this.then(undefined, onRejected);
-};
 
 /**
  * Service for interacting with RESTful services.
@@ -1468,7 +1473,7 @@ function plugin(Vue) {
     Vue.url = Url;
     Vue.http = Http;
     Vue.resource = Resource;
-    Vue.Promise = Promise$1;
+    Vue.Promise = PromiseObj;
 
     Object.defineProperties(Vue.prototype, {
 
@@ -1503,15 +1508,8 @@ function plugin(Vue) {
     });
 }
 
-if (typeof window !== 'undefined') {
-
-    if (!window.Promise) {
-        window.Promise = Promise$2;
-    }
-
-    if (window.Vue) {
-        window.Vue.use(plugin);
-    }
+if (typeof window !== 'undefined' && window.Vue) {
+    window.Vue.use(plugin);
 }
 
 return plugin;
