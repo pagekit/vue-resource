@@ -9,7 +9,7 @@ export default function (request, next) {
 
     if (isFormData(request.body)) {
 
-        request.headers.delete('Content-Type');
+        request.headers.delete('Content-Type') || response.headers.get('content-type');
 
     } else if (isObject(request.body) || isArray(request.body)) {
 
