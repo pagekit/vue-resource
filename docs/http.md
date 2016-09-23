@@ -132,7 +132,7 @@ Vue.http.interceptors.push((request, next) => {
 
 ### Request and Response processing
 ```js
-Vue.http.interceptors.push((request, next)  => {
+Vue.http.interceptors.push((request, next) => {
 
   // modify request
   request.method = 'POST';
