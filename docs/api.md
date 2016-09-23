@@ -24,6 +24,7 @@
   getUrl() (string)
   getBody() (any)
   respondWith(any: body, object: options) (Response)
+  abort()
 }
 ```
 
