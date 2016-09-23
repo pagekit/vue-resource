@@ -7,25 +7,26 @@ import Promise from '../../promise';
 export default function (request) {
     return new Promise((resolve) => {
 
-        var xdr = new XDomainRequest(), handler = (event) => {
+        var xdr = new XDomainRequest(), handler = ({type}) => {
 
-            var response = request.respondWith(
-                xdr.responseText, {
-                    status: xdr.status,
-                    statusText: xdr.statusText
-                }
-            );
+            var status = 0;
 
-            resolve(response);
+            if (type === 'load') {
+                status = 200;
+            } else if (type === 'error') {
+                status = 500;
+            }
+
+            resolve(request.respondWith(xdr.responseText, {status}));
         };
 
         request.abort = () => xdr.abort();
 
-        xdr.open(request.method, request.getUrl(), true);
+        xdr.open(request.method, request.getUrl());
         xdr.timeout = 0;
         xdr.onload = handler;
         xdr.onerror = handler;
-        xdr.ontimeout = () => {};
+        xdr.ontimeout = handler;
         xdr.onprogress = () => {};
         xdr.send(request.getBody());
     });

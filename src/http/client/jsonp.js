@@ -9,14 +9,14 @@ export default function (request) {
 
         var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script;
 
-        handler = (event) => {
+        handler = ({type}) => {
 
             var status = 0;
 
-            if (event.type === 'load' && body !== null) {
+            if (type === 'load' && body !== null) {
                 status = 200;
-            } else if (event.type === 'error') {
-                status = 404;
+            } else if (type === 'error') {
+                status = 500;
             }
 
             resolve(request.respondWith(body, {status}));
