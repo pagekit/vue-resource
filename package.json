@@ -1,6 +1,6 @@
 {
   "name": "vue-resource",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/vue-resource.common.js",
   "jsnext:main": "dist/vue-resource.es2015.js",
   "description": "The HTTP client for Vue.js",

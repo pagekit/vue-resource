@@ -1,5 +1,5 @@
 /*!
- * vue-resource v1.0.2
+ * vue-resource v1.0.3
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -768,25 +768,30 @@ function xdrClient (request) {
     return new PromiseObj(function (resolve) {
 
         var xdr = new XDomainRequest(),
-            handler = function (event) {
+            handler = function (_ref) {
+            var type = _ref.type;
 
-            var response = request.respondWith(xdr.responseText, {
-                status: xdr.status,
-                statusText: xdr.statusText
-            });
 
-            resolve(response);
+            var status = 0;
+
+            if (type === 'load') {
+                status = 200;
+            } else if (type === 'error') {
+                status = 500;
+            }
+
+            resolve(request.respondWith(xdr.responseText, { status: status }));
         };
 
         request.abort = function () {
             return xdr.abort();
         };
 
-        xdr.open(request.method, request.getUrl(), true);
+        xdr.open(request.method, request.getUrl());
         xdr.timeout = 0;
         xdr.onload = handler;
         xdr.onerror = handler;
-        xdr.ontimeout = function () {};
+        xdr.ontimeout = handler;
         xdr.onprogress = function () {};
         xdr.send(request.getBody());
     });
@@ -887,14 +892,16 @@ function jsonpClient (request) {
             handler,
             script;
 
-        handler = function (event) {
+        handler = function (_ref) {
+            var type = _ref.type;
+
 
             var status = 0;
 
-            if (event.type === 'load' && body !== null) {
+            if (type === 'load' && body !== null) {
                 status = 200;
-            } else if (event.type === 'error') {
-                status = 404;
+            } else if (type === 'error') {
+                status = 500;
             }
 
             resolve(request.respondWith(body, { status: status }));
