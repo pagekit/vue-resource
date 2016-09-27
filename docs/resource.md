@@ -25,7 +25,7 @@ delete: {method: 'DELETE'}
 
   // GET someItem/1
   resource.get({id: 1}).then((response) => {
-    this.$set('item', response.json())
+    this.$set('item', response.body)
   });
 
   // POST someItem/1
@@ -57,7 +57,7 @@ delete: {method: 'DELETE'}
 
   // GET someItem/foo/1
   resource.foo({id: 1}).then((response) => {
-    this.$set('item', response.json())
+    this.$set('item', response.body)
   });
 
   // POST someItem/bar/1
