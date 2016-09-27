@@ -136,6 +136,7 @@ Vue.http.interceptors.push((request, next) => {
 
   // modify request
   request.method = 'POST';
+  request.headers.set('foo', 'bar');
 
   // continue to next interceptor
   next((response) => {
