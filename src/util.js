@@ -95,7 +95,7 @@ export function each(obj, iterator) {
 
     var i, key;
 
-    if (obj && typeof obj.length == 'number') {
+    if (isArray(obj)) {
         for (i = 0; i < obj.length; i++) {
             iterator.call(obj[i], obj[i], i);
         }
