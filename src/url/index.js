@@ -5,14 +5,14 @@
 const inBrowser = typeof window !== 'undefined';
 const ie = inBrowser ? document.documentMode : 11;
 const el = inBrowser ? document.createElement('a') : {
-    href: null,
-    protocol: null,
-    port: null,
-    host: null,
-    hostname: null,
-    pathname: null,
-    search: null,
-    hash: null,
+    href: '',
+    protocol: '',
+    port: '',
+    host: '',
+    hostname: '',
+    pathname: '',
+    search: '',
+    hash: '',
 };
 
 import root from './root';
