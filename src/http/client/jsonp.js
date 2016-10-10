@@ -4,6 +4,8 @@
 
 import Promise from '../../promise';
 
+const inBrowser = typeof window !== 'undefined';
+
 export default function (request) {
     return new Promise((resolve) => {
 
@@ -21,23 +23,27 @@ export default function (request) {
 
             resolve(request.respondWith(body, {status}));
 
-            delete window[callback];
-            document.body.removeChild(script);
+            if (inBrowser) {
+                delete window[callback];
+                document.body.removeChild(script);
+            }
         };
 
         request.params[name] = callback;
 
-        window[callback] = (result) => {
-            body = JSON.stringify(result);
-        };
+        if (inBrowser) {
+            window[callback] = (result) => {
+                body = JSON.stringify(result);
+            };
 
-        script = document.createElement('script');
-        script.src = request.getUrl();
-        script.type = 'text/javascript';
-        script.async = true;
-        script.onload = handler;
-        script.onerror = handler;
+            script = document.createElement('script');
+            script.src = request.getUrl();
+            script.type = 'text/javascript';
+            script.async = true;
+            script.onload = handler;
+            script.onerror = handler;
 
-        document.body.appendChild(script);
+            document.body.appendChild(script);
+        }
     });
 }
