@@ -37,6 +37,7 @@
     "rollup-plugin-babel": "^2.6.1",
     "uglify-js": "^2.7.3",
     "vue": "^1.0.26",
-    "webpack": "2.1.0-beta.21"
+    "webpack": "2.1.0-beta.21",
+    "xhr2": "latest"
   }
 }
