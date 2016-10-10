@@ -6,8 +6,9 @@ import Url from '../../url/index';
 import xdrClient from '../client/xdr';
 import { isBoolean } from '../../util';
 
-const ORIGIN_URL = Url.parse(location.href);
-const SUPPORTS_CORS = 'withCredentials' in new XMLHttpRequest();
+const inBrowser = typeof window !== 'undefined';
+const ORIGIN_URL =  Url.parse(inBrowser ? location.href : '');
+const SUPPORTS_CORS = inBrowser ? 'withCredentials' in new XMLHttpRequest() : true;
 
 export default function (request, next) {
 
