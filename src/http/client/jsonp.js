@@ -7,7 +7,14 @@ import Promise from '../../promise';
 export default function (request) {
     return new Promise((resolve) => {
 
-        var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script;
+        var name = request.jsonp || 'callback',
+            reParams = new RegExp('(\\?|\\&)' + name + '=([^\\&]+)'),
+            reqUrl = request.getUrl(),
+            jsonpCallback = reqUrl.match(reParams) ? reqUrl.match(reParams)[2] : null,
+            callback = jsonpCallback ? jsonpCallback : '_jsonp' + Math.random().toString(36).substr(2),
+            body = null,
+            handler,
+            script;
 
         handler = ({type}) => {
 
@@ -32,7 +39,7 @@ export default function (request) {
         };
 
         script = document.createElement('script');
-        script.src = request.getUrl();
+        script.src = reqUrl;
         script.type = 'text/javascript';
         script.async = true;
         script.onload = handler;
