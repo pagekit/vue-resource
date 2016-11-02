@@ -49,7 +49,7 @@ export default class Headers {
     
     deleteAll() {
         this.map = {};
-    },
+    }
 
     forEach(callback, thisArg) {
         each(this.map, (list, name) => {
