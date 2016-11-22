@@ -37,7 +37,7 @@ export default function (request, next) {
 
         return response.bodyText ? when(response.text(), text => {
 
-            var type = response.headers.get('Content-Type');
+            var type = response.headers.get('Content-Type') || response.headers.get('content-type');
 
             if (isString(type) && type.indexOf('application/json') === 0) {
 
