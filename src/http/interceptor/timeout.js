@@ -8,6 +8,7 @@ export default function (request, next) {
 
     if (request.timeout) {
         timeout = setTimeout(() => {
+        	request.onTimeout && request.onTimeout();
             request.abort();
         }, request.timeout);
     }
