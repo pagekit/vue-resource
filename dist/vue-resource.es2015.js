@@ -1005,6 +1005,7 @@ function timeout (request, next) {
 
     if (request.timeout) {
         timeout = setTimeout(function () {
+            request.onTimeout && request.onTimeout();
             request.abort();
         }, request.timeout);
     }
@@ -1267,7 +1268,7 @@ var Response = function () {
 
     Response.prototype.json = function json() {
         return when(this.text(), function (text) {
-            return JSON.parse(text);
+            return text?JSON.parse(text):'';
         });
     };
 
