@@ -40,7 +40,13 @@ export default class Response {
     }
 
     json() {
-        return when(this.text(), text => JSON.parse(text));
+        return when(this.text(), text => {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                return null;
+            }
+        });
     }
 
 }
