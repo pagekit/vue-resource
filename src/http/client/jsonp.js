@@ -7,9 +7,14 @@ import Promise from '../../promise';
 export default function (request) {
     return new Promise((resolve) => {
 
-        var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script;
+        var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script, isHandled = false;
 
         handler = ({type}) => {
+            if (isHandled) {
+                return;
+            }
+
+            isHandled = true
 
             var status = 0;
 
@@ -27,8 +32,18 @@ export default function (request) {
 
         request.params[name] = callback;
 
+        request.abort = () => {
+            if (!isHandled) {
+                handler({});
+            }
+        }
+
         window[callback] = (result) => {
-            body = JSON.stringify(result);
+            try {
+                body = JSON.stringify(result);
+            } catch (e) {
+                body = null;
+            }
         };
 
         script = document.createElement('script');
