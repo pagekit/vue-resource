@@ -28,7 +28,7 @@ export function nextTick(cb, ctx) {
 }
 
 export function trim(str) {
-    return str.replace(/^\s*|\s*$/g, '');
+    return str? str.replace(/^\s*|\s*$/g, '') : '';
 }
 
 export function toLower(str) {
