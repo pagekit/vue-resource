@@ -286,7 +286,7 @@ function nextTick(cb, ctx) {
 }
 
 function trim(str) {
-    return str.replace(/^\s*|\s*$/g, '');
+    return str ? str.replace(/^\s*|\s*$/g, ''): '';
 }
 
 function toLower(str) {
