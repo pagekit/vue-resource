@@ -91,7 +91,6 @@ blob() | `Promise` | Resolves the body as Blob object
 
     // set data on vm
     this.$set('someData', response.body);
-
   }, (response) => {
     // error callback
   });
@@ -159,4 +158,23 @@ Vue.http.interceptors.push((request, next) => {
     statusText: 'Not found'
   }));
 });
+```
+
+### Get Response data in vue2 by vue-resource
+```
+created(){
+  var id=this.$route.params.id;
+  this.$http.get('/data/user/one?id='+id).then((res)=>{
+          var data=res.body.data;
+          //this will cover Vue.$data.name and Vue.$data.phone
+          this.name=data.nickname;
+          this.phone=data.phone
+  });
+},
+data(){
+   return {
+         name:'',
+         phone:''
+  }
+}
 ```
