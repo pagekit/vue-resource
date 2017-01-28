@@ -31,12 +31,12 @@ Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/1.0.3/vue-resource
 ```js
 {
   // GET /someUrl
-  this.$http.get('/someUrl').then((response) => {
+  this.$http.get('/someUrl').then(response => {
 
     // get body data
-    this.$set('someData', response.body);
+    this.someData = response.body;
 
-  }, (response) => {
+  }, response => {
     // error callback
   });
 }
