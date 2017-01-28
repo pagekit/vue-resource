@@ -142,7 +142,7 @@ Vue.http.interceptors.push((request, next) => {
   request.method = 'POST';
 
   // continue to next interceptor
-  next((response) => {
+  next(response => {
 
     // modify response
     response.body = '...';
