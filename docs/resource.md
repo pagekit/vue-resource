@@ -24,21 +24,21 @@ delete: {method: 'DELETE'}
   var resource = this.$resource('someItem{/id}');
 
   // GET someItem/1
-  resource.get({id: 1}).then((response) => {
+  resource.get({id: 1}).then(response => {
     this.$set('item', response.body)
   });
 
   // POST someItem/1
-  resource.save({id: 1}, {item: this.item}).then((response) => {
+  resource.save({id: 1}, {item: this.item}).then(response => {
     // success callback
-  }, (response) => {
+  }, response => {
     // error callback
   });
 
   // DELETE someItem/1
-  resource.delete({id: 1}).then((response) => {
+  resource.delete({id: 1}).then(response => {
     // success callback
-  }, (response) => {
+  }, response => {
     // error callback
   });
 }
@@ -56,14 +56,14 @@ delete: {method: 'DELETE'}
   var resource = this.$resource('someItem{/id}', {}, customActions);
 
   // GET someItem/foo/1
-  resource.foo({id: 1}).then((response) => {
+  resource.foo({id: 1}).then(response => {
     this.$set('item', response.body)
   });
 
   // POST someItem/bar/1
-  resource.bar({id: 1}, {item: this.item}).then((response) => {
+  resource.bar({id: 1}, {item: this.item}).then(response => {
     // success callback
-  }, (response) => {
+  }, response => {
     // error callback
   });
 }

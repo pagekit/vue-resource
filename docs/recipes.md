@@ -17,9 +17,9 @@ Sending forms using [FormData](https://developer.mozilla.org/en-US/docs/Web/API/
   formData.append('pic', fileInput, 'mypic.jpg');
 
   // POST /someUrl
-  this.$http.post('/someUrl', formData).then((response) => {
+  this.$http.post('/someUrl', formData).then(response => {
     // success callback
-  }, (response) => {
+  }, response => {
     // error callback
   });
 }
@@ -46,9 +46,9 @@ Abort a previous request when a new request is about to be sent. For example whe
       this.previousRequest = request;
     }
 
-  }).then((response) => {
+  }).then(response => {
     // success callback
-  }, (response) => {
+  }, response => {
     // error callback
   });
 }

@@ -9,9 +9,9 @@ A Vue instance provides the `this.$http` service which can send HTTP requests. A
 ```js
 {
   // GET /someUrl
-  this.$http.get('/someUrl').then((response) => {
+  this.$http.get('/someUrl').then(response => {
     // success callback
-  }, (response) => {
+  }, response => {
     // error callback
   });
 }
@@ -78,7 +78,7 @@ blob() | `Promise` | Resolves the body as Blob object
 ```js
 {
   // POST /someUrl
-  this.$http.post('/someUrl', {foo: 'bar'}).then((response) => {
+  this.$http.post('/someUrl', {foo: 'bar'}).then(response => {
 
     // get status
     response.status;
@@ -92,7 +92,7 @@ blob() | `Promise` | Resolves the body as Blob object
     // get body data
     this.someData = response.body;
 
-  }, (response) => {
+  }, response => {
     // error callback
   });
 }
@@ -103,7 +103,7 @@ Fetch an image and use the blob() method to extract the image body content from 
 ```js
 {
   // GET /image.jpg
-  this.$http.get('/image.jpg').then((response) => {
+  this.$http.get('/image.jpg').then(response => {
 
     // resolve to Blob
     return response.blob();
