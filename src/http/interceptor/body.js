@@ -21,7 +21,7 @@ export default function (request, next) {
         }
     }
 
-    next((response) => {
+    next(response => {
 
         Object.defineProperty(response, 'data', {
 

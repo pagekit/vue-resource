@@ -12,7 +12,7 @@ export default function (request, next) {
         }, request.timeout);
     }
 
-    next((response) => {
+    next(response => {
 
         clearTimeout(timeout);
 

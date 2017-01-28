@@ -5,7 +5,7 @@
 import Promise from '../../promise';
 
 export default function (request) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
 
         var xdr = new XDomainRequest(), handler = ({type}) => {
 

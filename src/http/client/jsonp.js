@@ -5,13 +5,11 @@
 import Promise from '../../promise';
 
 export default function (request) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
 
-        var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script;
+        var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), body = null, status = 0, handler, script;
 
         handler = ({type}) => {
-
-            var status = 0;
 
             if (type === 'load' && body !== null) {
                 status = 200;
@@ -26,6 +24,9 @@ export default function (request) {
         };
 
         request.params[name] = callback;
+        request.abort = () => {
+            resolve(request.respondWith(body, {status}));
+        };
 
         window[callback] = (result) => {
             body = JSON.stringify(result);

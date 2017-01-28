@@ -6,7 +6,7 @@ import Promise from '../../promise';
 import { each, trim } from '../../util';
 
 export default function (request) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
 
         var xhr = new XMLHttpRequest(), handler = (event) => {
 
