@@ -108,7 +108,7 @@ Fetch an image and use the blob() method to extract the image body content from 
     // resolve to Blob
     return response.blob();
 
-  }).then(blob) => {
+  }).then((blob) => {
     // use image Blob
   });
 }
