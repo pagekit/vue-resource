@@ -47,6 +47,10 @@ export default class Headers {
         delete this.map[getName(this.map, name)];
     }
 
+    deleteAll(){
+        this.map = {};
+    }
+
     forEach(callback, thisArg) {
         each(this.map, (list, name) => {
             each(list, value => callback.call(thisArg, value, name, this));

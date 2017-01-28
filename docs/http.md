@@ -90,7 +90,7 @@ blob() | `Promise` | Resolves the body as Blob object
     response.headers.get('Expires');
 
     // get body data
-    this.$set('someData', response.body);
+    this.someData = response.body;
 
   }, (response) => {
     // error callback
@@ -108,7 +108,7 @@ Fetch an image and use the blob() method to extract the image body content from 
     // resolve to Blob
     return response.blob();
 
-  }).then(blob) => {
+  }).then(blob => {
     // use image Blob
   });
 }
@@ -122,8 +122,12 @@ Interceptors can be defined globally and are used for pre- and postprocessing of
 ```js
 Vue.http.interceptors.push((request, next) => {
 
-  // modify request
+  // modify method
   request.method = 'POST';
+
+  // modify headers
+  request.headers.set('X-CSRF-TOKEN', 'TOKEN');
+  request.headers.set('Authorization', 'Bearer TOKEN');
 
   // continue to next interceptor
   next();
@@ -136,7 +140,6 @@ Vue.http.interceptors.push((request, next) => {
 
   // modify request
   request.method = 'POST';
-  request.headers.set('foo', 'bar');
 
   // continue to next interceptor
   next((response) => {
