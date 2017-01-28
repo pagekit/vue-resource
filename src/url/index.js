@@ -2,8 +2,18 @@
  * Service for URL templating.
  */
 
-const ie = document.documentMode;
-const el = document.createElement('a');
+const inBrowser = typeof window !== 'undefined';
+const ie = inBrowser ? document.documentMode : 11;
+const el = inBrowser ? document.createElement('a') : {
+    href: '',
+    protocol: '',
+    port: '',
+    host: '',
+    hostname: '',
+    pathname: '',
+    search: '',
+    hash: '',
+};
 
 import root from './root';
 import query from './query';

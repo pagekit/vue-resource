@@ -5,6 +5,9 @@
 import Promise from '../../promise';
 import { each, trim } from '../../util';
 
+const inBrowser = typeof window !== 'undefined';
+const XMLHttpRequest = inBrowser ? window.XMLHttpRequest : require('xhr2');
+
 export default function (request) {
     return new Promise((resolve) => {
 

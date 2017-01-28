@@ -2,10 +2,12 @@
  * Promise adapter.
  */
 
-import PromiseLib from './lib/promise';
+import Promise from './lib/promise';
 
-if (typeof Promise === 'undefined') {
-    window.Promise = PromiseLib;
+const inBrowser = typeof window !== 'undefined';
+
+if (inBrowser && typeof window.Promise === 'undefined') {
+    window.Promise = Promise;
 }
 
 export default function PromiseObj(executor, context) {
