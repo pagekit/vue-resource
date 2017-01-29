@@ -7,7 +7,7 @@ import Promise from '../../promise';
 export default function (request) {
     return new Promise(resolve => {
 
-        var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script;
+        var name = request.jsonp || 'callback', callback = request.jsonpCallback || '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script;
 
         handler = ({type}) => {
 
