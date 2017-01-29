@@ -12,7 +12,6 @@ import jsonp from './interceptor/jsonp';
 import before from './interceptor/before';
 import method from './interceptor/method';
 import header from './interceptor/header';
-import timeout from './interceptor/timeout';
 import Client from './client/index';
 import Request from './request';
 import Promise from '../promise';
@@ -53,7 +52,7 @@ Http.headers = {
     common: COMMON_HEADERS
 };
 
-Http.interceptors = [before, timeout, method, body, jsonp, header, cors];
+Http.interceptors = [before, method, body, jsonp, header, cors];
 
 ['get', 'delete', 'head', 'jsonp'].forEach((method) => {
 

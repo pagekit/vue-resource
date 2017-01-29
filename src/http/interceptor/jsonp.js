@@ -11,16 +11,16 @@ export default function (request, next) {
         request.client = jsonpClient;
     }
 
-    next((response) => {
+    next(response => {
 
         if (request.method == 'JSONP') {
 
-            return when(response.json(), json => {
+            try {
+                response.body = JSON.parse(response.body);
+            } catch (e) {
+                response.body = null;
+            }
 
-                response.body = json;
-
-                return response;
-            });
         }
 
     });

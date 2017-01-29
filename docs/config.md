@@ -22,6 +22,8 @@ new Vue({
 })
 ```
 
+Note that for the root option to work, the path of the request must be relative. This will use this the root option: `Vue.http.get('someUrl')` while this will not: `Vue.http.get('/someUrl')`.
+
 ## Webpack/Browserify
 
 Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then add these lines in your code:

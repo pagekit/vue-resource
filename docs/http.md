@@ -9,9 +9,9 @@ A Vue instance provides the `this.$http` service which can send HTTP requests. A
 ```js
 {
   // GET /someUrl
-  this.$http.get('/someUrl').then((response) => {
+  this.$http.get('/someUrl').then(response => {
     // success callback
-  }, (response) => {
+  }, response => {
     // error callback
   });
 }
@@ -78,7 +78,7 @@ blob() | `Promise` | Resolves the body as Blob object
 ```js
 {
   // POST /someUrl
-  this.$http.post('/someUrl', {foo: 'bar'}).then((response) => {
+  this.$http.post('/someUrl', {foo: 'bar'}).then(response => {
 
     // get status
     response.status;
@@ -89,10 +89,10 @@ blob() | `Promise` | Resolves the body as Blob object
     // get 'Expires' header
     response.headers.get('Expires');
 
-    // set data on vm
-    this.$set('someData', response.body);
+    // get body data
+    this.someData = response.body;
 
-  }, (response) => {
+  }, response => {
     // error callback
   });
 }
@@ -103,12 +103,12 @@ Fetch an image and use the blob() method to extract the image body content from 
 ```js
 {
   // GET /image.jpg
-  this.$http.get('/image.jpg').then((response) => {
+  this.$http.get('/image.jpg').then(response => {
 
     // resolve to Blob
     return response.blob();
 
-  }).then(blob) => {
+  }).then(blob => {
     // use image Blob
   });
 }
@@ -122,8 +122,12 @@ Interceptors can be defined globally and are used for pre- and postprocessing of
 ```js
 Vue.http.interceptors.push((request, next) => {
 
-  // modify request
+  // modify method
   request.method = 'POST';
+
+  // modify headers
+  request.headers.set('X-CSRF-TOKEN', 'TOKEN');
+  request.headers.set('Authorization', 'Bearer TOKEN');
 
   // continue to next interceptor
   next();
@@ -132,13 +136,13 @@ Vue.http.interceptors.push((request, next) => {
 
 ### Request and Response processing
 ```js
-Vue.http.interceptors.push((request, next)  => {
+Vue.http.interceptors.push((request, next) => {
 
   // modify request
   request.method = 'POST';
 
   // continue to next interceptor
-  next((response) => {
+  next(response => {
 
     // modify response
     response.body = '...';

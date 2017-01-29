@@ -4,7 +4,7 @@
 
 import Promise from './promise';
 
-var debug = false, util = {}, { slice } = [];
+var debug = false, util = {}, {hasOwnProperty} = {}, {slice} = [];
 
 export default function (Vue) {
     util = Vue.util;
@@ -28,7 +28,7 @@ export function nextTick(cb, ctx) {
 }
 
 export function trim(str) {
-    return str.replace(/^\s*|\s*$/g, '');
+    return str ? str.replace(/^\s*|\s*$/g, '') : '';
 }
 
 export function toLower(str) {
@@ -95,13 +95,13 @@ export function each(obj, iterator) {
 
     var i, key;
 
-    if (obj && typeof obj.length == 'number') {
+    if (isArray(obj)) {
         for (i = 0; i < obj.length; i++) {
             iterator.call(obj[i], obj[i], i);
         }
     } else if (isObject(obj)) {
         for (key in obj) {
-            if (obj.hasOwnProperty(key)) {
+            if (hasOwnProperty.call(obj, key)) {
                 iterator.call(obj[key], obj[key], key);
             }
         }

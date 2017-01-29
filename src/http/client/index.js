@@ -15,7 +15,7 @@ export default function (context) {
     }
 
     function Client(request) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
 
             function exec() {
 
@@ -56,7 +56,7 @@ export default function (context) {
         }, context);
     }
 
-    Client.use = (handler) => {
+    Client.use = handler => {
         reqHandlers.push(handler);
     };
 

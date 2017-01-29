@@ -5,9 +5,9 @@
 import Promise from '../../promise';
 
 export default function (request) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
 
-        var name = request.jsonp || 'callback', callback = '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script;
+        var name = request.jsonp || 'callback', callback = request.jsonpCallback || '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script;
 
         handler = ({type}) => {
 
@@ -19,17 +19,27 @@ export default function (request) {
                 status = 500;
             }
 
-            resolve(request.respondWith(body, {status}));
+            if (status && window[callback]) {
+                delete window[callback];
+                document.body.removeChild(script);
+            }
 
-            delete window[callback];
-            document.body.removeChild(script);
+            resolve(request.respondWith(body, {status}));
+        };
+
+        window[callback] = result => {
+            body = JSON.stringify(result);
+        };
+
+        request.abort = () => {
+            handler({type: 'abort'});
         };
 
         request.params[name] = callback;
 
-        window[callback] = (result) => {
-            body = JSON.stringify(result);
-        };
+        if (request.timeout) {
+            setTimeout(request.abort, request.timeout);
+        }
 
         script = document.createElement('script');
         script.src = request.getUrl();

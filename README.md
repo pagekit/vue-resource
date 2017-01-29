@@ -22,18 +22,21 @@ $ bower install vue-resource
 ```
 
 ### CDN
-Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/1.0.3/vue-resource.min.js), [cdnjs](https://cdnjs.com/libraries/vue-resource) or [unpkg](https://unpkg.com/vue-resource@1.0.3/dist/vue-resource.min.js).
+Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/1.1.0/vue-resource.min.js), [cdnjs](https://cdnjs.com/libraries/vue-resource) or [unpkg](https://unpkg.com/vue-resource@1.1.0/dist/vue-resource.min.js).
 ```html
-<script src="https://cdn.jsdelivr.net/vue.resource/1.0.3/vue-resource.min.js"></script>
+<script src="https://cdn.jsdelivr.net/vue.resource/1.1.0/vue-resource.min.js"></script>
 ```
 
 ## Example
 ```js
 {
   // GET /someUrl
-  this.$http.get('/someUrl').then((response) => {
-    // success callback
-  }, (response) => {
+  this.$http.get('/someUrl').then(response => {
+
+    // get body data
+    this.someData = response.body;
+
+  }, response => {
     // error callback
   });
 }
