@@ -38,7 +38,7 @@ export default function (request) {
         request.params[name] = callback;
 
         if (request.timeout) {
-            setTimeout(() => request.abort(), request.timeout);
+            setTimeout(request.abort, request.timeout);
         }
 
         script = document.createElement('script');
