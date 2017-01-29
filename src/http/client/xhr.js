@@ -40,6 +40,10 @@ export default function (request) {
             xhr.responseType = 'blob';
         }
 
+        if (request.timeout) {
+            xhr.timeout = request.timeout;
+        }
+
         if (request.credentials === true) {
             xhr.withCredentials = true;
         }
@@ -48,9 +52,10 @@ export default function (request) {
             xhr.setRequestHeader(name, value);
         });
 
-        xhr.timeout = 0;
         xhr.onload = handler;
+        xhr.onabort = handler;
         xhr.onerror = handler;
+        xhr.ontimeout = handler;
         xhr.send(request.getBody());
     });
 }
