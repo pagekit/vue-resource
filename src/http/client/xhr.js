@@ -36,7 +36,7 @@ export default function (request) {
 
         xhr.open(request.method, request.getUrl(), true);
 
-        if ('responseType' in xhr) {
+        if ('responseType' in xhr && typeof Blob !== 'undefined') {
             xhr.responseType = 'blob';
         }
 
