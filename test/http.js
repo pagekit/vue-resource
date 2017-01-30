@@ -125,8 +125,6 @@ describe('this.$http', function () {
 
                 this.$http.get(`data/valid.json?${random}`, {timeout: 1}).then(res => {
 
-                    console.log(res);
-
                     fail('Callback has been called');
 
                 }, res => {
