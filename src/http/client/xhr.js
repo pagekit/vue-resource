@@ -5,6 +5,8 @@
 import Promise from '../../promise';
 import { each, trim } from '../../util';
 
+const SUPPORTS_BLOB = typeof Blob !== 'undefined' && typeof FileReader !== 'undefined';
+
 export default function (request) {
     return new Promise(resolve => {
 
@@ -17,7 +19,7 @@ export default function (request) {
                 }
             );
 
-            each(trim(xhr.getAllResponseHeaders()).split('\n'), (row) => {
+            each(trim(xhr.getAllResponseHeaders()).split('\n'), row => {
                 response.headers.append(row.slice(0, row.indexOf(':')), row.slice(row.indexOf(':') + 1));
             });
 
@@ -36,16 +38,16 @@ export default function (request) {
 
         xhr.open(request.method, request.getUrl(), true);
 
-        if ('responseType' in xhr) {
-            xhr.responseType = 'blob';
-        }
-
         if (request.timeout) {
             xhr.timeout = request.timeout;
         }
 
         if (request.credentials === true) {
             xhr.withCredentials = true;
+        }
+
+        if ('responseType' in xhr && SUPPORTS_BLOB) {
+            xhr.responseType = 'blob';
         }
 
         request.headers.forEach((value, name) => {

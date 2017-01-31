@@ -3,7 +3,7 @@
  */
 
 import Url from '../../url/index';
-import { when, isString, isArray, isObject, isFormData } from '../../util';
+import { when, isArray, isObject, isFormData } from '../../util';
 
 export default function (request, next) {
 
@@ -37,9 +37,9 @@ export default function (request, next) {
 
         return response.bodyText ? when(response.text(), text => {
 
-            var type = response.headers.get('Content-Type');
+            var type = response.headers.get('Content-Type') || '';
 
-            if (isString(type) && type.indexOf('application/json') === 0) {
+            if (type.indexOf('application/json') === 0 || isJson(text)) {
 
                 try {
                     response.body = JSON.parse(text);
@@ -56,4 +56,11 @@ export default function (request, next) {
         }) : response;
 
     });
+}
+
+function isJson(str) {
+
+    var start = str.match(/^\[|^\{(?!\{)/), end = {'[': /]$/, '{': /}$/};
+
+    return start && end[start[0]].test(str);
 }
