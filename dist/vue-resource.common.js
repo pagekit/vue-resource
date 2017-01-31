@@ -1,5 +1,5 @@
 /*!
- * vue-resource v1.1.0
+ * vue-resource v1.1.1
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -865,9 +865,9 @@ var body = function (request, next) {
 
         return response.bodyText ? when(response.text(), function (text) {
 
-            var type = response.headers.get('Content-Type');
+            var type = response.headers.get('Content-Type') || '';
 
-            if (isString(type) && type.indexOf('application/json') === 0) {
+            if (type.indexOf('application/json') === 0 || isJson(text)) {
 
                 try {
                     response.body = JSON.parse(text);
@@ -885,6 +885,13 @@ var body = function (request, next) {
 
     });
 };
+
+function isJson(str) {
+
+    var start = str.match(/^\[|^\{(?!\{)/), end = {'[': /]$/, '{': /}$/};
+
+    return start && end[start[0]].test(str);
+}
 
 /**
  * JSONP client.
@@ -950,19 +957,7 @@ var jsonp = function (request, next) {
         request.client = jsonpClient;
     }
 
-    next(function (response) {
-
-        if (request.method == 'JSONP') {
-
-            try {
-                response.body = JSON.parse(response.body);
-            } catch (e) {
-                response.body = null;
-            }
-
-        }
-
-    });
+    next();
 };
 
 /**
@@ -1016,6 +1011,8 @@ var header = function (request, next) {
  * XMLHttp client.
  */
 
+var SUPPORTS_BLOB = typeof Blob !== 'undefined' && typeof FileReader !== 'undefined';
+
 var xhrClient = function (request) {
     return new PromiseObj(function (resolve) {
 
@@ -1047,16 +1044,16 @@ var xhrClient = function (request) {
 
         xhr.open(request.method, request.getUrl(), true);
 
-        if ('responseType' in xhr) {
-            xhr.responseType = 'blob';
-        }
-
         if (request.timeout) {
             xhr.timeout = request.timeout;
         }
 
         if (request.credentials === true) {
             xhr.withCredentials = true;
+        }
+
+        if ('responseType' in xhr && SUPPORTS_BLOB) {
+            xhr.responseType = 'blob';
         }
 
         request.headers.forEach(function (value, name) {
