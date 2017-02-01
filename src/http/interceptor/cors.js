@@ -10,31 +10,21 @@ const SUPPORTS_CORS = inBrowser && 'withCredentials' in new XMLHttpRequest();
 
 export default function (request, next) {
 
-    Object.defineProperty(request, 'crossOrigin', {
+    if (inBrowser) {
 
-        get() {
+        var orgUrl = Url.parse(location.href);
+        var reqUrl = Url.parse(request.getUrl());
 
-            if (inBrowser) {
+        if (reqUrl.protocol !== orgUrl.protocol || reqUrl.host !== orgUrl.host) {
 
-                var orgUrl = Url.parse(location.href);
-                var reqUrl = Url.parse(request.getUrl());
+            request.crossOrigin = true;
+            request.emulateHTTP = false;
 
-                if (reqUrl.protocol !== orgUrl.protocol || reqUrl.host !== orgUrl.host) {
-
-                    if (!SUPPORTS_CORS) {
-                        request.client = xdrClient;
-                    }
-
-                    delete request.emulateHTTP;
-
-                    return true;
-                }
+            if (!SUPPORTS_CORS) {
+                request.client = xdrClient;
             }
-
-            return false;
         }
-
-    });
+    }
 
     next();
 }
