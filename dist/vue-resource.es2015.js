@@ -1,5 +1,5 @@
 /*!
- * vue-resource v1.1.1
+ * vue-resource v1.1.2
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -268,6 +268,8 @@ var hasOwnProperty = ref.hasOwnProperty;
 var ref$1 = [];
 var slice = ref$1.slice;
 
+var inBrowser = typeof window !== 'undefined';
+
 var Util = function (Vue) {
     util = Vue.util;
     debug = Vue.config.debug || !Vue.config.silent;
@@ -307,9 +309,7 @@ function isString(val) {
     return typeof val === 'string';
 }
 
-function isBoolean(val) {
-    return val === true || val === false;
-}
+
 
 function isFunction(val) {
     return typeof val === 'function';
@@ -637,9 +637,6 @@ var template = function (options) {
  * Service for URL templating.
  */
 
-var ie = document.documentMode;
-var el = document.createElement('a');
-
 function Url(url, params) {
 
     var self = this || {}, options$$1 = url, transform;
@@ -709,7 +706,9 @@ Url.params = function (obj) {
 
 Url.parse = function (url) {
 
-    if (ie) {
+    var el = document.createElement('a');
+
+    if (document.documentMode) {
         el.href = url;
         url = el.href;
     }
@@ -799,33 +798,28 @@ var xdrClient = function (request) {
  * CORS Interceptor.
  */
 
-var ORIGIN_URL = Url.parse(location.href);
-var SUPPORTS_CORS = 'withCredentials' in new XMLHttpRequest();
+var SUPPORTS_CORS = inBrowser && 'withCredentials' in new XMLHttpRequest();
 
 var cors = function (request, next) {
 
-    if (!isBoolean(request.crossOrigin) && crossOrigin(request)) {
-        request.crossOrigin = true;
-    }
+    if (inBrowser) {
 
-    if (request.crossOrigin) {
+        var orgUrl = Url.parse(location.href);
+        var reqUrl = Url.parse(request.getUrl());
 
-        if (!SUPPORTS_CORS) {
-            request.client = xdrClient;
+        if (reqUrl.protocol !== orgUrl.protocol || reqUrl.host !== orgUrl.host) {
+
+            request.crossOrigin = true;
+            request.emulateHTTP = false;
+
+            if (!SUPPORTS_CORS) {
+                request.client = xdrClient;
+            }
         }
-
-        delete request.emulateHTTP;
     }
 
     next();
 };
-
-function crossOrigin(request) {
-
-    var requestUrl = Url.parse(Url(request));
-
-    return (requestUrl.protocol !== ORIGIN_URL.protocol || requestUrl.host !== ORIGIN_URL.host);
-}
 
 /**
  * Body Interceptor.

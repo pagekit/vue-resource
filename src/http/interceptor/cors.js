@@ -4,32 +4,27 @@
 
 import Url from '../../url/index';
 import xdrClient from '../client/xdr';
-import { isBoolean } from '../../util';
+import { inBrowser } from '../../util';
 
-const ORIGIN_URL = Url.parse(location.href);
-const SUPPORTS_CORS = 'withCredentials' in new XMLHttpRequest();
+const SUPPORTS_CORS = inBrowser && 'withCredentials' in new XMLHttpRequest();
 
 export default function (request, next) {
 
-    if (!isBoolean(request.crossOrigin) && crossOrigin(request)) {
-        request.crossOrigin = true;
-    }
+    if (inBrowser) {
 
-    if (request.crossOrigin) {
+        var orgUrl = Url.parse(location.href);
+        var reqUrl = Url.parse(request.getUrl());
 
-        if (!SUPPORTS_CORS) {
-            request.client = xdrClient;
+        if (reqUrl.protocol !== orgUrl.protocol || reqUrl.host !== orgUrl.host) {
+
+            request.crossOrigin = true;
+            request.emulateHTTP = false;
+
+            if (!SUPPORTS_CORS) {
+                request.client = xdrClient;
+            }
         }
-
-        delete request.emulateHTTP;
     }
 
     next();
-}
-
-function crossOrigin(request) {
-
-    var requestUrl = Url.parse(Url(request));
-
-    return (requestUrl.protocol !== ORIGIN_URL.protocol || requestUrl.host !== ORIGIN_URL.host);
 }

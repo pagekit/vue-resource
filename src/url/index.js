@@ -2,9 +2,6 @@
  * Service for URL templating.
  */
 
-const ie = document.documentMode;
-const el = document.createElement('a');
-
 import root from './root';
 import query from './query';
 import template from './template';
@@ -79,7 +76,9 @@ Url.params = function (obj) {
 
 Url.parse = function (url) {
 
-    if (ie) {
+    var el = document.createElement('a');
+
+    if (document.documentMode) {
         el.href = url;
         url = el.href;
     }

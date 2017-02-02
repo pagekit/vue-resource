@@ -6,6 +6,8 @@ import Promise from './promise';
 
 var debug = false, util = {}, {hasOwnProperty} = {}, {slice} = [];
 
+export const inBrowser = typeof window !== 'undefined';
+
 export default function (Vue) {
     util = Vue.util;
     debug = Vue.config.debug || !Vue.config.silent;
