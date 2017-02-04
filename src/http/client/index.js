@@ -4,7 +4,8 @@
 
 import Promise from '../../promise';
 import xhrClient from './xhr';
-import { warn, when, isObject, isFunction } from '../../util';
+import nodeClient from './node';
+import { warn, when, isObject, isFunction, inBrowser } from '../../util';
 
 export default function (context) {
 
@@ -65,7 +66,7 @@ export default function (context) {
 
 function sendRequest(request, resolve) {
 
-    var client = request.client || xhrClient;
+    var client = request.client || (inBrowser ? xhrClient : nodeClient);
 
     resolve(client(request));
 }
