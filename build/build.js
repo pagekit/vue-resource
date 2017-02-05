@@ -6,7 +6,7 @@ var package = require('../package.json');
 var banner =
     "/*!\n" +
     " * vue-resource v" + package.version + "\n" +
-    " * https://github.com/vuejs/vue-resource\n" +
+    " * https://github.com/pagekit/vue-resource\n" +
     " * Released under the MIT License.\n" +
     " */\n";
 
