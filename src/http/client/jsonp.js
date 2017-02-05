@@ -1,5 +1,5 @@
 /**
- * JSONP client.
+ * JSONP client (Browser).
  */
 
 import Promise from '../../promise';

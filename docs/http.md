@@ -116,11 +116,11 @@ Fetch an image and use the blob() method to extract the image body content from 
 
 ## Interceptors
 
-Interceptors can be defined globally and are used for pre- and postprocessing of a request.
+Interceptors can be defined globally and are used for pre- and postprocessing of a request. If a request is send using `this.$http` or `this.$resource` the current Vue instance is available as `this` in a interceptor callback.
 
 ### Request processing
 ```js
-Vue.http.interceptors.push((request, next) => {
+Vue.http.interceptors.push(function(request, next) {
 
   // modify method
   request.method = 'POST';
@@ -136,13 +136,13 @@ Vue.http.interceptors.push((request, next) => {
 
 ### Request and Response processing
 ```js
-Vue.http.interceptors.push((request, next) => {
+Vue.http.interceptors.push(function(request, next) {
 
   // modify request
   request.method = 'POST';
 
   // continue to next interceptor
-  next(response => {
+  next(function(response) {
 
     // modify response
     response.body = '...';
@@ -153,7 +153,7 @@ Vue.http.interceptors.push((request, next) => {
 
 ### Return a Response and stop processing
 ```js
-Vue.http.interceptors.push((request, next) => {
+Vue.http.interceptors.push(function(request, next) {
 
   // modify request ...
 

@@ -1,6 +1,6 @@
 /*!
- * vue-resource v1.1.2
- * https://github.com/vuejs/vue-resource
+ * vue-resource v1.2.0
+ * https://github.com/pagekit/vue-resource
  * Released under the MIT License.
  */
 
@@ -892,7 +892,7 @@ function isJson(str) {
 }
 
 /**
- * JSONP client.
+ * JSONP client (Browser).
  */
 
 var jsonpClient = function (request) {
@@ -1006,7 +1006,7 @@ var header = function (request, next) {
 };
 
 /**
- * XMLHttp client.
+ * XMLHttp client (Browser).
  */
 
 var SUPPORTS_BLOB = typeof Blob !== 'undefined' && typeof FileReader !== 'undefined';
@@ -1050,6 +1050,10 @@ var xhrClient = function (request) {
             xhr.withCredentials = true;
         }
 
+        if (!request.crossOrigin) {
+            request.headers.set('X-Requested-With', 'XMLHttpRequest');
+        }
+
         if ('responseType' in xhr && SUPPORTS_BLOB) {
             xhr.responseType = 'blob';
         }
@@ -1063,6 +1067,43 @@ var xhrClient = function (request) {
         xhr.onerror = handler;
         xhr.ontimeout = handler;
         xhr.send(request.getBody());
+    });
+};
+
+/**
+ * Http client (Node).
+ */
+
+var nodeClient = function (request) {
+
+    var client = require('got');
+
+    return new PromiseObj(function (resolve) {
+
+        var url = request.getUrl();
+        var body = request.getBody();
+        var method = request.method;
+        var headers = {}, handler;
+
+        request.headers.forEach(function (value, name) {
+            headers[name] = value;
+        });
+
+        client(url, {body: body, method: method, headers: headers}).then(handler = function (resp) {
+
+            var response = request.respondWith(resp.body, {
+                    status: resp.statusCode,
+                    statusText: trim(resp.statusMessage)
+                }
+            );
+
+            each(resp.headers, function (value, name) {
+                response.headers.set(name, value);
+            });
+
+            resolve(response);
+
+        }, function (error$$1) { return handler(error$$1.response); });
     });
 };
 
@@ -1129,7 +1170,7 @@ var Client = function (context) {
 
 function sendRequest(request, resolve) {
 
-    var client = request.client || xhrClient;
+    var client = request.client || (inBrowser ? xhrClient : nodeClient);
 
     resolve(client(request));
 }
@@ -1303,7 +1344,6 @@ Request.prototype.respondWith = function respondWith (body, options$$1) {
  * Service for sending network requests.
  */
 
-var CUSTOM_HEADERS = {'X-Requested-With': 'XMLHttpRequest'};
 var COMMON_HEADERS = {'Accept': 'application/json, text/plain, */*'};
 var JSON_CONTENT_TYPE = {'Content-Type': 'application/json;charset=utf-8'};
 
@@ -1338,8 +1378,8 @@ Http.headers = {
     post: JSON_CONTENT_TYPE,
     patch: JSON_CONTENT_TYPE,
     delete: JSON_CONTENT_TYPE,
-    custom: CUSTOM_HEADERS,
-    common: COMMON_HEADERS
+    common: COMMON_HEADERS,
+    custom: {}
 };
 
 Http.interceptors = [before, method, body, jsonp, header, cors];

@@ -2,7 +2,6 @@
  * Service for sending network requests.
  */
 
-const CUSTOM_HEADERS = {'X-Requested-With': 'XMLHttpRequest'};
 const COMMON_HEADERS = {'Accept': 'application/json, text/plain, */*'};
 const JSON_CONTENT_TYPE = {'Content-Type': 'application/json;charset=utf-8'};
 
@@ -48,8 +47,8 @@ Http.headers = {
     post: JSON_CONTENT_TYPE,
     patch: JSON_CONTENT_TYPE,
     delete: JSON_CONTENT_TYPE,
-    custom: CUSTOM_HEADERS,
-    common: COMMON_HEADERS
+    common: COMMON_HEADERS,
+    custom: {}
 };
 
 Http.interceptors = [before, method, body, jsonp, header, cors];

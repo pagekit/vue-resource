@@ -1,5 +1,5 @@
 /**
- * XMLHttp client.
+ * XMLHttp client (Browser).
  */
 
 import Promise from '../../promise';
@@ -44,6 +44,10 @@ export default function (request) {
 
         if (request.credentials === true) {
             xhr.withCredentials = true;
+        }
+
+        if (!request.crossOrigin) {
+            request.headers.set('X-Requested-With', 'XMLHttpRequest');
         }
 
         if ('responseType' in xhr && SUPPORTS_BLOB) {
