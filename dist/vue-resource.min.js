@@ -1,6 +1,6 @@
 /*!
  * vue-resource v1.2.0
- * https://github.com/vuejs/vue-resource
+ * https://github.com/pagekit/vue-resource
  * Released under the MIT License.
  */
 
