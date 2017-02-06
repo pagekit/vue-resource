@@ -118,7 +118,7 @@ export function merge(target) {
 
     var args = slice.call(arguments, 1);
 
-    args.forEach((source) => {
+    args.forEach(source => {
         _merge(target, source, true);
     });
 
@@ -129,7 +129,7 @@ export function defaults(target) {
 
     var args = slice.call(arguments, 1);
 
-    args.forEach((source) => {
+    args.forEach(source => {
 
         for (var key in source) {
             if (target[key] === undefined) {
@@ -146,7 +146,7 @@ function _assign(target) {
 
     var args = slice.call(arguments, 1);
 
-    args.forEach((source) => {
+    args.forEach(source => {
         _merge(target, source);
     });
 

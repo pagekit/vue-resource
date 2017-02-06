@@ -38,8 +38,8 @@ export default function (context) {
 
                 } else if (isObject(response)) {
 
-                    resHandlers.forEach((handler) => {
-                        response = when(response, (response) => {
+                    resHandlers.forEach(handler => {
+                        response = when(response, response => {
                             return handler.call(context, response) || response;
                         });
                     });
