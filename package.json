@@ -34,9 +34,9 @@
   "devDependencies": {
     "buble": "^0.15.2",
     "buble-loader": "^0.4.0",
-    "generate-release": "^0.10.1",
+    "generate-release": "^0.11.0",
     "jasmine-core": "^2.5.2",
-    "jest": "^18.1.0",
+    "jest": "^19.0.2",
     "replace-in-file": "^2.0.1",
     "rollup": "^0.41.4",
     "rollup-plugin-buble": "^0.15.0",
