@@ -4,13 +4,13 @@
 
 import Promise from './promise';
 
-var debug = false, util = {}, {hasOwnProperty} = {}, {slice} = [];
+var {hasOwnProperty} = {}, {slice} = [], debug = false, ntick;
 
 export const inBrowser = typeof window !== 'undefined';
 
-export default function (Vue) {
-    util = Vue.util;
-    debug = Vue.config.debug || !Vue.config.silent;
+export default function ({config, nextTick}) {
+    ntick = nextTick;
+    debug = config.debug || !config.silent;
 }
 
 export function warn(msg) {
@@ -26,7 +26,7 @@ export function error(msg) {
 }
 
 export function nextTick(cb, ctx) {
-    return util.nextTick(cb, ctx);
+    return ntick(cb, ctx);
 }
 
 export function trim(str) {
