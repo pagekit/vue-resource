@@ -1,5 +1,5 @@
 /*!
- * vue-resource v1.2.0
+ * vue-resource v1.2.1
  * https://github.com/pagekit/vue-resource
  * Released under the MIT License.
  */
@@ -262,19 +262,22 @@ p.finally = function (callback) {
  * Utility functions.
  */
 
-var debug = false;
-var util = {};
 var ref = {};
 var hasOwnProperty = ref.hasOwnProperty;
 
 var ref$1 = [];
 var slice = ref$1.slice;
+var debug = false;
+var ntick;
 
 var inBrowser = typeof window !== 'undefined';
 
-var Util = function (Vue) {
-    util = Vue.util;
-    debug = Vue.config.debug || !Vue.config.silent;
+var Util = function (ref) {
+    var config = ref.config;
+    var nextTick = ref.nextTick;
+
+    ntick = nextTick;
+    debug = config.debug || !config.silent;
 };
 
 function warn(msg) {
@@ -290,7 +293,7 @@ function error(msg) {
 }
 
 function nextTick(cb, ctx) {
-    return util.nextTick(cb, ctx);
+    return ntick(cb, ctx);
 }
 
 function trim(str) {
@@ -1192,7 +1195,7 @@ Headers.prototype.get = function get (name) {
 
     var list = this.map[getName(this.map, name)];
 
-    return list ? list[0] : null;
+    return list ? list.join() : null;
 };
 
 Headers.prototype.getAll = function getAll (name) {
@@ -1205,9 +1208,9 @@ Headers.prototype.set = function set (name, value) {
 
 Headers.prototype.append = function append (name, value){
 
-    var list = this.getAll(name);
+    var list = this.map[getName(this.map, name)];
 
-    if (list.length) {
+    if (list) {
         list.push(trim(value));
     } else {
         this.set(name, value);
