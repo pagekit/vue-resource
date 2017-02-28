@@ -21,7 +21,7 @@ export default class Headers {
 
         var list = this.map[getName(this.map, name)];
 
-        return list ? list[0] : null;
+        return list ? list.join() : null;
     }
 
     getAll(name) {
@@ -34,9 +34,9 @@ export default class Headers {
 
     append(name, value){
 
-        var list = this.getAll(name);
+        var list = this.map[getName(this.map, name)];
 
-        if (list.length) {
+        if (list) {
             list.push(trim(value));
         } else {
             this.set(name, value);

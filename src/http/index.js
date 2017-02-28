@@ -22,15 +22,15 @@ export default function Http(options) {
 
     defaults(options || {}, self.$options, Http.options);
 
-    Http.interceptors.forEach((handler) => {
+    Http.interceptors.forEach(handler => {
         client.use(handler);
     });
 
-    return client(new Request(options)).then((response) => {
+    return client(new Request(options)).then(response => {
 
         return response.ok ? response : Promise.reject(response);
 
-    }, (response) => {
+    }, response => {
 
         if (response instanceof Error) {
             error(response);
@@ -53,7 +53,7 @@ Http.headers = {
 
 Http.interceptors = [before, method, body, jsonp, header, cors];
 
-['get', 'delete', 'head', 'jsonp'].forEach((method) => {
+['get', 'delete', 'head', 'jsonp'].forEach(method => {
 
     Http[method] = function (url, options) {
         return this(assign(options || {}, {url, method}));
@@ -61,7 +61,7 @@ Http.interceptors = [before, method, body, jsonp, header, cors];
 
 });
 
-['post', 'put', 'patch'].forEach((method) => {
+['post', 'put', 'patch'].forEach(method => {
 
     Http[method] = function (url, body, options) {
         return this(assign(options || {}, {url, method, body}));
