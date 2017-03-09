@@ -1,5 +1,22 @@
-For issues or feature requests related to the code in this repository file a Github issue. If your issue is an implementation question, please ask your question on http://stackoverflow.com/search?q=vue-resource instead of filing a GitHub issue.
+<!--
+Got a question?
+===============
+The issue list of this repo is exclusively for bug reports and feature requests. For questions, please use the following resources:
 
-Please describe the problem and submit a reproducible test case with an example on https://jsfiddle.net/qhh7sqc6/
+- Read the docs: https://github.com/pagekit/vue-resource/tree/master/docs
+- Look for/ask questions on stack overflow: http://stackoverflow.com/search?q=vue-resource
 
 Thank you!
+-->
+
+<!-- BUG REPORT TEMPLATE -->
+### Reproduction Link
+<!-- A minimal jsfiddle that can reproduce the bug. -->
+<!-- You could start with this template: https://jsfiddle.net/qhh7sqc6/ -->
+
+### Steps to reproduce
+<!-- Incl. which version is used on what browser and device. -->
+
+### What is Expected?
+
+### What is actually happening?
