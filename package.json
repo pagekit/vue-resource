@@ -33,15 +33,15 @@
   },
   "devDependencies": {
     "buble": "^0.15.2",
-    "buble-loader": "^0.4.0",
+    "buble-loader": "^0.4.1",
     "generate-release": "^0.11.0",
     "jasmine-core": "^2.5.2",
     "jest": "^19.0.2",
-    "replace-in-file": "^2.0.1",
-    "rollup": "^0.41.4",
+    "replace-in-file": "^2.5.0",
+    "rollup": "^0.41.6",
     "rollup-plugin-buble": "^0.15.0",
-    "uglify-js": "^2.7.5",
-    "vue": "^2.2.1",
+    "uglify-js": "^2.8.14",
+    "vue": "^2.2.4",
     "webpack": "^2.2.0"
   }
 }
