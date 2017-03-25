@@ -50,8 +50,8 @@ export default function (request) {
             request.headers.set('X-Requested-With', 'XMLHttpRequest');
         }
 
-        if ('responseType' in xhr && SUPPORTS_BLOB) {
-            xhr.responseType = 'blob';
+        if ('responseType' in xhr) {
+            xhr.responseType = request.responseType || (SUPPORTS_BLOB ? 'blob' : '');
         }
 
         request.headers.forEach((value, name) => {
