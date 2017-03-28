@@ -5,8 +5,6 @@
 import Promise from '../../promise';
 import { each, trim } from '../../util';
 
-const SUPPORTS_BLOB = typeof Blob !== 'undefined' && typeof FileReader !== 'undefined';
-
 export default function (request) {
     return new Promise(resolve => {
 
@@ -51,7 +49,7 @@ export default function (request) {
         }
 
         if ('responseType' in xhr) {
-            xhr.responseType = request.responseType || (SUPPORTS_BLOB ? 'blob' : '');
+            xhr.responseType = request.responseType || '';
         }
 
         request.headers.forEach((value, name) => {
