@@ -14,7 +14,7 @@ import header from './interceptor/header';
 import Client from './client/index';
 import Request from './request';
 import Promise from '../promise';
-import { assign, defaults, error } from '../util';
+import { assign, defaults, error, isString, isFunction } from '../util';
 
 export default function Http(options) {
 
@@ -23,7 +23,15 @@ export default function Http(options) {
     defaults(options || {}, self.$options, Http.options);
 
     Http.interceptors.forEach(handler => {
-        client.use(handler);
+
+        if (isString(handler)) {
+            handler = Http.interceptor[handler];
+        }
+
+        if (isFunction(handler)) {
+            client.use(handler);
+        }
+
     });
 
     return client(new Request(options)).then(response => {
@@ -51,7 +59,8 @@ Http.headers = {
     custom: {}
 };
 
-Http.interceptors = [before, method, body, jsonp, header, cors];
+Http.interceptor = {before, method, body, jsonp, header, cors};
+Http.interceptors = ['before', 'method', 'body', 'jsonp', 'header', 'cors'];
 
 ['get', 'delete', 'head', 'jsonp'].forEach(method => {
 

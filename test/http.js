@@ -46,7 +46,7 @@ describe('Vue.http', function () {
 
     it('get("github.com/avatar")', done => {
 
-        Vue.http.get('https://avatars1.githubusercontent.com/u/6128107').then(res => {
+        Vue.http.get('https://avatars1.githubusercontent.com/u/6128107', {responseType: 'blob'}).then(res => {
 
             expect(res.ok).toBe(true);
             expect(res.status).toBe(200);

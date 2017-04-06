@@ -18,7 +18,15 @@ export default function Url(url, params) {
     options = merge({}, Url.options, self.$options, options);
 
     Url.transforms.forEach(handler => {
-        transform = factory(handler, transform, self.$vm);
+
+        if (isString(handler)) {
+            handler = Url.transform[handler];
+        }
+
+        if (isFunction(handler)) {
+            transform = factory(handler, transform, self.$vm);
+        }
+
     });
 
     return transform(options);
@@ -38,7 +46,8 @@ Url.options = {
  * Url transforms.
  */
 
-Url.transforms = [template, query, root];
+Url.transform = {template, query, root};
+Url.transforms = ['template', 'query', 'root'];
 
 /**
  * Encodes a Url parameter string.
@@ -98,7 +107,7 @@ Url.parse = function (url) {
 };
 
 function factory(handler, next, vm) {
-    return (options) => {
+    return options => {
         return handler.call(vm, options, next);
     };
 }
