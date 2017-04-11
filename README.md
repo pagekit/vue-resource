@@ -16,6 +16,11 @@ The plugin for [Vue.js](http://vuejs.org) provides services for making web reque
 $ npm install vue-resource
 ```
 
+### YARN
+```
+$ yarn add vue-resource
+```
+
 ### Bower
 ```
 $ bower install vue-resource
