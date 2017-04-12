@@ -6,7 +6,8 @@ const COMMON_HEADERS = {'Accept': 'application/json, text/plain, */*'};
 const JSON_CONTENT_TYPE = {'Content-Type': 'application/json;charset=utf-8'};
 
 import cors from './interceptor/cors';
-import body from './interceptor/body';
+import form from './interceptor/form';
+import json from './interceptor/json';
 import jsonp from './interceptor/jsonp';
 import before from './interceptor/before';
 import method from './interceptor/method';
@@ -59,8 +60,8 @@ Http.headers = {
     custom: {}
 };
 
-Http.interceptor = {before, method, body, jsonp, header, cors};
-Http.interceptors = ['before', 'method', 'body', 'jsonp', 'header', 'cors'];
+Http.interceptor = {before, method, jsonp, json, form, header, cors};
+Http.interceptors = ['before', 'method', 'jsonp', 'json', 'form', 'header', 'cors'];
 
 ['get', 'delete', 'head', 'jsonp'].forEach(method => {
 

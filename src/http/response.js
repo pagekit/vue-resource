@@ -45,6 +45,18 @@ export default class Response {
 
 }
 
+Object.defineProperty(Response.prototype, 'data', {
+
+    get() {
+        return this.body;
+    },
+
+    set(body) {
+        this.body = body;
+    }
+
+});
+
 function blobText(body) {
     return new Promise((resolve) => {
 
