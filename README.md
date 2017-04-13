@@ -10,15 +10,10 @@ The plugin for [Vue.js](http://vuejs.org) provides services for making web reque
 - Compact size 14KB (5.3KB gzipped)
 
 ## Installation
-
-### NPM
+You can install it via [yarn](https://yarnpkg.com/) or [NPM](http://npmjs.org/).
 ```
+$ yarn add vue-resource
 $ npm install vue-resource
-```
-
-### Bower
-```
-$ bower install vue-resource
 ```
 
 ### CDN
