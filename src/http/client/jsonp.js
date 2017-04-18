@@ -47,6 +47,7 @@ export default function (request) {
         script.async = true;
         script.onload = handler;
         script.onerror = handler;
+        script.charset = request.jsonpCharset || '';
 
         document.body.appendChild(script);
     });
