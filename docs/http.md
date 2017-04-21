@@ -165,3 +165,15 @@ Vue.http.interceptors.push(function(request, next) {
   }));
 });
 ```
+
+### Overriding default interceptors
+
+All default interceptors callbacks can be overriden to change their behavior. All interceptors are exposed through the `Vue.http.interceptor` object with their names `before`, `method`, `jsonp`, `json`, `form`, `header` and `cors`.
+
+```js
+Vue.http.interceptor.before = function(request, next) {
+
+  // override before interceptor
+
+  next();
+});
