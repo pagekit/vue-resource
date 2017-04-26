@@ -47,11 +47,11 @@ Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/1.3.1/vue-resource
 
 ## Changelog
 
-Details changes for each release are documented in the [release notes](https://github.com/vuejs/vue-resource/releases).
+Details changes for each release are documented in the [release notes](https://github.com/pagekit/vue-resource/releases).
 
 ## Contribution
 
-If you find a bug or want to contribute to the code or documentation, you can help by submitting an [issue](https://github.com/vuejs/vue-resource/issues) or a [pull request](https://github.com/vuejs/vue-resource/pulls).
+If you find a bug or want to contribute to the code or documentation, you can help by submitting an [issue](https://github.com/pagekit/vue-resource/issues) or a [pull request](https://github.com/pagekit/vue-resource/pulls).
 
 ## License
 
