@@ -2,9 +2,10 @@ version: 2
 jobs:
   build:
     docker:
-      - image: node:7.8.0
+      - image: node:7.9.0
     working_directory: ~/vue-resource
     steps:
+      - run: apt-get update && apt-get -y install git
       - checkout
       - run:
           name: Install Dependencies
