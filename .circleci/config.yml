@@ -5,7 +5,9 @@ jobs:
       - image: node:7.9.0
     working_directory: ~/vue-resource
     steps:
-      - run: apt-get update && apt-get -y install git
+      - run:
+          name: Update Environment
+          command: apt-get update && apt-get -y install git unzip
       - checkout
       - run:
           name: Install Dependencies
