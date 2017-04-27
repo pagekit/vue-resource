@@ -165,3 +165,23 @@ Vue.http.interceptors.push(function(request, next) {
   }));
 });
 ```
+
+### set loading
+```js
+Vue.http.interceptors.push({
+        request: function(request){
+            // Delay start loading 
+            request.loadingid = setTimeout(function () {
+                // show loading
+            }, 500);
+            return request
+        },
+        response: function(response){
+
+            // clean loading
+            clearTimeout(response.request.loadingid);
+			
+            return response
+        }
+    });
+```
