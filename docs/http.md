@@ -176,4 +176,4 @@ Vue.http.interceptor.before = function(request, next) {
   // override before interceptor
 
   next();
-});
+};
