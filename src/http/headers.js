@@ -46,6 +46,10 @@ export default class Headers {
     delete(name){
         delete this.map[getName(this.map, name)];
     }
+    
+    deleteAll() {
+        this.map = {};
+    }
 
     deleteAll(){
         this.map = {};
