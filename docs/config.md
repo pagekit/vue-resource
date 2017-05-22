@@ -7,6 +7,8 @@ Vue.http.options.root = '/root';
 Vue.http.headers.common['Authorization'] = 'Basic YXBpOnBhc3N3b3Jk';
 ```
 
+Note that for the root option to work, the path of the request may not start with a `/`. This will use this the root option: `Vue.$http.get('user')` while this will not: `Vue.$http.get('/user')`.
+
 Set default values inside your Vue component options.
 
 ```js
