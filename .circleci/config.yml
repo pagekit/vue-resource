@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: node:7.9.0
+    working_directory: ~/vue-resource
+    steps:
+      - run:
+          name: Update Environment
+          command: apt-get update && apt-get -y install unzip
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn
+      - run:
+          name: Run Tests
+          command: yarn test
+      - run:
+          name: Build Release
+          command: yarn run build

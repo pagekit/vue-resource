@@ -33,6 +33,19 @@ export function trim(str) {
     return str ? str.replace(/^\s*|\s*$/g, '') : '';
 }
 
+export function trimEnd(str, chars) {
+
+    if (str && chars === undefined) {
+        return str.replace(/\s+$/, '');
+    }
+
+    if (!str || !chars) {
+        return str;
+    }
+
+    return str.replace(new RegExp(`[${chars}]+$`), '');
+}
+
 export function toLower(str) {
     return str ? str.toLowerCase() : '';
 }

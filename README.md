@@ -7,24 +7,20 @@ The plugin for [Vue.js](http://vuejs.org) provides services for making web reque
 - Supports the [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) API and [URI Templates](https://medialize.github.io/URI.js/uri-template.html)
 - Supports [interceptors](docs/http.md#interceptors) for request and response
 - Supports latest Firefox, Chrome, Safari, Opera and IE9+
+- Supports Vue 1.0 & Vue 2.0
 - Compact size 14KB (5.3KB gzipped)
 
 ## Installation
-
-### NPM
+You can install it via [yarn](https://yarnpkg.com/) or [NPM](http://npmjs.org/).
 ```
+$ yarn add vue-resource
 $ npm install vue-resource
 ```
 
-### Bower
-```
-$ bower install vue-resource
-```
-
 ### CDN
-Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/1.3.1/vue-resource.min.js), [cdnjs](https://cdnjs.com/libraries/vue-resource) or [unpkg](https://unpkg.com/vue-resource@1.3.1/dist/vue-resource.min.js).
+Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/1.3.2/vue-resource.min.js), [cdnjs](https://cdnjs.com/libraries/vue-resource) or [unpkg](https://unpkg.com/vue-resource@1.3.2/dist/vue-resource.min.js).
 ```html
-<script src="https://cdn.jsdelivr.net/vue.resource/1.3.1/vue-resource.min.js"></script>
+<script src="https://cdn.jsdelivr.net/vue.resource/1.3.2/vue-resource.min.js"></script>
 ```
 
 ## Example
@@ -52,11 +48,11 @@ Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/1.3.1/vue-resource
 
 ## Changelog
 
-Details changes for each release are documented in the [release notes](https://github.com/vuejs/vue-resource/releases).
+Details changes for each release are documented in the [release notes](https://github.com/pagekit/vue-resource/releases).
 
 ## Contribution
 
-If you find a bug or want to contribute to the code or documentation, you can help by submitting an [issue](https://github.com/vuejs/vue-resource/issues) or a [pull request](https://github.com/vuejs/vue-resource/pulls).
+If you find a bug or want to contribute to the code or documentation, you can help by submitting an [issue](https://github.com/pagekit/vue-resource/issues) or a [pull request](https://github.com/pagekit/vue-resource/pulls).
 
 ## License
 
