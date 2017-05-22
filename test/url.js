@@ -30,4 +30,15 @@ describe('Vue.url', function () {
 
     });
 
+    it('url with params', function () {
+
+        expect(Vue.url('url', {})).toBe('url');
+        expect(Vue.url('url', {foo: 'bar'})).toBe('url?foo=bar');
+        expect(Vue.url('url', {foo: 'bar', b: 10})).toBe('url?foo=bar&b=10');
+
+        // Bug #347: Would be 'url?0=undefined&1=undefined'
+        expect(Vue.url('url', {length:2})).toBe('url?length=2');
+
+    });
+
 });
