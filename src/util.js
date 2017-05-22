@@ -33,14 +33,17 @@ export function trim(str) {
     return str ? str.replace(/^\s*|\s*$/g, '') : '';
 }
 
-export function trimEnd(string, chars) {
-    if (string && chars === undefined) {
-        return string.replace(/\s+$/, '');
+export function trimEnd(str, chars) {
+
+    if (str && chars === undefined) {
+        return str.replace(/\s+$/, '');
     }
-    if (!string || !chars) {
-        return string;
+
+    if (!str || !chars) {
+        return str;
     }
-    return string.replace(new RegExp(`[${chars}]+$`), '');
+
+    return str.replace(new RegExp(`[${chars}]+$`), '');
 }
 
 export function toLower(str) {
