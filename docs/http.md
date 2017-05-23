@@ -135,6 +135,16 @@ Vue.http.interceptors.push(function(request, next) {
 });
 ```
 
+### Adding Headers to Request
+```js
+Vue.http.interceptors.push((request, next) => {
+    request.headers.set('X-CSRF-TOKEN', 'laravel-token');
+    request.headers.set('Authorization', 'Bearer ' + localStorage.getItem('jwt-token'));
+
+    next();
+});
+```
+
 ### Request and Response processing
 ```js
 Vue.http.interceptors.push(function(request, next) {
