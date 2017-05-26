@@ -91,4 +91,4 @@ export interface Resource extends $resource {
     actions: ResourceActions;
 }
 
-export declare function install(vue: _Vue): void;
+export declare function install(vue: typeof _Vue): void;
