@@ -22,6 +22,20 @@ Available on [jsdelivr](https://cdn.jsdelivr.net/npm/vue-resource@1.3.3), [unpkg
 ```html
 <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.3"></script>
 ```
+## Working with vuejs project
+
+If you already have a vuejs project. you may need put more extra code in your main.js 
+
+```
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import VueResource from 'vue-resource' //Add this line to import vue-resource
+import { configRouter } from './route-config'
+
+Vue.use(VueRouter)
+Vue.use(VueResource) // Tell vue use vue-resource plugin
+
+```
 
 ## Example
 ```js
