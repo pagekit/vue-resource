@@ -121,7 +121,7 @@ function serialize(params, obj, scope) {
         hash = isObject(value) || isArray(value);
 
         if (scope) {
-            key = scope + '[' + (plain || hash ? key : '') + ']';
+            key = scope + (plain || hash ? '[' + key + ']' : '');
         }
 
         if (!scope && array) {
