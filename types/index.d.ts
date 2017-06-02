@@ -14,7 +14,7 @@ export interface HttpHeaders {
 }
 
 export interface HttpResponse {
-    data: Object;
+    data: any;
     ok: boolean;
     status: number;
     statusText: string;
@@ -84,7 +84,7 @@ export interface ResourceMethods {
 }
 
 export interface $resource {
-    (url: string, params?: Object, actions?: any, options?: HttpOptions): ResourceMethods;
+    (url: string, params?: any, actions?: any, options?: HttpOptions): ResourceMethods;
 }
 
 export interface Resource extends $resource {
