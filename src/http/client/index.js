@@ -41,7 +41,7 @@ export default function (context) {
                     resHandlers.forEach(handler => {
                         response = when(response, response => {
                             return handler.call(context, response) || response;
-                        });
+                        }, reject);
                     });
 
                     when(response, resolve, reject);
