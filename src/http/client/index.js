@@ -16,7 +16,7 @@ export default function (context) {
     }
 
     function Client(request) {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
 
             function exec() {
 
@@ -41,10 +41,10 @@ export default function (context) {
                     resHandlers.forEach(handler => {
                         response = when(response, response => {
                             return handler.call(context, response) || response;
-                        });
+                        }, reject);
                     });
 
-                    when(response, resolve);
+                    when(response, resolve, reject);
 
                     return;
                 }

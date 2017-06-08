@@ -22,8 +22,9 @@ rollup.rollup({
   }).code, bundle);
 })
 .then(function (bundle) {
+  var code = fs.readFileSync('dist/vue-resource.js', 'utf8');
   return write('dist/vue-resource.min.js',
-    banner + '\n' + uglify.minify('dist/vue-resource.js').code,
+    banner + '\n' + uglify.minify(code).code,
   bundle);
 })
 .then(function (bundle) {
