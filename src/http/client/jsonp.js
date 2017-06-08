@@ -34,7 +34,11 @@ export default function (request) {
         request.abort = () => {
             handler({type: 'abort'});
         };
-
+        
+        if (request.params[request.jsonp]) {
+            callback = request.params[request.jsonp]
+        }
+          
         request.params[name] = callback;
 
         if (request.timeout) {
