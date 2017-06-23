@@ -37,13 +37,13 @@
     "buble": "^0.15.2",
     "buble-loader": "^0.4.1",
     "generate-release": "^0.13.0",
-    "jasmine-core": "^2.6.2",
+    "jasmine-core": "^2.6.4",
     "jest": "^20.0.4",
-    "replace-in-file": "^2.5.0",
-    "rollup": "^0.42.0",
+    "replace-in-file": "^2.5.2",
+    "rollup": "^0.43.0",
     "rollup-plugin-buble": "^0.15.0",
-    "uglify-js": "^3.0.15",
-    "vue": "^2.3.3",
-    "webpack": "^2.6.1"
+    "uglify-js": "^3.0.19",
+    "vue": "^2.3.4",
+    "webpack": "^3.0.0"
   }
 }
