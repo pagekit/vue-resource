@@ -12,7 +12,7 @@ Thank you!
 <!-- BUG REPORT TEMPLATE -->
 ### Reproduction Link
 <!-- A minimal jsfiddle that can reproduce the bug. -->
-<!-- You could start with this template: https://jsfiddle.net/qhh7sqc6/ -->
+<!-- You could start with this template: https://jsfiddle.net/pjjr7e7m/ -->
 
 ### Steps to reproduce
 <!-- Incl. which version is used on what browser and device. -->
