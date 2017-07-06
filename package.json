@@ -45,5 +45,8 @@
     "uglify-js": "^3.0.23",
     "vue": "^2.3.4",
     "webpack": "^3.0.0"
+  },
+  "optionalDependencies": {
+    "fsevents": "*"
   }
 }
