@@ -28,7 +28,7 @@ export default function (request) {
         };
 
         window[callback] = result => {
-            body = JSON.stringify(result);
+            body = typeof result === 'string' ? result : JSON.stringify(result);
         };
 
         request.abort = () => {
