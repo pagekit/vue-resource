@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: node:8.1
+      - image: node:8
     working_directory: ~/vue-resource
     steps:
       - run:
