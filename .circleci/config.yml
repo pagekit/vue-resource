@@ -5,9 +5,6 @@ jobs:
       - image: node:8
     working_directory: ~/vue-resource
     steps:
-      - run:
-          name: Update Environment
-          command: apt-get update && apt-get -y install unzip
       - checkout
       - restore_cache:
           key: npm-{{ checksum "package.json" }}
