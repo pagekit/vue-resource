@@ -3,6 +3,8 @@ version: 2
 defaults: &defaults
   docker:
     - image: circleci/node:7-browsers
+  environment:
+    CHROME_BIN: /usr/bin/google-chrome
   working_directory: ~/vue-resource
 
 jobs:
@@ -10,6 +12,9 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - run:
+          name: Update Environment
+          command: echo 'export PATH=$CIRCLE_WORKING_DIRECTORY/node_modules/.bin:$PATH' >> $BASH_ENV
       - restore_cache:
           key: yarn-{{ checksum "yarn.lock" }}
       - run:
@@ -22,6 +27,9 @@ jobs:
       - run:
           name: Run Tests
           command: yarn test
+      - run:
+          name: Run Karma
+          command: karma start test/karma.conf.js --browsers Chrome
       - run:
           name: Build Release
           command: yarn run build
