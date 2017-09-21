@@ -31,7 +31,7 @@ jobs:
           name: Run Karma
           command: |
             yarn run webpack
-            karma start test/karma.conf.js --browsers Chrome
+            karma start test/karma.conf.js --single-run --browsers Chrome
       - run:
           name: Build Release
           command: yarn run build
