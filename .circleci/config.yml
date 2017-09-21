@@ -1,9 +1,13 @@
 version: 2
+
+defaults: &defaults
+  docker:
+    - image: circleci/node:7-browsers
+  working_directory: ~/vue-resource
+
 jobs:
   build:
-    docker:
-      - image: node:8
-    working_directory: ~/vue-resource
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
