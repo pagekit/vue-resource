@@ -26,10 +26,8 @@ jobs:
             - ./node_modules
       - run:
           name: Run Tests
-          command: yarn test
-      - run:
-          name: Run Karma
           command: |
+            yarn test
             yarn run webpack
             karma start test/karma.conf.js --single-run --browsers Chrome
       - run:
