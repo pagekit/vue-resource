@@ -16,12 +16,12 @@ jobs:
           command: echo 'export PATH=$CIRCLE_WORKING_DIRECTORY/node_modules/.bin:$PATH' >> $BASH_ENV
       - checkout
       - restore_cache:
-          key: yarn-{{ checksum "yarn.lock" }}
+          key: pkg-{{ checksum "package.json" }}
       - run:
           name: Install Dependencies
           command: yarn install
       - save_cache:
-          key: yarn-{{ checksum "yarn.lock" }}
+          key: pkg-{{ checksum "package.json" }}
           paths:
             - ./node_modules
       - run:
