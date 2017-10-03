@@ -9,9 +9,13 @@ module.exports = config => {
     browsers: ['Chrome', 'Safari', 'Firefox'],
 
     files: [
-      'specs.js',
+      'index.js',
       {pattern: 'data/*', included: false},
     ],
+
+    preprocessors: {
+      'index.js': ['webpack']
+    },
 
     proxies: {
       '/data/': '/base/data/'

@@ -28,7 +28,6 @@ jobs:
           name: Run Tests
           command: |
             yarn test
-            yarn run webpack
             karma start test/karma.conf.js --single-run --browsers Chrome
       - run:
           name: Build Release
