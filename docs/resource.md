@@ -68,3 +68,26 @@ delete: {method: 'DELETE'}
   });
 }
 ```
+
+**Note:** When passing only one single object (for POST, PUT and PATCH custom actions), it will defaults to body param. If you need set url params you will have to pass an empty object as second argument.
+
+```js
+{
+  var resource = this.$resource('someItem{/id}', {}, {
+    baz: {method: 'POST', url: 'someItem/baz{/id}'}
+  });
+
+  // POST someItem/baz
+  resource.baz({id: 1}).then(response => {
+    // success callback
+  }, response => {
+    // error callback
+  });
+
+  // POST someItem/baz/1
+  resource.baz({id: 1}, {}).then(response => {
+    // success callback
+  }, response => {
+    // error callback
+  });
+```
