@@ -1509,7 +1509,8 @@ Resource.actions = {
     query: {method: 'GET'},
     update: {method: 'PUT'},
     remove: {method: 'DELETE'},
-    delete: {method: 'DELETE'}
+    delete: {method: 'DELETE'},
+    options: {method: 'OPTIONS'}
 
 };
 
