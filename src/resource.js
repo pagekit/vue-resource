@@ -72,6 +72,6 @@ Resource.actions = {
     update: {method: 'PUT'},
     remove: {method: 'DELETE'},
     delete: {method: 'DELETE'},
-    http_options: {method: 'OPTIONS'}
+    options: {method: 'OPTIONS'}
 
 };

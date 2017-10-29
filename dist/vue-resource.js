@@ -1427,7 +1427,7 @@ Http.headers = {
 Http.interceptor = {before: before, method: method, jsonp: jsonp, json: json, form: form, header: header, cors: cors};
 Http.interceptors = ['before', 'method', 'jsonp', 'json', 'form', 'header', 'cors'];
 
-['get', 'delete', 'head', 'jsonp', 'http_options'].forEach(function (method$$1) {
+['get', 'delete', 'head', 'jsonp', 'options'].forEach(function (method$$1) {
 
     Http[method$$1] = function (url, options$$1) {
         return this(assign(options$$1 || {}, {url: url, method: method$$1}));
@@ -1514,7 +1514,7 @@ Resource.actions = {
     update: {method: 'PUT'},
     remove: {method: 'DELETE'},
     delete: {method: 'DELETE'},
-    http_options: {method: 'OPTIONS'}
+    options: {method: 'OPTIONS'}
 
 };
 
