@@ -63,7 +63,7 @@ Http.headers = {
 Http.interceptor = {before, method, jsonp, json, form, header, cors};
 Http.interceptors = ['before', 'method', 'jsonp', 'json', 'form', 'header', 'cors'];
 
-['get', 'delete', 'head', 'jsonp'].forEach(method => {
+['get', 'delete', 'head', 'jsonp', 'http_options'].forEach(method => {
 
     Http[method] = function (url, options) {
         return this(assign(options || {}, {url, method}));
