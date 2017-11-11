@@ -2,7 +2,7 @@
  * Extends interfaces in Vue.js
  */
 
-import Vue = require("vue");
+import Vue from "vue";
 import { HttpHeaders, HttpOptions, HttpResponse, $http, $resource } from "./index";
 
 declare module "vue/types/options" {
