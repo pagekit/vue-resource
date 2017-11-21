@@ -13,7 +13,7 @@ export default function (request) {
             var response = request.respondWith(
                 'response' in xhr ? xhr.response : xhr.responseText, {
                     status: xhr.status === 1223 ? 204 : xhr.status, // IE9 status bug
-                    statusText: xhr.status === 1223 ? 'No Content' : trim(xhr.statusText)
+                    statusText: xhr.status === 1223 ? 'No Content' : trim(xhr.statusText || event.type)
                 }
             );
 
