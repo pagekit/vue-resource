@@ -11,7 +11,6 @@ describe('Vue.http', function () {
             expect(res.body).toBe('text');
             expect(res.data).toBe(res.body);
             expect(res.headers.get('Content-Type')).toBe('text/plain');
-            expect(res.headers.get('Content-Length')).toBe('4');
 
             done();
         });

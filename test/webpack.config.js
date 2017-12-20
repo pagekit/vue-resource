@@ -1,3 +1,5 @@
+var webpack = require('webpack');
+
 module.exports = {
     entry: __dirname + '/index.js',
     output: {
@@ -8,5 +10,8 @@ module.exports = {
         loaders: [
             {test: /\.js$/, loader: 'buble-loader', exclude: /node_modules/}
         ]
-    }
+    },
+    plugins: [
+        new webpack.optimize.ModuleConcatenationPlugin()
+    ]
 };

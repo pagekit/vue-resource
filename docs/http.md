@@ -99,12 +99,25 @@ blob() | `Promise` | Resolves the body as Blob object
 }
 ```
 
+Send a get request with URL query parameters and a custom headers.
+
+```js
+{
+  // GET /someUrl?foo=bar
+  this.$http.get('/someUrl', {params: {foo: 'bar'}, headers: {'X-Custom': '...'}}).then(response => {
+    // success callback
+  }, response => {
+    // error callback
+  });
+}
+```
+
 Fetch an image and use the blob() method to extract the image body content from the response.
 
 ```js
 {
   // GET /image.jpg
-  this.$http.get('/image.jpg').then(response => {
+  this.$http.get('/image.jpg', {responseType: 'blob'}).then(response => {
 
     // resolve to Blob
     return response.blob();

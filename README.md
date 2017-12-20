@@ -1,4 +1,4 @@
-# vue-resource [![Version](https://img.shields.io/npm/v/vue-resource.svg)](https://www.npmjs.com/package/vue-resource) [![License](https://img.shields.io/npm/l/vue-resource.svg)](https://www.npmjs.com/package/vue-resource) [![Downloads](https://img.shields.io/npm/dt/vue-resource.svg)](https://www.npmjs.com/package/vue-resource)
+# vue-resource [![Build](https://img.shields.io/circleci/project/pagekit/vue-resource/develop.svg)](https://circleci.com/gh/pagekit/vue-resource) [![Downloads](https://img.shields.io/npm/dm/vue-resource.svg)](https://www.npmjs.com/package/vue-resource) [![Version](https://img.shields.io/npm/v/vue-resource.svg)](https://www.npmjs.com/package/vue-resource) [![License](https://img.shields.io/npm/l/vue-resource.svg)](https://www.npmjs.com/package/vue-resource)
 
 The plugin for [Vue.js](http://vuejs.org) provides services for making web requests and handle responses using a [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) or JSONP.
 
@@ -18,9 +18,9 @@ $ npm install vue-resource
 ```
 
 ### CDN
-Available on [jsdelivr](https://cdn.jsdelivr.net/npm/vue-resource@1.3.4), [unpkg](https://unpkg.com/vue-resource@1.3.4) or [cdnjs](https://cdnjs.com/libraries/vue-resource).
+Available on [jsdelivr](https://cdn.jsdelivr.net/npm/vue-resource@1.3.5), [unpkg](https://unpkg.com/vue-resource@1.3.5) or [cdnjs](https://cdnjs.com/libraries/vue-resource).
 ```html
-<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.5"></script>
 ```
 
 ## Example

@@ -11,36 +11,39 @@ var banner =
     " */\n";
 
 rollup.rollup({
-  entry: 'src/index.js',
+  input: 'src/index.js',
   plugins: [buble()]
 })
-.then(function (bundle) {
-  return write('dist/vue-resource.js', bundle.generate({
+.then(bundle =>
+  bundle.generate({
     format: 'umd',
     banner: banner,
-    moduleName: 'VueResource'
-  }).code, bundle);
-})
-.then(function (bundle) {
-  var code = fs.readFileSync('dist/vue-resource.js', 'utf8');
-  return write('dist/vue-resource.min.js',
-    banner + '\n' + uglify.minify(code).code,
-  bundle);
-})
-.then(function (bundle) {
-  return write('dist/vue-resource.es2015.js', bundle.generate({
+    name: 'VueResource'
+  }).then(({code}) => write('dist/vue-resource.js', code, bundle))
+)
+.then(bundle =>
+  write('dist/vue-resource.min.js', banner + '\n' +
+    uglify.minify(read('dist/vue-resource.js')).code,
+  bundle)
+)
+.then(bundle =>
+  bundle.generate({
     format: 'es',
     banner: banner,
     footer: 'export { Url, Http, Resource };'
-  }).code, bundle);
-})
-.then(function (bundle) {
-  return write('dist/vue-resource.common.js', bundle.generate({
+  }).then(({code}) => write('dist/vue-resource.esm.js', code, bundle))
+)
+.then(bundle =>
+  bundle.generate({
     format: 'cjs',
     banner: banner
-  }).code, bundle);
-})
+  }).then(({code}) => write('dist/vue-resource.common.js', code, bundle))
+)
 .catch(logError);
+
+function read(path) {
+  return fs.readFileSync(path, 'utf8');
+}
 
 function write(dest, code, bundle) {
   return new Promise(function (resolve, reject) {
