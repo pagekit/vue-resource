@@ -31,7 +31,7 @@ rollup.rollup({
     format: 'es',
     banner: banner,
     footer: 'export { Url, Http, Resource };'
-  }).then(({code}) => write('dist/vue-resource.es2015.js', code, bundle))
+  }).then(({code}) => write('dist/vue-resource.esm.js', code, bundle))
 )
 .then(bundle =>
   bundle.generate({
