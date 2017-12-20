@@ -6,7 +6,7 @@ import Url from './url/index';
 import Http from './http/index';
 import Promise from './promise';
 import Resource from './resource';
-import Util, { options } from './util';
+import Util, {options} from './util';
 
 function plugin(Vue) {
 

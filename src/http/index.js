@@ -15,7 +15,7 @@ import header from './interceptor/header';
 import Client from './client/index';
 import Request from './request';
 import Promise from '../promise';
-import { assign, defaults, error, isString, isFunction } from '../util';
+import {assign, defaults, error, isString, isFunction} from '../util';
 
 export default function Http(options) {
 

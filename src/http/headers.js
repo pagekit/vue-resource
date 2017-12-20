@@ -2,7 +2,7 @@
  * HTTP Headers.
  */
 
-import { each, trim, toLower } from '../util';
+import {each, trim, toLower} from '../util';
 
 export default class Headers {
 
@@ -32,7 +32,7 @@ export default class Headers {
         this.map[normalizeName(getName(this.map, name) || name)] = [trim(value)];
     }
 
-    append(name, value){
+    append(name, value) {
 
         var list = this.map[getName(this.map, name)];
 
@@ -43,11 +43,11 @@ export default class Headers {
         }
     }
 
-    delete(name){
+    delete(name) {
         delete this.map[getName(this.map, name)];
     }
 
-    deleteAll(){
+    deleteAll() {
         this.map = {};
     }
 
@@ -67,7 +67,7 @@ function getName(map, name) {
 
 function normalizeName(name) {
 
-    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
+    if (/[^a-z0-9\-#$%&'*+.^_`|~]/i.test(name)) {
         throw new TypeError('Invalid character in header field name');
     }
 

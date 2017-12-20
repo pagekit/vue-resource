@@ -2,7 +2,7 @@
  * Before Interceptor.
  */
 
-import { isFunction } from '../../util';
+import {isFunction} from '../../util';
 
 export default function (request, next) {
 

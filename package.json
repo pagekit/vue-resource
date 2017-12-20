@@ -37,6 +37,7 @@
   "devDependencies": {
     "buble": "^0.18.0",
     "buble-loader": "^0.4.1",
+    "eslint": "^4.13.1",
     "generate-release": "^0.14.0",
     "jasmine": "^2.8.0",
     "jasmine-core": "^2.8.0",

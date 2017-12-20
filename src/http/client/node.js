@@ -3,7 +3,7 @@
  */
 
 import Promise from '../../promise';
-import { each, trim } from '../../util';
+import {each, trim} from '../../util';
 
 export default function (request) {
 
@@ -23,10 +23,9 @@ export default function (request) {
         client(url, {body, method, headers}).then(handler = (resp) => {
 
             var response = request.respondWith(resp.body, {
-                    status: resp.statusCode,
-                    statusText: trim(resp.statusMessage)
-                }
-            );
+                status: resp.statusCode,
+                statusText: trim(resp.statusMessage)
+            });
 
             each(resp.headers, (value, name) => {
                 response.headers.set(name, value);

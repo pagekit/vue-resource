@@ -3,7 +3,7 @@
  */
 
 import Http from './http/index';
-import { assign, each, merge } from './util';
+import {assign, each, merge} from './util';
 
 export default function Resource(url, params, actions, options) {
 

@@ -2,7 +2,7 @@
  * Root Prefix Transform.
  */
 
-import { isString, trimEnd } from '../util';
+import {isString, trimEnd} from '../util';
 
 export default function (options, next) {
 

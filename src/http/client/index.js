@@ -5,7 +5,7 @@
 import Promise from '../../promise';
 import xhrClient from './xhr';
 import nodeClient from './node';
-import { warn, when, isObject, isFunction, inBrowser } from '../../util';
+import {warn, when, isObject, isFunction, inBrowser} from '../../util';
 
 export default function (context) {
 

@@ -5,7 +5,7 @@
 import Url from '../url/index';
 import Headers from './headers';
 import Response from './response';
-import { assign, toUpper } from '../util';
+import {assign, toUpper} from '../util';
 
 export default class Request {
 
@@ -23,11 +23,11 @@ export default class Request {
         }
     }
 
-    getUrl(){
+    getUrl() {
         return Url(this);
     }
 
-    getBody(){
+    getBody() {
         return this.body;
     }
 

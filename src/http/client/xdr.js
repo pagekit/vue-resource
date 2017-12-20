@@ -9,16 +9,16 @@ export default function (request) {
 
         var xdr = new XDomainRequest(), handler = ({type}) => {
 
-            var status = 0;
+                var status = 0;
 
-            if (type === 'load') {
-                status = 200;
-            } else if (type === 'error') {
-                status = 500;
-            }
+                if (type === 'load') {
+                    status = 200;
+                } else if (type === 'error') {
+                    status = 500;
+                }
 
-            resolve(request.respondWith(xdr.responseText, {status}));
-        };
+                resolve(request.respondWith(xdr.responseText, {status}));
+            };
 
         request.abort = () => xdr.abort();
 

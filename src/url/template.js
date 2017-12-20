@@ -2,7 +2,7 @@
  * URL Template (RFC 6570) Transform.
  */
 
-import { expand } from '../lib/url-template';
+import {expand} from '../lib/url-template';
 
 export default function (options) {
 
