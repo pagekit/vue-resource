@@ -1,7 +1,7 @@
 {
   "name": "vue-resource",
   "main": "dist/vue-resource.js",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "description": "The HTTP client for Vue.js",
   "homepage": "https://github.com/pagekit/vue-resource",
   "license": "MIT",
