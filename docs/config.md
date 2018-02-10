@@ -48,3 +48,7 @@ If your web server can't handle REST/HTTP requests like `PUT`, `PATCH` and `DELE
 ```js
 Vue.http.options.emulateHTTP = true;
 ```
+
+## Typescript Support
+
+Typescript for vue-resource should work out of the box since the type definition files are included within the npm package.
