@@ -33,27 +33,27 @@
     "got": false
   },
   "dependencies": {
-    "got": "^7.1.0"
+    "got": "^8.0.3"
   },
   "devDependencies": {
-    "buble": "^0.18.0",
+    "buble": "^0.19.1",
     "buble-loader": "^0.4.1",
-    "eslint": "^4.13.1",
+    "eslint": "^4.17.0",
     "generate-release": "^0.14.0",
-    "jasmine": "^2.8.0",
-    "jasmine-core": "^2.8.0",
-    "jest": "^22.0.3",
-    "karma": "^1.7.1",
+    "jasmine": "^3.0.0",
+    "jasmine-core": "^2.99.1",
+    "jest": "^22.2.2",
+    "karma": "^2.0.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-firefox-launcher": "^1.1.0",
     "karma-jasmine": "^1.1.1",
     "karma-safari-launcher": "^1.0.0",
     "karma-webpack": "^2.0.9",
-    "replace-in-file": "^3.0.0",
-    "rollup": "^0.52.3",
-    "rollup-plugin-buble": "^0.18.0",
-    "uglify-js": "^3.2.2",
+    "replace-in-file": "^3.1.1",
+    "rollup": "^0.55.5",
+    "rollup-plugin-buble": "^0.19.1",
+    "uglify-js": "^3.3.10",
     "vue": "^2.5.13",
-    "webpack": "^3.10.0"
+    "webpack": "^3.11.0"
   }
 }
