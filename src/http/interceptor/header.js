@@ -3,7 +3,7 @@
  */
 
 import Http from '../index';
-import { assign, each, toLower } from '../../util';
+import {assign, each, toLower} from '../../util';
 
 export default function (request, next) {
 

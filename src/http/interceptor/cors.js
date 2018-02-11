@@ -4,7 +4,7 @@
 
 import Url from '../../url/index';
 import xdrClient from '../client/xdr';
-import { inBrowser } from '../../util';
+import {inBrowser} from '../../util';
 
 const SUPPORTS_CORS = inBrowser && 'withCredentials' in new XMLHttpRequest();
 

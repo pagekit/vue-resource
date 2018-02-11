@@ -20,7 +20,7 @@ export function parse(template) {
     return {
         vars: variables,
         expand(context) {
-            return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, (_, expression, literal) => {
+            return template.replace(/\{([^{}]+)\}|([^{}]+)/g, (_, expression, literal) => {
                 if (expression) {
 
                     var operator = null, values = [];
@@ -31,7 +31,7 @@ export function parse(template) {
                     }
 
                     expression.split(/,/g).forEach((variable) => {
-                        var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
+                        var tmp = /([^:*]*)(?::(\d+)|(\*))?/.exec(variable);
                         values.push.apply(values, getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
                         variables.push(tmp[1]);
                     });

@@ -3,7 +3,7 @@
  */
 
 import Url from './index';
-import { each } from '../util';
+import {each} from '../util';
 
 export default function (options, next) {
 

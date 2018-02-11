@@ -4,9 +4,9 @@
 
 const RESOLVED = 0;
 const REJECTED = 1;
-const PENDING  = 2;
+const PENDING = 2;
 
-import { nextTick } from '../util';
+import {nextTick} from '../util';
 
 export default function Promise(executor) {
 

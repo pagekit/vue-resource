@@ -5,7 +5,7 @@
 import root from './root';
 import query from './query';
 import template from './template';
-import { each, merge, isArray, isFunction, isObject, isPlainObject, isString } from '../util';
+import {each, merge, isArray, isFunction, isObject, isPlainObject, isString} from '../util';
 
 export default function Url(url, params) {
 
