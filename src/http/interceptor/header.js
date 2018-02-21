@@ -5,9 +5,9 @@
 import Http from '../index';
 import {assign, each, toLower} from '../../util';
 
-export default function (request, next) {
+export default function (request) {
 
-    var headers = assign({}, Http.headers.common,
+    const headers = assign({}, Http.headers.common,
         !request.crossOrigin ? Http.headers.custom : {},
         Http.headers[toLower(request.method)]
     );
@@ -18,5 +18,4 @@ export default function (request, next) {
         }
     });
 
-    next();
 }

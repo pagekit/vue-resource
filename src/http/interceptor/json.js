@@ -4,19 +4,19 @@
 
 import {when, isObject} from '../../util';
 
-export default function (request, next) {
+export default function (request) {
 
-    var type = request.headers.get('Content-Type') || '';
+    const type = request.headers.get('Content-Type') || '';
 
     if (isObject(request.body) && type.indexOf('application/json') === 0) {
         request.body = JSON.stringify(request.body);
     }
 
-    next(response => {
+    return response => {
 
         return response.bodyText ? when(response.text(), text => {
 
-            type = response.headers.get('Content-Type') || '';
+            const type = response.headers.get('Content-Type') || '';
 
             if (type.indexOf('application/json') === 0 || isJson(text)) {
 
@@ -34,7 +34,7 @@ export default function (request, next) {
 
         }) : response;
 
-    });
+    };
 }
 
 function isJson(str) {
