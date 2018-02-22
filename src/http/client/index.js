@@ -9,52 +9,45 @@ import {warn, when, isObject, isFunction, inBrowser} from '../../util';
 
 export default function (context) {
 
-    var reqHandlers = [sendRequest], resHandlers = [], handler;
+    const reqHandlers = [sendRequest], resHandlers = [];
 
     if (!isObject(context)) {
         context = null;
     }
 
     function Client(request) {
-        return new Promise((resolve, reject) => {
+        while (reqHandlers.length) {
 
-            function exec() {
+            const handler = reqHandlers.pop();
 
-                handler = reqHandlers.pop();
+            if (isFunction(handler)) {
 
-                if (isFunction(handler)) {
-                    handler.call(context, request, next);
-                } else {
-                    warn(`Invalid interceptor of type ${typeof handler}, must be a function`);
-                    next();
+                let response, next;
+
+                response = handler.call(context, request, val => next = val) || next;
+
+                if (isObject(response)) {
+                    return new Promise((resolve, reject) => {
+
+                        resHandlers.forEach(handler => {
+                            response = when(response, response => {
+                                return handler.call(context, response) || response;
+                            }, reject);
+                        });
+
+                        when(response, resolve, reject);
+
+                    }, context);
                 }
-            }
-
-            function next(response) {
 
                 if (isFunction(response)) {
-
                     resHandlers.unshift(response);
-
-                } else if (isObject(response)) {
-
-                    resHandlers.forEach(handler => {
-                        response = when(response, response => {
-                            return handler.call(context, response) || response;
-                        }, reject);
-                    });
-
-                    when(response, resolve, reject);
-
-                    return;
                 }
 
-                exec();
+            } else {
+                warn(`Invalid interceptor of type ${typeof handler}, must be a function`);
             }
-
-            exec();
-
-        }, context);
+        }
     }
 
     Client.use = handler => {
@@ -66,7 +59,7 @@ export default function (context) {
 
 function sendRequest(request, resolve) {
 
-    var client = request.client || (inBrowser ? xhrClient : nodeClient);
+    const client = request.client || (inBrowser ? xhrClient : nodeClient);
 
     resolve(client(request));
 }

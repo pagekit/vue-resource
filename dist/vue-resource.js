@@ -1,5 +1,5 @@
 /*!
- * vue-resource v1.3.6
+ * vue-resource v1.4.0
  * https://github.com/pagekit/vue-resource
  * Released under the MIT License.
  */
@@ -268,11 +268,9 @@ p$1.finally = function (callback) {
 
 var ref = {};
 var hasOwnProperty = ref.hasOwnProperty;
-
 var ref$1 = [];
 var slice = ref$1.slice;
-var debug = false;
-var ntick;
+var debug = false, ntick;
 
 var inBrowser = typeof window !== 'undefined';
 
@@ -330,8 +328,6 @@ var isArray = Array.isArray;
 function isString(val) {
     return typeof val === 'string';
 }
-
-
 
 function isFunction(val) {
     return typeof val === 'function';
@@ -831,7 +827,7 @@ function xdrClient (request) {
 
 var SUPPORTS_CORS = inBrowser && 'withCredentials' in new XMLHttpRequest();
 
-function cors (request, next) {
+function cors (request) {
 
     if (inBrowser) {
 
@@ -849,33 +845,28 @@ function cors (request, next) {
         }
     }
 
-    next();
 }
 
 /**
  * Form data Interceptor.
  */
 
-function form (request, next) {
+function form (request) {
 
     if (isFormData(request.body)) {
-
         request.headers.delete('Content-Type');
-
     } else if (isObject(request.body) && request.emulateJSON) {
-
         request.body = Url.params(request.body);
         request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
     }
 
-    next();
 }
 
 /**
  * JSON Interceptor.
  */
 
-function json (request, next) {
+function json (request) {
 
     var type = request.headers.get('Content-Type') || '';
 
@@ -883,11 +874,11 @@ function json (request, next) {
         request.body = JSON.stringify(request.body);
     }
 
-    next(function (response) {
+    return function (response) {
 
         return response.bodyText ? when(response.text(), function (text) {
 
-            type = response.headers.get('Content-Type') || '';
+            var type = response.headers.get('Content-Type') || '';
 
             if (type.indexOf('application/json') === 0 || isJson(text)) {
 
@@ -905,7 +896,7 @@ function json (request, next) {
 
         }) : response;
 
-    });
+    };
 }
 
 function isJson(str) {
@@ -974,47 +965,44 @@ function jsonpClient (request) {
  * JSONP Interceptor.
  */
 
-function jsonp (request, next) {
+function jsonp (request) {
 
     if (request.method == 'JSONP') {
         request.client = jsonpClient;
     }
 
-    next();
 }
 
 /**
  * Before Interceptor.
  */
 
-function before (request, next) {
+function before (request) {
 
     if (isFunction(request.before)) {
         request.before.call(this, request);
     }
 
-    next();
 }
 
 /**
  * HTTP method override Interceptor.
  */
 
-function method (request, next) {
+function method (request) {
 
     if (request.emulateHTTP && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
         request.headers.set('X-HTTP-Method-Override', request.method);
         request.method = 'POST';
     }
 
-    next();
 }
 
 /**
  * Header Interceptor.
  */
 
-function header (request, next) {
+function header (request) {
 
     var headers = assign({}, Http.headers.common,
         !request.crossOrigin ? Http.headers.custom : {},
@@ -1027,7 +1015,6 @@ function header (request, next) {
         }
     });
 
-    next();
 }
 
 /**
@@ -1134,52 +1121,45 @@ function nodeClient (request) {
 
 function Client (context) {
 
-    var reqHandlers = [sendRequest], resHandlers = [], handler;
+    var reqHandlers = [sendRequest], resHandlers = [];
 
     if (!isObject(context)) {
         context = null;
     }
 
     function Client(request) {
-        return new PromiseObj(function (resolve, reject) {
+        while (reqHandlers.length) {
 
-            function exec() {
+            var handler = reqHandlers.pop();
 
-                handler = reqHandlers.pop();
+            if (isFunction(handler)) {
 
-                if (isFunction(handler)) {
-                    handler.call(context, request, next);
-                } else {
-                    warn(("Invalid interceptor of type " + (typeof handler) + ", must be a function"));
-                    next();
+                var response = (void 0), next = (void 0);
+
+                response = handler.call(context, request, function (val) { return next = val; }) || next;
+
+                if (isObject(response)) {
+                    return new PromiseObj(function (resolve, reject) {
+
+                        resHandlers.forEach(function (handler) {
+                            response = when(response, function (response) {
+                                return handler.call(context, response) || response;
+                            }, reject);
+                        });
+
+                        when(response, resolve, reject);
+
+                    }, context);
                 }
-            }
-
-            function next(response) {
 
                 if (isFunction(response)) {
-
                     resHandlers.unshift(response);
-
-                } else if (isObject(response)) {
-
-                    resHandlers.forEach(function (handler) {
-                        response = when(response, function (response) {
-                            return handler.call(context, response) || response;
-                        }, reject);
-                    });
-
-                    when(response, resolve, reject);
-
-                    return;
                 }
 
-                exec();
+            } else {
+                warn(("Invalid interceptor of type " + (typeof handler) + ", must be a function"));
             }
-
-            exec();
-
-        }, context);
+        }
     }
 
     Client.use = function (handler) {
