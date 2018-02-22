@@ -18,9 +18,9 @@ $ npm install vue-resource
 ```
 
 ### CDN
-Available on [jsdelivr](https://cdn.jsdelivr.net/npm/vue-resource@1.3.6), [unpkg](https://unpkg.com/vue-resource@1.3.6) or [cdnjs](https://cdnjs.com/libraries/vue-resource).
+Available on [jsdelivr](https://cdn.jsdelivr.net/npm/vue-resource@1.4.0), [unpkg](https://unpkg.com/vue-resource@1.4.0) or [cdnjs](https://cdnjs.com/libraries/vue-resource).
 ```html
-<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.6"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.4.0"></script>
 ```
 
 ## Example
