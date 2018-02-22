@@ -57,9 +57,9 @@ export default function (context) {
     return Client;
 }
 
-function sendRequest(request, resolve) {
+function sendRequest(request) {
 
     const client = request.client || (inBrowser ? xhrClient : nodeClient);
 
-    resolve(client(request));
+    return client(request);
 }
