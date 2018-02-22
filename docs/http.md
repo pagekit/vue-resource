@@ -134,7 +134,7 @@ Interceptors can be defined globally and are used for pre- and postprocessing of
 
 ### Request processing
 ```js
-Vue.http.interceptors.push(function(request, next) {
+Vue.http.interceptors.push(function(request) {
 
   // modify method
   request.method = 'POST';
@@ -143,39 +143,37 @@ Vue.http.interceptors.push(function(request, next) {
   request.headers.set('X-CSRF-TOKEN', 'TOKEN');
   request.headers.set('Authorization', 'Bearer TOKEN');
 
-  // continue to next interceptor
-  next();
 });
 ```
 
 ### Request and Response processing
 ```js
-Vue.http.interceptors.push(function(request, next) {
+Vue.http.interceptors.push(function(request) {
 
   // modify request
   request.method = 'POST';
 
-  // continue to next interceptor
-  next(function(response) {
+  // return response callback
+  return function(response) {
 
     // modify response
     response.body = '...';
 
-  });
+  };
 });
 ```
 
 ### Return a Response and stop processing
 ```js
-Vue.http.interceptors.push(function(request, next) {
+Vue.http.interceptors.push(function(request) {
 
   // modify request ...
 
   // stop and return response
-  next(request.respondWith(body, {
+  return request.respondWith(body, {
     status: 404,
     statusText: 'Not found'
-  }));
+  });
 });
 ```
 
@@ -184,9 +182,8 @@ Vue.http.interceptors.push(function(request, next) {
 All default interceptors callbacks can be overriden to change their behavior. All interceptors are exposed through the `Vue.http.interceptor` object with their names `before`, `method`, `jsonp`, `json`, `form`, `header` and `cors`.
 
 ```js
-Vue.http.interceptor.before = function(request, next) {
+Vue.http.interceptor.before = function(request) {
 
   // override before interceptor
 
-  next();
 };
