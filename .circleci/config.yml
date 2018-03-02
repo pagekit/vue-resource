@@ -2,7 +2,7 @@ version: 2
 
 defaults: &defaults
   docker:
-    - image: circleci/node:8-browsers
+    - image: circleci/node:9-browsers
   environment:
     CHROME_BIN: /usr/bin/google-chrome
   working_directory: ~/vue-resource
@@ -28,7 +28,7 @@ jobs:
           name: Run Tests
           command: |
             yarn test
-            karma start test/karma.conf.js --single-run --browsers Chrome
+            karma start test/karma.conf.js --single-run --browsers Chrome,Firefox
       - run:
           name: Build Release
           command: yarn run build
