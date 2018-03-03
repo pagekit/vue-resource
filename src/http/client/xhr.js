@@ -3,7 +3,7 @@
  */
 
 import Promise from '../../promise';
-import {each, trim} from '../../util';
+import {each, trim, isFunction} from '../../util';
 
 export default function (request) {
     return new Promise(resolve => {
@@ -25,14 +25,6 @@ export default function (request) {
 
         request.abort = () => xhr.abort();
 
-        if (request.progress) {
-            if (request.method === 'GET') {
-                xhr.addEventListener('progress', request.progress);
-            } else if (/^(POST|PUT)$/i.test(request.method)) {
-                xhr.upload.addEventListener('progress', request.progress);
-            }
-        }
-
         xhr.open(request.method, request.getUrl(), true);
 
         if (request.timeout) {
@@ -49,6 +41,24 @@ export default function (request) {
 
         if (!request.crossOrigin) {
             request.headers.set('X-Requested-With', 'XMLHttpRequest');
+        }
+
+        // deprecated use downloadProgress
+        if (isFunction(request.progress) && request.method === 'GET') {
+            xhr.addEventListener('progress', request.progress);
+        }
+
+        if (isFunction(request.downloadProgress)) {
+            xhr.addEventListener('progress', request.downloadProgress);
+        }
+
+        // deprecated use uploadProgress
+        if (isFunction(request.progress) && /^(POST|PUT)$/i.test(request.method)) {
+            xhr.upload.addEventListener('progress', request.progress);
+        }
+
+        if (isFunction(request.uploadProgress) && xhr.upload) {
+            xhr.upload.addEventListener('progress', request.uploadProgress);
         }
 
         request.headers.forEach((value, name) => {

@@ -1,6 +1,6 @@
 {
   "name": "vue-resource",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "main": "dist/vue-resource.common.js",
   "module": "dist/vue-resource.esm.js",
   "unpkg": "dist/vue-resource.min.js",
@@ -41,7 +41,7 @@
     "eslint": "^4.17.0",
     "generate-release": "^0.14.0",
     "jasmine": "^3.0.0",
-    "jasmine-core": "^2.99.1",
+    "jasmine-core": "^3.1.0",
     "jest": "^22.2.2",
     "karma": "^2.0.0",
     "karma-chrome-launcher": "^2.2.0",

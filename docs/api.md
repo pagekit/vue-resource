@@ -5,7 +5,7 @@
 ```js
 {
   // Constructor
-  constructor(object: options)
+  constructor(object: config)
 
   // Properties
   url (string)
@@ -23,7 +23,7 @@
   // Methods
   getUrl() (string)
   getBody() (any)
-  respondWith(any: body, object: options) (Response)
+  respondWith(any: body, object: config) (Response)
   abort()
 }
 ```
