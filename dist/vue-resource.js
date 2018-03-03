@@ -1,5 +1,5 @@
 /*!
- * vue-resource v1.4.0
+ * vue-resource v1.5.0
  * https://github.com/pagekit/vue-resource
  * Released under the MIT License.
  */
@@ -1041,14 +1041,6 @@ function xhrClient (request) {
 
         request.abort = function () { return xhr.abort(); };
 
-        if (request.progress) {
-            if (request.method === 'GET') {
-                xhr.addEventListener('progress', request.progress);
-            } else if (/^(POST|PUT)$/i.test(request.method)) {
-                xhr.upload.addEventListener('progress', request.progress);
-            }
-        }
-
         xhr.open(request.method, request.getUrl(), true);
 
         if (request.timeout) {
@@ -1065,6 +1057,24 @@ function xhrClient (request) {
 
         if (!request.crossOrigin) {
             request.headers.set('X-Requested-With', 'XMLHttpRequest');
+        }
+
+        // deprecated use downloadProgress
+        if (isFunction(request.progress) && request.method === 'GET') {
+            xhr.addEventListener('progress', request.progress);
+        }
+
+        if (isFunction(request.downloadProgress)) {
+            xhr.addEventListener('progress', request.downloadProgress);
+        }
+
+        // deprecated use uploadProgress
+        if (isFunction(request.progress) && /^(POST|PUT)$/i.test(request.method)) {
+            xhr.upload.addEventListener('progress', request.progress);
+        }
+
+        if (isFunction(request.uploadProgress) && xhr.upload) {
+            xhr.upload.addEventListener('progress', request.uploadProgress);
         }
 
         request.headers.forEach(function (value, name) {
@@ -1169,11 +1179,11 @@ function Client (context) {
     return Client;
 }
 
-function sendRequest(request, resolve) {
+function sendRequest(request) {
 
     var client = request.client || (inBrowser ? xhrClient : nodeClient);
 
-    resolve(client(request));
+    return client(request);
 }
 
 /**
