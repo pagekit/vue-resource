@@ -3,12 +3,12 @@
  */
 
 import Vue from "vue";
-import { HttpHeaders, HttpOptions, HttpResponse, $http, $resource } from "./index";
+import { HttpHeaders, HttpOptions, HttpResponse, $http, $resource } from "./vue_resource";
 
 declare module "vue/types/options" {
-  interface ComponentOptions<V extends Vue> {
-    http?: (HttpOptions & { headers?: HttpHeaders } & { [key: string]: any })
-  }
+    interface ComponentOptions<V extends Vue> {
+        http?: (HttpOptions & { headers?: HttpHeaders } & { [key: string]: any })
+    }
 }
 
 declare module "vue/types/vue" {
