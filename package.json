@@ -1,6 +1,6 @@
 {
   "name": "vue-resource",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "main": "dist/vue-resource.common.js",
   "module": "dist/vue-resource.esm.js",
   "unpkg": "dist/vue-resource.min.js",
