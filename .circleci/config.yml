@@ -31,4 +31,4 @@ jobs:
             karma start test/karma.conf.js --single-run --browsers Chrome,Firefox
       - run:
           name: Build Release
-          command: yarn run build
+          command: yarn build
