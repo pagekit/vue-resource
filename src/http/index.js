@@ -55,7 +55,7 @@ Http.headers = {
     put: JSON_CONTENT_TYPE,
     post: JSON_CONTENT_TYPE,
     patch: JSON_CONTENT_TYPE,
-    delete: JSON_CONTENT_TYPE,
+    delete: COMMON_HEADERS,
     common: COMMON_HEADERS,
     custom: {}
 };
