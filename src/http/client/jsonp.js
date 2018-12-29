@@ -2,8 +2,6 @@
  * JSONP client (Browser).
  */
 
-import Promise from '../../promise';
-
 export default function (request) {
     return new Promise(resolve => {
 

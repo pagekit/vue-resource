@@ -4,7 +4,6 @@
 
 import Url from './url/index';
 import Http from './http/index';
-import Promise from './promise';
 import Resource from './resource';
 import Util, {options} from './util';
 
@@ -19,7 +18,6 @@ function plugin(Vue) {
     Vue.url = Url;
     Vue.http = Http;
     Vue.resource = Resource;
-    Vue.Promise = Promise;
 
     Object.defineProperties(Vue.prototype, {
 
@@ -38,12 +36,6 @@ function plugin(Vue) {
         $resource: {
             get() {
                 return Vue.resource.bind(this);
-            }
-        },
-
-        $promise: {
-            get() {
-                return (executor) => new Vue.Promise(executor, this);
             }
         }
 

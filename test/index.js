@@ -6,4 +6,3 @@ Vue.use(VueResource);
 require('./url');
 require('./http');
 require('./resource');
-require('./promise');
