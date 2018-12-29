@@ -1,45 +1,41 @@
 /* eslint-env node */
 
-var fs = require('fs');
-var rollup = require('rollup');
-var uglify = require('uglify-js');
-var buble = require('rollup-plugin-buble');
-var {version} = require('../package.json');
-var banner =
-    '/*!\n' +
-    ' * vue-resource v' + version + '\n' +
-    ' * https://github.com/pagekit/vue-resource\n' +
-    ' * Released under the MIT License.\n' +
-    ' */\n';
+const fs = require('fs');
+const zlib = require('zlib');
+const rollup = require('rollup');
+const uglify = require('uglify-js');
+const babel = require('rollup-plugin-babel');
+const replace = require('rollup-plugin-replace');
+const {name, version, homepage} = require('../package.json');
+const banner = `/*!\n * ${name} v${version}\n * ${homepage}\n * Released under the MIT License.\n */\n`;
 
 rollup.rollup({
     input: 'src/index.js',
-    plugins: [buble()]
+    plugins: [babel(), replace({__VERSION__: version})]
 })
 .then(bundle =>
-  bundle.generate({
-      format: 'umd',
-      banner: banner,
-      name: 'VueResource'
-  }).then(({code}) => write('dist/vue-resource.js', code, bundle))
+    bundle.generate({
+        banner,
+        format: 'umd',
+        name: 'VueResource'
+    }).then(({code}) => write(`dist/${name}.js`, code, bundle))
 )
 .then(bundle =>
-  write('dist/vue-resource.min.js', banner + '\n' +
-    uglify.minify(read('dist/vue-resource.js')).code,
-  bundle)
+    write(`dist/${name}.min.js`, banner + '\n' +
+    uglify.minify(read(`dist/${name}.js`)).code, bundle, true)
 )
 .then(bundle =>
-  bundle.generate({
-      format: 'es',
-      banner: banner,
-      footer: 'export { Url, Http, Resource };'
-  }).then(({code}) => write('dist/vue-resource.esm.js', code, bundle))
+    bundle.generate({
+        banner,
+        format: 'es',
+        footer: 'export { Url, Http, Resource };'
+    }).then(({code}) => write(`dist/${name}.esm.js`, code, bundle))
 )
 .then(bundle =>
-  bundle.generate({
-      format: 'cjs',
-      banner: banner
-  }).then(({code}) => write('dist/vue-resource.common.js', code, bundle))
+    bundle.generate({
+        banner,
+        format: 'cjs'
+    }).then(({code}) => write(`dist/${name}.common.js`, code, bundle))
 )
 .catch(logError);
 
@@ -47,11 +43,20 @@ function read(path) {
     return fs.readFileSync(path, 'utf8');
 }
 
-function write(dest, code, bundle) {
-    return new Promise(function (resolve, reject) {
-        fs.writeFile(dest, code, function (err) {
+function write(dest, code, bundle, zip) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(dest, code, err => {
             if (err) return reject(err);
-            console.log(blue(dest) + ' ' + getSize(code));
+
+            if (zip) {
+                zlib.gzip(code, (err, zipped) => {
+                    if (err) return reject(err);
+                    console.log(blue(dest) + ' ' + getSize(code) + ' (' + getSize(zipped) + ' gzipped)');
+                });
+            } else {
+                console.log(blue(dest) + ' ' + getSize(code));
+            }
+
             resolve(bundle);
         });
     });
