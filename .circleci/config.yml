@@ -2,7 +2,7 @@ version: 2
 
 defaults: &defaults
   docker:
-    - image: circleci/node:9-browsers
+    - image: circleci/node:10-browsers
   environment:
     CHROME_BIN: /usr/bin/google-chrome
   working_directory: ~/vue-resource
