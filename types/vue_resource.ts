@@ -29,6 +29,8 @@ export interface HttpOptions {
     method?: string;
     body?: any;
     params?: any;
+    timeout?: number;
+    responseType?: string;
     headers?: any;
     before?(request: any): any;
     progress?(event: any): any;
