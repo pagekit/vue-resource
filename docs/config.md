@@ -1,5 +1,11 @@
 # Configuration
 
+Import VueResource into your main.js file.
+```js
+import VueResource from 'vue-resource'
+Vue.use(VueResource);
+```
+
 Set default values using the global configuration.
 
 ```js
