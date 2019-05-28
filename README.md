@@ -32,7 +32,7 @@ Available on [jsdelivr](https://cdn.jsdelivr.net/npm/vue-resource@1.5.1), [unpkg
     // get body data
     this.someData = response.body;
 
-  }, response => {
+  }, error => {
     // error callback
   });
 }
