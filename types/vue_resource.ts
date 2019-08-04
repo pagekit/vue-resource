@@ -15,6 +15,8 @@ export interface HttpHeaders {
 
 export interface HttpResponse {
     data: any;
+    body: any;
+    bodyText: any;
     ok: boolean;
     status: number;
     statusText: string;
