@@ -14,7 +14,7 @@ declare module "vue/types/options" {
 declare module "vue/types/vue" {
     interface Vue {
         $http: {
-            (options: HttpOptions): PromiseLike<HttpResponse>;
+            (options: HttpOptions): Promise<HttpResponse>;
             get: $http;
             post: $http;
             put: $http;
