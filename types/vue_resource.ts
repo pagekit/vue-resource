@@ -38,8 +38,8 @@ export interface HttpOptions {
 }
 
 export interface $http {
-    (url: string, data?: any, options?: HttpOptions): PromiseLike<HttpResponse>;
-    (url: string, options?: HttpOptions): PromiseLike<HttpResponse>;
+    (url: string, data?: any, options?: HttpOptions): Promise<HttpResponse>;
+    (url: string, options?: HttpOptions): Promise<HttpResponse>;
 }
 
 export interface HttpInterceptor {
@@ -69,9 +69,9 @@ export interface ResourceActions {
 }
 
 export interface ResourceMethod {
-    (params: any, data?: any, success?: Function, error?: Function): PromiseLike<HttpResponse>;
-    (params: any, success?: Function, error?: Function): PromiseLike<HttpResponse>;
-    (success?: Function, error?: Function): PromiseLike<HttpResponse>;
+    (params: any, data?: any, success?: Function, error?: Function): Promise<HttpResponse>;
+    (params: any, success?: Function, error?: Function): Promise<HttpResponse>;
+    (success?: Function, error?: Function): Promise<HttpResponse>;
 }
 
 export interface ResourceMethods {
