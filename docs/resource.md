@@ -90,4 +90,5 @@ delete: {method: 'DELETE'}
   }, response => {
     // error callback
   });
+}
 ```
