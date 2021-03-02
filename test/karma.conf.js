@@ -9,8 +9,10 @@ module.exports = config => {
     browsers: ['Chrome', 'Safari', 'Firefox'],
 
     files: [
-      'index.js',
-      {pattern: 'data/*', included: false},
+      'index.js', {
+        pattern: 'data/*',
+        included: false
+      },
     ],
 
     preprocessors: {
@@ -19,6 +21,10 @@ module.exports = config => {
 
     proxies: {
       '/data/': '/base/data/'
+    },
+
+    webpack: {
+      mode: 'development'
     },
 
   });

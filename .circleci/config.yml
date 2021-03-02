@@ -2,7 +2,7 @@ version: 2
 
 defaults: &defaults
   docker:
-    - image: circleci/node:9-browsers
+    - image: circleci/node:10-browsers
   environment:
     CHROME_BIN: /usr/bin/google-chrome
   working_directory: ~/vue-resource
@@ -11,24 +11,21 @@ jobs:
   build:
     <<: *defaults
     steps:
-      - run:
-          name: Update Environment
-          command: echo 'export PATH=$CIRCLE_WORKING_DIRECTORY/node_modules/.bin:$PATH' >> $BASH_ENV
       - checkout
       - restore_cache:
           key: yarn-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: yarn install --pure-lockfile --cache-folder ~/.yarn
-      - save_cache:
-          key: yarn-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.yarn
+          command: yarn --pure-lockfile
       - run:
           name: Run Tests
           command: |
             yarn test
-            karma start test/karma.conf.js --single-run --browsers Chrome,Firefox
+            yarn karma --browsers Chrome
       - run:
           name: Build Release
           command: yarn build
+      - save_cache:
+          key: yarn-{{ checksum "yarn.lock" }}
+          paths:
+            - ./node_modules
