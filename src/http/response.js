@@ -3,7 +3,6 @@
  */
 
 import Headers from './headers';
-import Promise from '../promise';
 import {when, isBlob, isString} from '../util';
 
 export default class Response {

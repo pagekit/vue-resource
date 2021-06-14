@@ -2,7 +2,6 @@
  * XMLHttp client (Browser).
  */
 
-import Promise from '../../promise';
 import {each, trim, isFunction} from '../../util';
 
 export default function (request) {

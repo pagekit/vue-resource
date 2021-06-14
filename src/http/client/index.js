@@ -2,10 +2,9 @@
  * Base client.
  */
 
-import Promise from '../../promise';
 import xhrClient from './xhr';
 import nodeClient from './node';
-import {warn, when, isObject, isFunction, inBrowser} from '../../util';
+import {log, when, isObject, isFunction, inBrowser} from '../../util';
 
 export default function (context) {
 
@@ -45,7 +44,7 @@ export default function (context) {
                 }
 
             } else {
-                warn(`Invalid interceptor of type ${typeof handler}, must be a function`);
+                log(`Invalid interceptor of type ${typeof handler}, must be a function`);
             }
         }
     }

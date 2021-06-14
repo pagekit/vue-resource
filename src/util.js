@@ -2,20 +2,19 @@
  * Utility functions.
  */
 
-import Promise from './promise';
+let _config = {};
 
-var {hasOwnProperty} = {}, {slice} = [], debug = false, ntick;
+const {hasOwnProperty} = {}, {slice} = [];
 
 export const inBrowser = typeof window !== 'undefined';
 
-export default function ({config, nextTick}) {
-    ntick = nextTick;
-    debug = config.debug || !config.silent;
+export default function ({config}) {
+    _config = config;
 }
 
-export function warn(msg) {
-    if (typeof console !== 'undefined' && debug) {
-        console.warn('[VueResource warn]: ' + msg);
+export function log(message, color = '#41B883') {
+    if (typeof console !== 'undefined' && _config.devtools) {
+        console.log(`%c vue-resource %c ${message} `, 'color: #fff; background: #35495E; padding: 1px; border-radius: 3px 0 0 3px;', `color: #fff; background: ${color}; padding: 1px; border-radius: 0 3px 3px 0;`);
     }
 }
 
@@ -23,10 +22,6 @@ export function error(msg) {
     if (typeof console !== 'undefined') {
         console.error(msg);
     }
-}
-
-export function nextTick(cb, ctx) {
-    return ntick(cb, ctx);
 }
 
 export function trim(str) {
