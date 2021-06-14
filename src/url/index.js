@@ -60,6 +60,10 @@ Url.params = function (obj) {
     var params = [], escape = encodeURIComponent;
 
     params.add = function (key, value) {
+        
+        if (value === undefined) {
+            return;
+        }
 
         if (isFunction(value)) {
             value = value();
