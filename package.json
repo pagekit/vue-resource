@@ -1,63 +1,63 @@
 {
-  "name": "vue-resource",
-  "version": "1.5.2",
-  "main": "dist/vue-resource.common.js",
-  "module": "dist/vue-resource.esm.js",
-  "unpkg": "dist/vue-resource.min.js",
-  "jsdelivr": "dist/vue-resource.min.js",
-  "typings": "types/index.d.ts",
-  "description": "The HTTP client for Vue.js",
-  "homepage": "https://github.com/pagekit/vue-resource",
-  "license": "MIT",
-  "keywords": [
-    "vue",
-    "xhr",
-    "http",
-    "ajax"
-  ],
-  "bugs": {
-    "url": "https://github.com/pagekit/vue-resource/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pagekit/vue-resource.git"
-  },
-  "scripts": {
-    "up": "yarn upgrade-interactive --latest",
-    "test": "jest --env=node",
-    "karma": "karma start test/karma.conf.js --single-run",
-    "build": "node build/build.js",
-    "release": "node build/release.js",
-    "webpack": "webpack --config test/webpack.config.js"
-  },
-  "browser": {
-    "got": false
-  },
-  "dependencies": {
-    "got": "^8.0.3"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.2.0",
-    "babel-loader": "^8.0.4",
-    "eslint": "^5.11.1",
-    "generate-release": "^1.1.1",
-    "jasmine": "^3.3.1",
-    "jasmine-core": "^3.3.0",
-    "jest": "^23.6.0",
-    "karma": "^3.1.4",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-firefox-launcher": "^1.1.0",
-    "karma-jasmine": "^2.0.1",
-    "karma-safari-launcher": "^1.0.0",
-    "karma-webpack": "^3.0.5",
-    "replace-in-file": "^3.4.2",
-    "rollup": "^0.66.0",
-    "rollup-plugin-babel": "^4.1.0",
-    "rollup-plugin-replace": "^2.1.0",
-    "uglify-js": "^3.4.9",
-    "vue": "^2.5.21",
-    "webpack": "^4.28.3",
-    "webpack-cli": "^3.1.2"
-  }
+    "name": "vue-resource",
+    "version": "1.5.2",
+    "main": "dist/vue-resource.common.js",
+    "module": "dist/vue-resource.esm.js",
+    "unpkg": "dist/vue-resource.min.js",
+    "jsdelivr": "dist/vue-resource.min.js",
+    "typings": "types/index.d.ts",
+    "description": "The HTTP client for Vue.js",
+    "homepage": "https://github.com/pagekit/vue-resource",
+    "license": "MIT",
+    "keywords": [
+        "vue",
+        "xhr",
+        "http",
+        "ajax"
+    ],
+    "bugs": {
+        "url": "https://github.com/pagekit/vue-resource/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pagekit/vue-resource.git"
+    },
+    "scripts": {
+        "up": "yarn upgrade-interactive --latest",
+        "test": "jest --env=node",
+        "karma": "karma start test/karma.conf.js --single-run",
+        "build": "node build/build.js",
+        "release": "node build/release.js",
+        "webpack": "webpack --config test/webpack.config.js"
+    },
+    "browser": {
+        "got": false
+    },
+    "dependencies": {
+        "got": ">=8.0 <12.0"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.2.2",
+        "@babel/preset-env": "^7.2.0",
+        "babel-loader": "^8.0.4",
+        "eslint": "^5.11.1",
+        "generate-release": "^1.1.1",
+        "jasmine": "^3.3.1",
+        "jasmine-core": "^3.3.0",
+        "jest": "^23.6.0",
+        "karma": "^3.1.4",
+        "karma-chrome-launcher": "^2.2.0",
+        "karma-firefox-launcher": "^1.1.0",
+        "karma-jasmine": "^2.0.1",
+        "karma-safari-launcher": "^1.0.0",
+        "karma-webpack": "^3.0.5",
+        "replace-in-file": "^3.4.2",
+        "rollup": "^0.66.0",
+        "rollup-plugin-babel": "^4.1.0",
+        "rollup-plugin-replace": "^2.1.0",
+        "uglify-js": "^3.4.9",
+        "vue": "^2.5.21",
+        "webpack": "^4.28.3",
+        "webpack-cli": "^3.1.2"
+    }
 }

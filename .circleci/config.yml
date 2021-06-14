@@ -1,31 +1,31 @@
 version: 2
 
 defaults: &defaults
-  docker:
-    - image: circleci/node:10-browsers
-  environment:
-    CHROME_BIN: /usr/bin/google-chrome
-  working_directory: ~/vue-resource
+    docker:
+        - image: circleci/node:14-browsers
+    environment:
+        CHROME_BIN: /usr/bin/google-chrome
+    working_directory: ~/vue-resource
 
 jobs:
-  build:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          key: yarn-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Dependencies
-          command: yarn --pure-lockfile
-      - run:
-          name: Run Tests
-          command: |
-            yarn test
-            yarn karma --browsers Chrome
-      - run:
-          name: Build Release
-          command: yarn build
-      - save_cache:
-          key: yarn-{{ checksum "yarn.lock" }}
-          paths:
-            - ./node_modules
+    build:
+        <<: *defaults
+        steps:
+            - checkout
+            - restore_cache:
+                  key: yarn-{{ checksum "yarn.lock" }}
+            - run:
+                  name: Install Dependencies
+                  command: yarn --pure-lockfile
+            - run:
+                  name: Run Tests
+                  command: |
+                      yarn test
+                      yarn karma --browsers Chrome
+            - run:
+                  name: Build Release
+                  command: yarn build
+            - save_cache:
+                  key: yarn-{{ checksum "yarn.lock" }}
+                  paths:
+                      - ./node_modules
