@@ -14,6 +14,7 @@ The plugin for [Vue.js](http://vuejs.org) provides services for making web reque
 You can install it via [yarn](https://yarnpkg.com/) or [NPM](http://npmjs.org/).
 ```
 $ yarn add vue-resource
+# OR
 $ npm install vue-resource
 ```
 
