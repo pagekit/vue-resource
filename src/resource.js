@@ -70,6 +70,7 @@ Resource.actions = {
     save: {method: 'POST'},
     query: {method: 'GET'},
     update: {method: 'PUT'},
+    patch: {method: 'PATCH'},
     remove: {method: 'DELETE'},
     delete: {method: 'DELETE'}
 
