@@ -30,7 +30,7 @@ export function nextTick(cb, ctx) {
 }
 
 export function trim(str) {
-    return str ? str.replace(/^\s*|\s*$/g, '') : '';
+    return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
 }
 
 export function trimEnd(str, chars) {
