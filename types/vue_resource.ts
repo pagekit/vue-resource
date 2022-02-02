@@ -26,15 +26,18 @@ export interface HttpResponse {
 
 export interface HttpOptions {
     url?: string;
-    method?: string;
     body?: any;
-    params?: any;
     headers?: any;
-    before?(request: any): any;
-    progress?(event: any): any;
+    params?: any;
+    method?: string;
+    responseType?: string;
+    timeout?: number;
     credentials?: boolean;
     emulateHTTP?: boolean;
     emulateJSON?: boolean;
+    before?(request: any): any;
+    uploadProgress?(event: any): any;
+    downloadProgress?(event: any): any;
 }
 
 export interface $http {
