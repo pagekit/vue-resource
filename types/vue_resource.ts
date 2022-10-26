@@ -38,8 +38,8 @@ export interface HttpOptions {
 }
 
 export interface $http {
-    (url: string, data?: any, options?: HttpOptions): PromiseLike<HttpResponse>;
     (url: string, options?: HttpOptions): PromiseLike<HttpResponse>;
+    (url: string, data?: any, options?: HttpOptions): PromiseLike<HttpResponse>;
 }
 
 export interface HttpInterceptor {
